@@ -25,7 +25,7 @@ Status labels:
 
 ## Projects
 
-- **CONFIRMED** — Yalla7gez (SaaS court-booking platform, founder/developer, Jun 2026–present; Next.js, TypeScript, Supabase, Tailwind, PostgreSQL, Recharts, Vitest).
+- **CONFIRMED** — Movenue (formerly Yalla7gez; SaaS court management and booking platform, founder/developer, Jun 2026–present; Next.js, TypeScript, Supabase, Tailwind, PostgreSQL, Recharts, Vitest; live at https://movenue.vercel.app/).
 - **CONFIRMED** — Agri-Bot (graduation project, YOLOv8 → MobileNetV2 → fuzzy PID, Jetson Nano, 20 FPS, 96% accuracy, IUGRC 2024 publication).
 - **CONFIRMED** — Personal RAG Chatbot (LangChain, ChromaDB, Groq Llama 4 Scout, FastAPI, May 2026).
 - **CONFIRMED** — FMCG Data Engineering Pipeline (Databricks, PySpark, Delta Lake, Unity Catalog, Medallion Architecture, Apr 2026).
@@ -82,7 +82,7 @@ Status labels:
 
 ## Other relevant work
 
-- **CONFIRMED** — Yalla7gez (founder/product work, bilingual SaaS) — relevant to product/engineering story.
+- **CONFIRMED** — Movenue (founder/product work, bilingual SaaS) — relevant to product/engineering story.
 - **CONFIRMED** — Military service engineering-office work (presentation decision pending — see Experience).
 - **CONFIRMED** — MCP / Claude platform training and applied building.
 

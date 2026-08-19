@@ -16,17 +16,14 @@ A single, premium, highly visual web experience that frames the person and the w
 
 - ML/AI hiring managers and recruiters (primary per prior positioning work)
 - Engineering collaborators and peers
-- Potential clients or partners for the SaaS/product work (Yalla7gez)
+- Potential clients or partners for the SaaS/product work (Movenue)
 - Anyone evaluating Yousef's portfolio as professional evidence
 
 ## Current project phase
 
-**PHASE 3 — UX / PAGE ARCHITECTURE (NEXT — NOT STARTED)**
+**PHASE 4A — HOME PAGE (IMPLEMENTATION) — IN PROGRESS**
 
-The project is ready to begin Phase 3, which defines (planning/documentation only — no implementation):
-- Global UX (navigation, header, footer, CTAs, mobile navigation)
-- Page-level architecture for HOME, WORK, ABOUT, EXPERIENCE, PUBLICATIONS, CONTACT
-- Content models, project media model, mobile UX
+The application is initialized (Next.js 16 + TypeScript + Tailwind) and the Home page is implemented as the first implementation milestone, following the approved Phase 3 architecture. Only HOME is built; WORK, ABOUT, EXPERIENCE, PUBLICATIONS, and CONTACT remain later milestones (currently honest placeholder pages so navigation never breaks).
 
 Full phase list, progress, and statuses: [ROADMAP.md](./ROADMAP.md) — the primary navigation document.
 
@@ -34,7 +31,8 @@ Phase history:
 - **PHASE 0 — PROJECT INITIALIZATION: COMPLETED** — documentation system, source-of-truth hierarchy, principles, Git/commit conventions.
 - **PHASE 1 — FOUNDATION / DISCOVERY: COMPLETED** — content inventory built; content conflicts resolved (resume-authoritative values).
 - **PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY: COMPLETED** — approved sitemap, visual direction, color palette, and interaction philosophy recorded.
-- **PHASE 3 — UX / PAGE ARCHITECTURE: NEXT** — comes after this phase; only then wireframes, brand system, and implementation.
+- **PHASE 3 — UX / PAGE ARCHITECTURE: COMPLETED** — approved page-level UX architecture recorded in PHASE3_UX.md.
+- **PHASE 4A — HOME PAGE: IN PROGRESS** — Home page implemented (user-directed implementation milestone ahead of the roadmap's wireframe-first sequence; see ROADMAP.md).
 
 ## Core principles
 

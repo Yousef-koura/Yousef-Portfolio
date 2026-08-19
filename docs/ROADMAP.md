@@ -139,7 +139,7 @@ Confirmed interaction philosophy:
 ---
 
 ## PHASE 3 — UX / PAGE ARCHITECTURE
-**Status: NEXT / NOT STARTED**
+**Status: COMPLETED**
 
 Goal:
 Define exactly what every page needs to accomplish before designing the visual layouts.
@@ -208,7 +208,7 @@ Tasks:
 - animation reductions
 
 Deliverable:
-Approved page-level UX architecture.
+Approved page-level UX architecture — recorded in [PHASE3_UX.md](./PHASE3_UX.md).
 
 ---
 
@@ -235,6 +235,38 @@ Tasks:
 
 Deliverable:
 Approved wireframe/layout specification.
+
+> **Note:** The roadmap's original plan was wireframes before implementation. At the user's direction, the project instead proceeded to an implementation milestone — **PHASE 4A — HOME PAGE** below — using the approved Phase 2 visual direction, Phase 3 UX architecture, and DESIGN_SYSTEM.md tokens. Formal wireframe/spec work remains an option for later phases if the user requests it.
+
+---
+
+## PHASE 4A — HOME PAGE (IMPLEMENTATION MILESTONE)
+**Status: IN PROGRESS** (Home implemented — pending user visual/UX review)
+
+This milestone is a **user-directed implementation milestone** that precedes the roadmap's wireframe-first sequence. It implements ONLY the HOME page. It does not claim Phase 4 (wireframes) or Phase 9 (homepage, in the original sequence) are complete.
+
+Completed:
+- Application initialized: Next.js 16 (App Router), TypeScript, Tailwind CSS v4, ESLint.
+- Approved dependencies installed: GSAP + ScrollTrigger, Framer Motion, Lenis, Lucide React, next/font.
+- Design tokens (Obsidian + Champagne) wired into the design system.
+- Provisional typography: Space Grotesk (display) + Inter (body) + JetBrains Mono (mono) — pending Phase 5 brand system.
+- Global UX: fixed header with responsive/mobile nav, footer, persistent structure (RESUME omitted — destination pending user decision).
+- Home sections per PHASE3_UX.md: Hero, Selected Work (Movenue featured + Agri-Bot, RAG Chatbot, FMCG pipeline), About preview, Experience preview, Publication preview, Capabilities, Final CTA.
+- Motion: Lenis smooth scroll, GSAP ScrollTrigger reveals, Framer Motion hero/menu; `prefers-reduced-motion` respected.
+- 3D: intentionally deferred to a clean CSS fallback for this milestone (3D concept is an open decision; see DECISIONS #26).
+- Placeholder pages for WORK / ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT so navigation has no dead links (the pages themselves are future milestones).
+- Project assets copied to `public/projects/` (Movenue screenshot used as the featured visual).
+- Metadata, semantic markup, skip link, focus states, alt text.
+
+Open / unresolved (carried from Phase 3, do not resolve silently):
+- Final positioning statement (hero copy uses confirmed resume summary as provisional text).
+- Resume destination URL — RESUME CTA intentionally omitted until it exists.
+- Portrait approval — the About preview uses text only (portrait NOT used).
+- Military service presentation — included as identity context ("Military service · completed") only, not as an experience entry.
+- Which old-site-only projects to include on WORK later.
+- Typography finalization (Phase 5), 3D concept (Phase 12), metadataBase/deployment URL (Phase 15).
+
+Next step: visual/UX review of the Home page — then future milestones (WORK, ABOUT, EXPERIENCE, PUBLICATIONS, CONTACT), not a bulk implementation of all pages.
 
 ---
 
@@ -627,9 +659,10 @@ If there is a conflict:
 - PHASE 0 — COMPLETED
 - PHASE 1 — COMPLETED
 - PHASE 2 — COMPLETED
-- PHASE 3 — NEXT / NOT STARTED
-- PHASES 4–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED)
+- PHASE 3 — COMPLETED
+- PHASE 4A — HOME PAGE (user-directed implementation milestone) — IN PROGRESS (Home implemented, pending review)
+- PHASES 4, 6–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED)
 
-The project is currently ready to begin:
+The project is currently in:
 
-**PHASE 3 — UX / PAGE ARCHITECTURE**
+**PHASE 4A — HOME PAGE (IMPLEMENTATION MILESTONE)**

@@ -26,7 +26,7 @@ Consolidated source-of-truth for building/updating the portfolio website. Compil
 ## 3. Summary / About Text
 
 **Resume version (current):**
-Junior Machine Learning Engineer with a Mechatronics Engineering background and hands-on experience across machine learning, computer vision, and data engineering, gained through internships and applied projects. Interested in machine learning and building end-to-end AI-driven products, currently building and launching a live SaaS platform (Yalla7gez) while continuing to grow as an ML engineer.
+Junior Machine Learning Engineer with a Mechatronics Engineering background and hands-on experience across machine learning, computer vision, and data engineering, gained through internships and applied projects. Interested in machine learning and building end-to-end AI-driven products, currently building and launching a live SaaS platform (Movenue) while continuing to grow as an ML engineer.
 
 **LinkedIn "About" version (more detailed, slightly older framing):**
 Junior Machine Learning Engineer specializing in Computer Vision and Applied AI, with a Mechatronics Engineering foundation (GPA 3.62/4). Built classification/prediction models across healthcare (tumor classification), finance (loan repayment prediction), real estate (housing price prediction), and ad targeting — CNNs, YOLO-based object detection, Python, TensorFlow. Graduation project: AI-powered plant disease detection robot (YOLOv8-MobileNetV3 + TensorRT on Jetson Nano, ~20 FPS, 96% accuracy), published at IUGRC 2024. Currently interning on the ML team at FlyRank AI on an end-to-end ML workflow (data prep, feature engineering, leakage auditing, group-based validation, model evaluation). Mechatronics background → thinks about AI systems end-to-end, sensor data to deployment, reinforced by hands-on Docker/Kubernetes work.
@@ -70,8 +70,8 @@ MSA University (Modern Sciences and Arts University), Giza, Egypt — dual-accre
 
 ## 6. Projects
 
-### Yalla7gez — Bilingual SaaS Court Booking Platform
-**Founder & Developer · Jun 2026 – Present**
+### Movenue — Court Management & Booking Platform (formerly Yalla7gez)
+**Founder & Developer · Jun 2026 – Present · Live: https://movenue.vercel.app/**
 - Two-sided marketplace SaaS in **Next.js, TypeScript, Supabase, Tailwind CSS** for padel/football court owners and players in Egypt; Venue → Court hierarchy; full Arabic/English localization.
 - Designed atomic booking **PostgreSQL** RPCs and row-level security (RLS) policies to prevent double-booking, including a partial unique index and hardened SECURITY DEFINER functions for concurrent bookings.
 - Built an owner analytics dashboard with **Recharts** (period-over-period deltas, booking heatmaps) and a player booking flow with dynamic slot generation, session grouping, cancellations.

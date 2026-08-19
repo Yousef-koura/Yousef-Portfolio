@@ -38,6 +38,7 @@ Recorded decisions only. Proposals and assumptions are NOT decisions and must no
 | 24 | 2026-08-19 | **Component inventory:** Planned in Phase 3+. | Future |
 | 25 | 2026-08-19 | **Motion choreography (specific animations):** Planned in later phases. | Future |
 | 26 | 2026-08-19 | **Exact 3D concept:** Planned in later phases. | Future |
+| 27 | 2026-08-19 | **SaaS project rename:** The court management and booking platform is named **Movenue** (formerly Yalla7gez). Live URL: https://movenue.vercel.app/. "Yalla7gez" is not used in the implemented portfolio. | Decided |
 
 ## Rules
 
