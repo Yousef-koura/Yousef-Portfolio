@@ -2,12 +2,13 @@
 
 ## Mandatory reading order before any work
 
-1. Read [PROJECT.md](./PROJECT.md) first — project purpose, phase, principles, scope.
-2. Read [TECH_STACK.md](./TECH_STACK.md) before making technical decisions.
-3. Read [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) before making visual decisions.
-4. Read [CONTENT.md](./CONTENT.md) before writing portfolio content.
-5. Read [DECISIONS.md](./DECISIONS.md) before changing an established decision.
-6. Inspect existing code before modifying it — never overwrite work you do not understand.
+1. Read [ROADMAP.md](./ROADMAP.md) first — current phase, progress, next required task, blockers.
+2. Read [PROJECT.md](./PROJECT.md) — project purpose, phase, principles, scope.
+3. Read [TECH_STACK.md](./TECH_STACK.md) before making technical decisions.
+4. Read [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) before making visual decisions.
+5. Read [CONTENT.md](./CONTENT.md) before writing portfolio content.
+6. Read [DECISIONS.md](./DECISIONS.md) before changing an established decision.
+7. Inspect existing code before modifying it — never overwrite work you do not understand.
 
 ## Non-negotiable rules
 
@@ -80,16 +81,56 @@ Rules:
 
 Because this is a portfolio project, `content:` and `design:` are particularly useful — let the Git history tell a clean story.
 
+## Roadmap workflow
+
+**ROADMAP.md is the primary navigation document for project progress.** Follow this workflow on every task.
+
+### Before every task
+
+1. Read [ROADMAP.md](./ROADMAP.md).
+2. Identify the current phase.
+3. Check which tasks are completed.
+4. Check the next required task.
+5. Read the relevant project documentation.
+6. Do not skip ahead to a later phase without explicit user approval.
+
+### During the task
+
+- Work only within the current approved phase unless the user explicitly changes scope.
+- If a decision affects a future phase, document it appropriately.
+- Do not silently change completed decisions.
+- If a blocker appears, mark the relevant phase **BLOCKED** in ROADMAP.md and explain why.
+
+### After every task
+
+1. Update docs/ROADMAP.md.
+2. Update phase status.
+3. Mark completed tasks.
+4. Record remaining tasks.
+5. Record blockers if any.
+6. Update relevant documentation files.
+7. Ensure ROADMAP.md agrees with PROJECT.md and DECISIONS.md.
+
 ## Phase discipline
 
-Do NOT skip ahead. The project proceeds in defined phases (see [PROJECT.md](./PROJECT.md)):
+Do NOT skip ahead. The project proceeds in defined phases (see [ROADMAP.md](./ROADMAP.md)):
 
-1. FOUNDATION — completed
-2. INFORMATION ARCHITECTURE + VISUAL IDENTITY — in progress
-3. DETAILED UX / PAGE ARCHITECTURE + WIREFRAME PLANNING — next
-4. INTERACTION SYSTEM
-5. UI SYSTEM
-6. IMPLEMENTATION
-7. VALIDATION
+0. PROJECT INITIALIZATION — completed
+1. FOUNDATION / DISCOVERY — completed
+2. INFORMATION ARCHITECTURE + VISUAL IDENTITY — completed
+3. UX / PAGE ARCHITECTURE — next
+4. WIREFRAMES + VISUAL COMPOSITION
+5. BRAND SYSTEM
+6. COMPONENT / DESIGN SYSTEM ARCHITECTURE
+7. APPLICATION INITIALIZATION
+8. CORE UI IMPLEMENTATION
+9. HOMEPAGE IMPLEMENTATION
+10. WORK / PROJECTS
+11. ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT
+12. MOTION + 3D POLISH
+13. CONTENT + ASSET INTEGRATION
+14. QUALITY / ACCESSIBILITY / PERFORMANCE
+15. DEPLOYMENT
+16. FINAL REVIEW
 
 If a task implies skipping a phase (e.g., jumping to implementation before sitemap/wireframe/identity decisions), stop and flag it.

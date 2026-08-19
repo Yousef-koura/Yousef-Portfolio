@@ -21,22 +21,20 @@ A single, premium, highly visual web experience that frames the person and the w
 
 ## Current project phase
 
-**PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY (IN PROGRESS)**
+**PHASE 3 — UX / PAGE ARCHITECTURE (NEXT — NOT STARTED)**
 
-This phase defines (planning/documentation only — no implementation):
-- Sitemap
-- Information architecture
-- Content hierarchy
-- Navigation
-- Visual identity
-- Color system
-- Typography direction
-- Interaction direction
+The project is ready to begin Phase 3, which defines (planning/documentation only — no implementation):
+- Global UX (navigation, header, footer, CTAs, mobile navigation)
+- Page-level architecture for HOME, WORK, ABOUT, EXPERIENCE, PUBLICATIONS, CONTACT
+- Content models, project media model, mobile UX
+
+Full phase list, progress, and statuses: [ROADMAP.md](./ROADMAP.md) — the primary navigation document.
 
 Phase history:
+- **PHASE 0 — PROJECT INITIALIZATION: COMPLETED** — documentation system, source-of-truth hierarchy, principles, Git/commit conventions.
 - **PHASE 1 — FOUNDATION / DISCOVERY: COMPLETED** — content inventory built; content conflicts resolved (resume-authoritative values).
-- **PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY: IN PROGRESS** — approved high-level sitemap and color palette are recorded.
-- **PHASE 3 — DETAILED UX / PAGE ARCHITECTURE + WIREFRAME PLANNING: NEXT** — comes after this phase; only then implementation.
+- **PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY: COMPLETED** — approved sitemap, visual direction, color palette, and interaction philosophy recorded.
+- **PHASE 3 — UX / PAGE ARCHITECTURE: NEXT** — comes after this phase; only then wireframes, brand system, and implementation.
 
 ## Core principles
 
@@ -114,6 +112,7 @@ Full log: [DECISIONS.md](./DECISIONS.md).
 
 ## Document references
 
+- [ROADMAP.md](./ROADMAP.md) — long-term execution plan and progress tracker (primary navigation)
 - [AGENTS.md](./AGENTS.md) — working instructions for AI agents
 - [SKILLS.md](./SKILLS.md) — intended technical skill/toolset
 - [TECH_STACK.md](./TECH_STACK.md) — selected technology stack

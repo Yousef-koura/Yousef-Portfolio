@@ -43,4 +43,4 @@ Recorded decisions only. Proposals and assumptions are NOT decisions and must no
 
 - Do not treat proposals as decisions.
 - Do not silently reverse a decision — record the change here with a new row and date.
-- Open items (11, 12, 20–26) must be resolved deliberately in the appropriate phase (Phase 2/3), not incidentally during implementation.
+- Open items (11, 12, 20–26) must be resolved deliberately in the appropriate phase per [ROADMAP.md](./ROADMAP.md) (typography/logo → Phase 5 Brand System; wireframes/homepage composition → Phase 4; component inventory → Phase 6; motion choreography/3D concept → Phase 12), not incidentally during implementation.

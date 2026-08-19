@@ -2,8 +2,8 @@
 
 ## Status
 
-**PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY (IN PROGRESS).**
-The visual direction is approved and the color palette is decided. Typography and detailed design tokens remain OPEN. This document records the approved direction and open items. It does not lock typography or final branding.
+**PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY: COMPLETED.**
+The visual direction is approved and the color palette is decided. Typography and detailed design tokens remain OPEN (Phase 5 — BRAND SYSTEM). This document records the approved direction and open items. It does not lock typography or final branding.
 
 ## Design goal
 
@@ -176,6 +176,10 @@ A detailed 3D-creator-portfolio reference was provided as **design inspiration**
 
 ## Relationship to phases
 
-- **Phase 2 (current):** Information Architecture + Visual Identity — high-level sitemap and color palette decided here.
-- **Phase 3 (next):** Detailed UX / page architecture + wireframe planning.
-- Interaction system and UI system are later phases; motion and 3D specifics will be finalized there.
+- **Phase 2 (completed):** Information Architecture + Visual Identity — high-level sitemap and color palette decided here.
+- **Phase 3 (next):** UX / Page Architecture — page-level architecture and content models.
+- **Phase 4:** Wireframes + Visual Composition.
+- **Phase 5:** Brand System — typography, type scale, logo/mark, spacing, border, radius, shadow, image/icon treatment, motion tokens, 3D visual language. This completes DESIGN_SYSTEM.md.
+- Phase 6+: Interaction system, UI system, and implementation; motion and 3D specifics will be finalized there.
+
+Full phase list and progress: [ROADMAP.md](./ROADMAP.md).
