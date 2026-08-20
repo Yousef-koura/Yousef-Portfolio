@@ -25,6 +25,8 @@ A single, premium, highly visual web experience that frames the person and the w
 
 The application is initialized (Next.js 16 + TypeScript + Tailwind) and the Home page is implemented as the first implementation milestone, following the approved Phase 3 architecture. Only HOME is built; WORK, ABOUT, EXPERIENCE, PUBLICATIONS, and CONTACT remain later milestones (currently honest placeholder pages so navigation never breaks).
 
+The Home hero integrates the **approved portrait** as a dimensional 3D/art-directed object (CSS 3D layered treatment — see DECISIONS #28–29) and features **Movenue** as the featured SaaS project (live at https://movenue.vercel.app/).
+
 Full phase list, progress, and statuses: [ROADMAP.md](./ROADMAP.md) — the primary navigation document.
 
 Phase history:

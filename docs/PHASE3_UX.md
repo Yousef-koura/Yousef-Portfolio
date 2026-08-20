@@ -164,7 +164,7 @@ The homepage is the professional front door. It must, in the first moments, answ
 
 1. **Hero — professional positioning.** Oversized, premium typography; name and role; immediate positioning claim. Purpose: instant clarity of identity and craft. The final positioning statement is **pending user decision** (currently provisional).
 2. **Selected work.** A curated, high-evidence preview of the best projects (not all). Routes to WORK and project detail. Purpose: prove capability with real evidence immediately.
-3. **About / profile.** A short personal/professional snapshot that makes the person human and credible; routes to ABOUT. Portrait usage is **pending user decision** (a portrait asset exists but has NOT been approved — do not assume approval).
+3. **About / profile.** A short personal/professional snapshot that makes the person human and credible; routes to ABOUT. Portrait usage is **pending user decision** — note that the portrait has since been approved for and used in the HOME hero (DECISIONS #28); whether it also appears on ABOUT is a later-milestone decision.
 4. **Experience preview.** Timeline/roles highlights; routes to EXPERIENCE. Purpose: establish trajectory and professional seriousness.
 5. **Publication preview.** The IUGRC publication signal; routes to PUBLICATIONS. Purpose: academic/research credibility.
 6. **Capabilities / skills.** Contextual presentation of skills/capabilities — not a shallow tech list; supports the identity claim. Purpose: quick competence framing without a standalone skills page.
@@ -386,7 +386,7 @@ These remain user decisions. They are deliberately NOT resolved in this document
 
 1. **Final positioning statement.** Currently provisional; the exact headline/positioning copy for the hero is a pending user decision.
 2. **Resume destination URL.** No resume URL has been confirmed. Do not invent one. Must be resolved before resume CTAs are wired (before Phase 13 content integration).
-3. **Portrait approval.** A portrait asset exists (`Yousef personal photo.jpeg`) but has NOT been approved for use. Do not assume approval. Whether/where a portrait appears (HOME, ABOUT) is a pending decision.
+3. **Portrait approval (HOME resolved, ABOUT open).** The portrait asset (`Yousef personal photo.jpeg`) is **approved for the Home hero** (DECISIONS #28). Whether/where the portrait also appears on ABOUT is a later-milestone decision — do not assume it applies elsewhere.
 4. **Inclusion of old-site-only provisional projects.** Ball Tracking Robot, Steganography Detector, standalone Breast Cancer AI repo, ML Projects collection, PotatoScan, SQL Projects — which (if any) are included is a pending user decision. Source still says "verify before including".
 5. **Military service presentation.** Whether the Armed Forces Engineering Authority role is a full experience entry or only "Military service completed" is a pending user decision.
 6. **Certifications presentation.** Which certifications to show and in what depth is an open presentation decision.

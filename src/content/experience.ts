@@ -15,7 +15,7 @@ export const experience: ExperienceEntry[] = [
     timeframe: "Jun 2026 — Present",
     current: true,
     summary:
-      "Analyzed the production data warehouse, designed a temporal train/test split, and built an interpretable Decision Tree model; completed MCP/Claude applied training and the AI Fluency framework.",
+      "Production data warehouse analysis, temporal train/test split design, and an interpretable Decision Tree model; MCP/Claude applied training and AI Fluency (4D framework).",
   },
   {
     org: "PioPetro",
@@ -23,7 +23,7 @@ export const experience: ExperienceEntry[] = [
     location: "Ohio, USA · Remote",
     timeframe: "Jun 2024 — Aug 2024",
     summary:
-      "Built and evaluated 4+ predictive models for petroleum production forecasting across Exploration, Artificial Lift, and Well Stimulation use cases; up to 87% R² on held-out test sets.",
+      "4+ predictive models for petroleum production forecasting; up to 87% R² on held-out test sets.",
   },
   {
     org: "ITI",
@@ -31,7 +31,7 @@ export const experience: ExperienceEntry[] = [
     location: "Menoufia, Egypt",
     timeframe: "Jul 2023 — Sep 2023",
     summary:
-      "Benchmarked 6+ supervised/unsupervised scikit-learn models across classification, regression, and clustering; up to 97% F1 on held-out test sets.",
+      "6+ supervised/unsupervised scikit-learn models across classification, regression, and clustering; up to 97% F1.",
   },
   {
     org: "Digital HUB (D-HUB)",
@@ -39,13 +39,13 @@ export const experience: ExperienceEntry[] = [
     location: "Cairo, Egypt",
     timeframe: "Aug 2023",
     summary:
-      "Built a breast cancer detection classifier reaching 96% accuracy; awarded 3rd place in an AI challenge co-hosted with the Electronics Research Institute.",
+      "Breast cancer detection classifier at 96% accuracy; 3rd place in an AI challenge co-hosted with the Electronics Research Institute.",
   },
 ];
 
 export const capabilities = [
   {
-    title: "Machine Learning & AI",
+    title: "ML & AI",
     items: [
       "Python",
       "Supervised & Unsupervised Learning",
@@ -58,12 +58,31 @@ export const capabilities = [
     ],
   },
   {
-    title: "Data & Engineering",
-    items: ["SQL", "ETL / ELT", "Medallion Architecture", "Delta Lake", "Databricks", "Docker", "Kubernetes", "AWS"],
+    title: "Computer Vision & Robotics",
+    items: [
+      "TensorFlow",
+      "PyTorch",
+      "OpenCV",
+      "YOLOv8",
+      "MobileNetV2",
+      "Jetson Nano",
+      "Fuzzy PID",
+    ],
   },
   {
-    title: "Full-stack & Product",
-    items: ["Next.js", "TypeScript", "Supabase", "PostgreSQL", "Tailwind CSS", "FastAPI", "TensorFlow", "PyTorch"],
+    title: "Data & Systems",
+    items: [
+      "SQL",
+      "ETL / ELT",
+      "Medallion Architecture",
+      "Delta Lake",
+      "Databricks",
+      "Star Schema",
+      "Docker",
+      "Kubernetes",
+      "AWS",
+      "FastAPI",
+    ],
   },
 ];
 

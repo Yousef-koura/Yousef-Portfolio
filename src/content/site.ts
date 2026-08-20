@@ -4,6 +4,7 @@ export const site = {
   location: "Menoufia, Egypt",
   email: "yousefahmed.ae20@gmail.com",
   phone: "+20 107 047 5596",
+  movenue: "https://movenue.vercel.app/",
   linkedin: "https://linkedin.com/in/yousefkoura",
   github: "https://github.com/Yousef-koura",
   nav: [

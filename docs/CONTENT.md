@@ -101,8 +101,8 @@ Status labels:
 
 ## Available assets
 
-- **CONFIRMED** — `projects&certificate_images/` contains: `Agribot.png`, `breast cancer.jpg`, `dhub certificate.png`, `FMCG dashboard.png`, `ITI MLAl Certificate .png`, `iugrc publication certificate.png`, `personal_rag_assistant.png`, `piopetro certificate.png`.
-- **MISSING** — Professional portrait/photo (the visual reference shows a large portrait composition — no portrait asset is present).
+- **CONFIRMED** — `projects&certificate_images/` contains: `Agribot.png`, `breast cancer.jpg`, `dhub certificate.png`, `FMCG dashboard.png`, `ITI MLAl Certificate .png`, `iugrc publication certificate.png`, `personal_rag_assistant.png`, `piopetro certificate.png`, `movenue.png`, `Yousef personal photo.jpeg`.
+- **CONFIRMED** — Portrait: `Yousef personal photo.jpeg` (640×641) — **approved for and used in the Home hero** as a dimensional 3D/art-directed object (see DECISIONS #28–29). Portrait use on ABOUT remains a later-milestone decision.
 - **MISSING** — Favicon / logo mark / brand assets (expected to be designed in Phase 3).
 
 ---

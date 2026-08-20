@@ -62,6 +62,103 @@ html.lenis body {
   overflow: hidden;
 }
 
+/* Technical marquee — pure CSS loop, no JS, no <marquee> */
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 46s linear infinite;
+  will-change: transform;
+}
+
+.marquee-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Edge fade masks — hard stop at the edges, no horizontal overflow */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ─── Hero editorial composition ─── */
+.hero-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 2.5rem;
+  }
+}
+
+.hero-identity {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.hero-portrait {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+.hero-cta {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+/* Name — editorial scale */
+.hero-name {
+  font-size: clamp(3.5rem, 8vw + 0.5rem, 10rem);
+}
+
+/* Mobile: name is still dominant but scaled for viewport */
+@media (max-width: 639px) {
+  .hero-name {
+    font-size: clamp(3.2rem, 14vw, 5rem);
+  }
+}
+
+/* Tablet */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .hero-name {
+    font-size: clamp(4rem, 8vw, 7rem);
+  }
+}
+
+/* Portrait bleed on desktop — extends slightly beyond the grid cell */
+@media (min-width: 1024px) {
+  .hero-portrait {
+    margin-left: -2rem;
+    margin-right: -3rem;
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -71,5 +168,9 @@ html.lenis body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .marquee-track {
+    animation: none;
   }
 }

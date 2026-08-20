@@ -39,6 +39,8 @@ Recorded decisions only. Proposals and assumptions are NOT decisions and must no
 | 25 | 2026-08-19 | **Motion choreography (specific animations):** Planned in later phases. | Future |
 | 26 | 2026-08-19 | **Exact 3D concept:** Planned in later phases. | Future |
 | 27 | 2026-08-19 | **SaaS project rename:** The court management and booking platform is named **Movenue** (formerly Yalla7gez). Live URL: https://movenue.vercel.app/. "Yalla7gez" is not used in the implemented portfolio. | Decided |
+| 28 | 2026-08-19 | **Portrait approved (Home hero):** The portrait asset `Yousef personal photo.jpeg` is approved for use and integrated into the Home hero as a dimensional, art-directed object. This resolves the previously-open portrait decision for the HOME page only; portrait use on ABOUT remains a later-milestone decision. | Decided |
+| 29 | 2026-08-19 | **Home hero 3D portrait technique:** CSS 3D transforms (`perspective` + `preserve-3d`) with layered image planes — a Z-offset echo/depth layer, a masked main portrait plane (radial mask so the photo's dark background melts into Obsidian), a champagne rim-light layer, and a foreground detail layer — driven by framer-motion (idle sway + spring-smoothed pointer-follow parallax). No WebGL dependency was added: the existing stack provided a performant solution for a flat portrait asset, keeping bundle size and mobile cost low. Full WebGL/3D visual language remains a Phase 12 decision. | Decided |
 
 ## Rules
 

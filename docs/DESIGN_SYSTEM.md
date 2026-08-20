@@ -112,6 +112,19 @@ Do not animate everything. Motion should communicate hierarchy or interaction an
 - Performance-conscious: compressed textures, optimized models, GPU-friendly transforms.
 - Reduce complexity when necessary, especially on mobile.
 
+### Implemented treatment (Home hero portrait — Phase 4A)
+
+The Home hero portrait uses a **CSS-3D layered technique with no WebGL dependency** (see [DECISIONS.md](./DECISIONS.md) #29):
+
+- A `perspective` container with a `preserve-3d` group.
+- A Z-offset echo/depth layer (duplicated, blurred, darkened) that creates parallax depth when the group rotates.
+- The main portrait plane, soft-edged via a radial mask so its near-black background melts into Obsidian.
+- A champagne rim-light layer and a foreground detail layer (light guide, technical readout, corner ticks) at a positive Z offset.
+- Framer Motion drives a restrained idle sway and a spring-smoothed pointer-follow parallax.
+- `prefers-reduced-motion` and coarse-pointer devices get a static, polished composition with no rotation/parallax.
+
+The exact WebGL/3D visual language (Phase 12) remains an open decision; this treatment does not commit to it.
+
 ## Responsive philosophy
 
 - Desktop may be visually ambitious; **mobile is a first-class experience**.

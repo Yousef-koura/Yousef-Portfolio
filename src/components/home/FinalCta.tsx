@@ -1,40 +1,44 @@
-import { Section } from "@/components/ui/Section";
+import { ArrowUpRight } from "lucide-react";
+import { SectionFrame } from "@/components/ui/SectionFrame";
 import { Reveal } from "@/components/ui/Reveal";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { site } from "@/content/site";
 
 export function FinalCta() {
   return (
-    <Section className="border-t border-line">
-      <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <Reveal>
-          <div className="relative overflow-hidden border border-line bg-surface px-6 py-20 text-center sm:px-12 lg:py-28">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(ellipse_at_center,rgba(201,168,106,0.1),transparent_65%)]"
-            />
-            <Eyebrow className="justify-center">Next step</Eyebrow>
-            <h2 className="mx-auto mt-5 max-w-2xl font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
-              Have an ML problem, or want to work together?
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
-              I&apos;m open to Junior ML Engineer, AI Engineer, and Computer Vision Engineer roles — and always
-              interested in building useful things. The fastest way to reach me is through the contact page or directly
-              by email.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <ButtonLink href="/contact">Get in touch</ButtonLink>
-              <ButtonLink href={site.github} external variant="ghost">
-                GitHub
-              </ButtonLink>
-              <ButtonLink href={site.linkedin} external variant="ghost">
-                LinkedIn
-              </ButtonLink>
-            </div>
+    <SectionFrame index="06" label="Contact" className="relative">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(ellipse_46%_90%_at_50%_0%,rgba(201,168,106,0.07),transparent_70%)]"
+      />
+      <Reveal>
+        <div className="relative mx-auto max-w-3xl text-center">
+          <h2 className="font-display text-5xl leading-[1.02] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+            Have an ML problem, or want to work together?
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
+            Open to Junior ML Engineer, AI Engineer, and Computer Vision Engineer roles — always up for building
+            useful things.
+          </p>
+          <a
+            href={`mailto:${site.email}`}
+            className="mt-10 inline-flex items-center gap-3 font-mono text-lg tracking-tight text-champagne transition-colors hover:text-champagne-light sm:text-xl"
+          >
+            <span aria-hidden="true" className="h-px w-8 shrink-0 bg-champagne/50" />
+            {site.email}
+            <ArrowUpRight size={18} aria-hidden="true" />
+          </a>
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
+            <ButtonLink href="/contact">Get in touch</ButtonLink>
+            <ButtonLink href={site.github} external variant="ghost">
+              GitHub
+            </ButtonLink>
+            <ButtonLink href={site.linkedin} external variant="ghost">
+              LinkedIn
+            </ButtonLink>
           </div>
-        </Reveal>
-      </div>
-    </Section>
+        </div>
+      </Reveal>
+    </SectionFrame>
   );
 }
