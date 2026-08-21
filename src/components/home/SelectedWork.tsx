@@ -2,8 +2,8 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { SectionFrame } from "@/components/ui/SectionFrame";
 import { Reveal } from "@/components/ui/Reveal";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Tag } from "@/components/ui/Tag";
+import { RevealImage } from "@/components/ui/RevealImage";
+import { QuietLink } from "@/components/ui/QuietLink";
 import { SecondaryProjectRow } from "@/components/cards/ProjectCard";
 import { featuredProject, secondaryProjects } from "@/content/projects";
 
@@ -17,96 +17,71 @@ export function SelectedWork() {
       index="01"
       label="Selected Work"
       title="Evidence, not adjectives."
-      description="A curated look at how I build — from production SaaS to computer vision systems and data pipelines."
-      action={
-        <ButtonLink href="/work" variant="ghost">
-          All work
-        </ButtonLink>
-      }
+      action={<QuietLink href="/work">All work</QuietLink>}
     >
-      {/* Movenue — flagship editorial composition */}
+      {/* Movenue — the primary visual proof. The product leads; words stay out of its way. */}
       <Reveal>
         <article className="group">
-          {/* Top strip — name, domain, live status */}
-          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
-            <div>
-              <div className="flex items-center gap-2">
+          {/* Caption row — name left, live status + domain right */}
+          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+            <h3 className="font-display text-5xl leading-none tracking-tight text-ink sm:text-6xl lg:text-7xl">
+              {featuredProject.name}
+            </h3>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pb-1 font-mono text-[10px] uppercase tracking-[0.22em]">
+              <span className="flex items-center gap-2 text-champagne">
                 <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-champagne" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-champagne">
-                  {featuredProject.status}
-                </span>
-              </div>
-              <h3 className="mt-3 font-display text-4xl tracking-tight text-ink sm:text-5xl lg:text-6xl">
-                {featuredProject.name}
-              </h3>
+                {featuredProject.status}
+              </span>
+              {primaryLink ? (
+                <a
+                  href={primaryLink.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-muted transition-colors hover:text-champagne"
+                >
+                  {displayUrl}
+                  <ArrowUpRight size={12} aria-hidden="true" />
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              ) : null}
             </div>
-            {primaryLink ? (
-              <a
-                href={primaryLink.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 border border-line px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted transition-colors hover:border-champagne hover:text-champagne"
-              >
-                {displayUrl}
-                <ArrowUpRight size={12} aria-hidden="true" />
-              </a>
-            ) : null}
           </div>
 
-          {/* Editorial body — asymmetric two-column */}
-          <div className="grid gap-10 pt-8 lg:grid-cols-[0.42fr_0.58fr] lg:gap-14 lg:pt-10">
-            {/* Left — description, role, tags */}
-            <div className="flex flex-col justify-between">
-              <div>
-                <p className="font-mono text-xs uppercase tracking-widest text-champagne">
-                  {featuredProject.kind}
-                </p>
-                <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
-                  {featuredProject.summary}
-                </p>
-                <p className="mt-5 flex items-start gap-2 border-l-2 border-champagne/70 pl-3 font-mono text-xs leading-relaxed text-ink/90">
-                  {featuredProject.evidence}
-                </p>
-              </div>
-              <div className="mt-8">
-                <p className="font-mono text-[11px] text-muted">
-                  {featuredProject.role} · {featuredProject.timeframe}
-                </p>
-                <ul className="mt-4 flex flex-wrap gap-2" aria-label="Technologies">
-                  {featuredProject.tags.map((tag) => (
-                    <li key={tag}>
-                      <Tag>{tag}</Tag>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Right — dominant screenshot */}
-            <div className="relative overflow-hidden border border-line bg-surface transition-colors duration-500 group-hover:border-champagne/30">
+          {/* Full-width screenshot — masked editorial reveal */}
+          <div className="mt-8 overflow-hidden border border-line bg-surface transition-colors duration-500 group-hover:border-champagne/30 sm:mt-10">
+            <RevealImage>
               <Image
                 src={featuredProject.image.src}
                 alt={featuredProject.image.alt}
                 width={featuredProject.image.width}
                 height={featuredProject.image.height}
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                className="h-auto w-full transition-transform duration-700 ease-out group-hover:scale-[1.015]"
-                priority
+                sizes="(min-width: 1152px) 1088px, 100vw"
+                className="h-auto w-full transition-transform duration-700 ease-out group-hover:scale-[1.012]"
               />
-              {/* Subtle bottom gradient for depth */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-obsidian/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              />
+            </RevealImage>
+          </div>
+
+          {/* Hairline info strip — one sentence, one metric, one line of tags */}
+          <div className="grid gap-6 border-t border-line pt-6 sm:grid-cols-[1fr_auto] sm:gap-16">
+            <p className="max-w-xl text-sm leading-relaxed text-muted">{featuredProject.summary}</p>
+            <div className="sm:text-right">
+              <p className="font-mono text-xs leading-relaxed text-ink">{featuredProject.evidence}</p>
+              <p className="mt-2 font-mono text-[11px] text-muted">
+                {featuredProject.role} · {featuredProject.timeframe}
+              </p>
             </div>
           </div>
+          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted/70">
+            {featuredProject.tags.join(" · ")}
+          </p>
         </article>
       </Reveal>
 
-      {/* Secondary projects — editorial index rows */}
-      <div className="mt-16 border-t border-line sm:mt-20">
+      {/* Secondary projects — minimal numbered index */}
+      <div className="mt-20 border-t border-line sm:mt-24">
+        <p className="sr-only">More projects</p>
         {secondaryProjects.map((project, index) => (
-          <Reveal key={project.name} delay={0.05 * (index + 1)}>
+          <Reveal key={project.name} delay={0.05 * (index + 1)} y={20}>
             <SecondaryProjectRow project={project} index={index} />
           </Reveal>
         ))}

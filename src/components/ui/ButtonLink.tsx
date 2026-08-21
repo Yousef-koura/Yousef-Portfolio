@@ -28,7 +28,14 @@ export function ButtonLink({
   const inner = (
     <>
       <span>{children}</span>
-      {external ? <ArrowUpRight size={14} aria-hidden="true" /> : <ArrowRight size={14} aria-hidden="true" />}
+      {external ? (
+        <>
+          <ArrowUpRight size={14} aria-hidden="true" />
+          <span className="sr-only"> (opens in a new tab)</span>
+        </>
+      ) : (
+        <ArrowRight size={14} aria-hidden="true" />
+      )}
     </>
   );
 

@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { site } from "@/content/site";
 
+const desktopNav = site.nav.filter((item) => item.href !== "/");
+
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -25,34 +28,46 @@ export function Header() {
     };
   }, [open]);
 
+  // Escape closes the mobile menu and returns focus to the toggle button
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled || open
-          ? "border-b border-line bg-obsidian/85 backdrop-blur-md"
-          : "border-b border-transparent"
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 ${
+        scrolled || open ? "border-b border-line bg-obsidian/70 backdrop-blur-xl" : "border-b border-transparent"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8 lg:h-20">
+        {/* Quiet typographic wordmark — deliberately quieter than the hero name */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 font-display text-lg tracking-tight text-ink"
+          className="font-display text-[15px] tracking-tight text-ink transition-colors duration-300 hover:text-champagne"
           aria-label="Yousef Koura — home"
         >
-          <span aria-hidden="true" className="inline-block h-2 w-2 bg-champagne" />
           {site.name}
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-          {site.nav.map((item) => (
+        {/* Compact editorial nav — hairline-separated, champagne only on active/hover */}
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
+          {desktopNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               aria-current={isActive(item.href) ? "page" : undefined}
-              className={`rounded px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] transition-colors ${
-                isActive(item.href) ? "text-champagne" : "text-muted hover:text-ink"
+              className={`font-mono text-[10px] uppercase tracking-[0.24em] transition-colors duration-300 ${
+                isActive(item.href) ? "text-champagne" : "text-muted hover:text-champagne"
               }`}
             >
               {item.label}
@@ -61,12 +76,13 @@ export function Header() {
         </nav>
 
         <button
+          ref={menuButtonRef}
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink transition-colors hover:border-champagne hover:text-champagne lg:hidden"
+          className="flex h-10 w-10 items-center justify-center border border-line text-ink transition-colors hover:border-champagne hover:text-champagne lg:hidden"
         >
           {open ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
         </button>
@@ -80,7 +96,7 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-line bg-obsidian/95 backdrop-blur-md lg:hidden"
+            className="overflow-hidden border-t border-line bg-obsidian/95 backdrop-blur-xl lg:hidden"
           >
             <nav className="flex flex-col gap-1 px-5 py-6" aria-label="Mobile">
               {site.nav.map((item, index) => (

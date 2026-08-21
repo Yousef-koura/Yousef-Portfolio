@@ -70,7 +70,7 @@ html.lenis body {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 46s linear infinite;
+  animation: marquee-scroll 64s linear infinite;
   will-change: transform;
 }
 
@@ -97,6 +97,23 @@ html.lenis body {
   to {
     transform: translateX(-50%);
   }
+}
+
+/* Scroll cue — a slow, quiet drift instead of a busy bounce */
+@keyframes scroll-cue-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 0.5;
+  }
+}
+
+.scroll-cue-icon {
+  animation: scroll-cue-drift 2.6s ease-in-out infinite;
 }
 
 /* ─── Hero editorial composition ─── */

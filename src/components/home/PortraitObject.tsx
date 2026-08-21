@@ -109,7 +109,7 @@ export function PortraitObject() {
               src={PORTRAIT_SRC}
               alt=""
               fill
-              sizes="(min-width: 1024px) 42vw, 80vw"
+              sizes="(min-width: 1024px) min(45vw, 580px), 80vw"
               className="object-cover opacity-20 blur-[6px] brightness-[0.45]"
               style={{ WebkitMaskImage: MASK, maskImage: MASK }}
             />
@@ -123,7 +123,7 @@ export function PortraitObject() {
               src={PORTRAIT_SRC}
               alt=""
               fill
-              sizes="(min-width: 1024px) 42vw, 80vw"
+              sizes="(min-width: 1024px) min(45vw, 580px), 80vw"
               className="object-cover opacity-30 blur-[4px] brightness-[0.55]"
               style={{ WebkitMaskImage: MASK, maskImage: MASK }}
             />
@@ -138,10 +138,10 @@ export function PortraitObject() {
             <Image
               src={PORTRAIT_SRC}
               alt="Yousef Koura — machine learning engineer"
-              width={640}
-              height={641}
+              width={1024}
+              height={1024}
               priority
-              sizes="(min-width: 1024px) 42vw, 80vw"
+              sizes="(min-width: 1024px) min(45vw, 580px), 80vw"
               className="h-full w-full object-cover scale-[1.03] object-center"
               style={{ WebkitMaskImage: MASK, maskImage: MASK }}
             />
