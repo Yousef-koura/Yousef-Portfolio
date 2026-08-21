@@ -82,8 +82,8 @@ export function Hero() {
           </motion.p>
         </motion.div>
 
-        {/* Portrait — duotone editorial crop; its one-time load reveal is
-            reduce-gated inside PortraitObject (DECISIONS #32) */}
+        {/* Portrait — art-directed transparent cutout (desktop/mobile crops);
+            its one-time load reveal is reduce-gated inside PortraitObject */}
         <div className="hero-portrait">
           <PortraitObject />
         </div>

@@ -101,8 +101,8 @@ Status labels:
 
 ## Available assets
 
-- **CONFIRMED** — `projects&certificate_images/` contains: `Agribot.png`, `breast cancer.jpg`, `dhub certificate.png`, `FMCG dashboard.png`, `ITI MLAl Certificate .png`, `iugrc publication certificate.png`, `personal_rag_assistant.png`, `piopetro certificate.png`, `movenue.png`, `Yousef personal photo 2.jpeg`, `Yousef personal photo.png`.
-- **CONFIRMED** — Portrait (raw assets in `projects&certificate_images/`): `Yousef personal photo 2.jpeg` (1024×1024) and `Yousef personal photo.png` (1024×1024); the public copy used by the site (`public/portrait/yousef-portrait.jpeg`) is byte-identical to `Yousef personal photo 2.jpeg` — **approved for and used in the Home hero**, presented as a duotone-graded asymmetric editorial crop with a one-time load reveal (see DECISIONS #28–32). Portrait use on ABOUT remains a later-milestone decision.
+- **CONFIRMED** — `projects&certificate_images/` contains: `Agribot.png`, `breast cancer.jpg`, `dhub certificate.png`, `FMCG dashboard.png`, `ITI MLAl Certificate .png`, `iugrc publication certificate.png`, `personal_rag_assistant.png`, `piopetro certificate.png`, `movenue.png`, `Yousef personal photo 2.jpeg`, `Yousef personal photo.png`, `personal image desktop.jpg`, `personal image mobile.jpg`.
+- **CONFIRMED** — Portrait (raw assets in `projects&certificate_images/`): `Yousef personal photo 2.jpeg` (1024×1024) and `Yousef personal photo.png` (1024×1024), plus user-supplied background-removed exports `personal image desktop.jpg` and `personal image mobile.jpg`. The site uses the transparent PNG pair in `public/portrait/` — `personal-image-desktop.png` (365×684, ≥761px viewports) and `personal-image-mobile.png` (394×634, below) — **approved for and used in the Home opening**, presented as clean cutouts at native aspect ratio via `<picture>` art direction with a one-time load reveal (see DECISIONS #28–34; `yousef-portrait.jpeg` is removed). Portrait use on ABOUT remains a later-milestone decision.
 - **MISSING** — Favicon / logo mark / brand assets (expected to be designed in Phase 3).
 
 ---

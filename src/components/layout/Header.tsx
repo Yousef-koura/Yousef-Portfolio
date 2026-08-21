@@ -27,11 +27,12 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [sectionHref, setSectionHref] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => { setScrolled(window.scrollY > 24); const height = document.documentElement.scrollHeight - window.innerHeight; setProgress(height > 0 ? window.scrollY / height : 0); };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -95,6 +96,7 @@ export function Header() {
         scrolled || open ? "border-b border-line bg-obsidian/70 backdrop-blur-xl" : "border-b border-transparent"
       }`}
     >
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left bg-champagne" style={{ transform: `scaleX(${progress})` }} />
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8 lg:h-20">
         {/* Bold display wordmark — the header carries real typographic weight */}
         <Link

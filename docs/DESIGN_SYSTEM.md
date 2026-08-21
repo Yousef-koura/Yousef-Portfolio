@@ -112,13 +112,13 @@ Do not animate everything. Motion should communicate hierarchy or interaction an
 - Performance-conscious: compressed textures, optimized models, GPU-friendly transforms.
 - Reduce complexity when necessary, especially on mobile.
 
-### Implemented treatment (Home hero portrait — Phase 4A, duotone editorial)
+### Implemented treatment (Home opening portrait — Phase 4A, transparent cutout art direction)
 
-The Home hero portrait is a **duotone editorial composition** with no WebGL and zero client-side JS (originally a CSS-3D layered technique per [DECISIONS.md](./DECISIONS.md) #29; simplified per **#30**; evolved into the current treatment per **#32**):
+The Home opening portrait is a **clean background-removed cutout** with no WebGL and no added client-side JS (originally a CSS-3D layered technique per [DECISIONS.md](./DECISIONS.md) #29; simplified per **#30**; duotone editorial per **#32**; current treatment per **#34**):
 
-- **Duotone grade:** an Obsidian gradient bed acts as the duotone shadow end; the grayscaled photo is composited via `mix-blend-luminosity` so shadows melt into Obsidian; a low-opacity (~30%) champagne `soft-light` layer warms highlights. The photo is graded into the palette, not dropped on a dark background.
-- **Asymmetric editorial crop:** taller `aspect-[3/4]` frame with a single diagonal cut across the top-right corner (`clip-path` polygon); on desktop it bleeds past the hero grid's right edge and rises slightly above its cell — deliberately composed, contained by the hero's `overflow-hidden`. Mobile stays contained/centered.
-- **One-time load reveal:** the frame wipes open via inset clip-path while the plane settles from a slight scale; plays once, then the portrait is fully static (no parallax/sway/pointer motion). Declared only under `prefers-reduced-motion: no-preference` — reduced-motion visitors see the final state immediately.
+- **Art-directed asset pair:** two user-supplied transparent PNGs of the approved photo — `personal-image-desktop.png` (365×684) for ≥761px viewports and `personal-image-mobile.png` (394×634) below — rendered via `<picture>` + `getImageProps` (Next.js 16 pattern), breakpoint-matched to the portal archive's 760px CSS breakpoint. Each crop shows at its native aspect ratio (`object-contain`, bottom-anchored in the portal frame).
+- **No grading or masking:** the cutout needs no gradient bed, luminosity/soft-light grades, radial edge melt, or corner clip-path — the subject shape is the composition. The one-time load reveal (inset clip-path wipe + scale settle, reduce-gated) is retained; afterwards the portrait is fully static.
+- **LCP priority:** `loading="eager"` + `fetchPriority="high"` on the fallback image — `preload` cannot be used across art-direction variants without double-fetching.
 
 The exact WebGL/3D visual language (Phase 12) remains an open decision; this treatment does not commit to it.
 

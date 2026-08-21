@@ -22,7 +22,7 @@ This file describes the **intended** technical skill/toolset for this project. I
 - **React Three Fiber** — Three.js for React
 - **Drei** — helpers/components for R3F
 
-Approved and reserved for later use (full 3D/WebGL language is a Phase 12 decision — see [DECISIONS.md](./DECISIONS.md) #13/#29). Not currently installed or in use: the Home hero portrait uses a CSS-3D layered technique with no WebGL dependency.
+Approved and reserved for later use (full 3D/WebGL language is a Phase 12 decision — see [DECISIONS.md](./DECISIONS.md) #13/#29). Not currently installed or in use: the Home opening portrait uses transparent PNG cutouts with no WebGL dependency.
 
 ## UI
 
