@@ -118,8 +118,9 @@ Do NOT skip ahead. The project proceeds in defined phases (see [ROADMAP.md](./RO
 0. PROJECT INITIALIZATION — completed
 1. FOUNDATION / DISCOVERY — completed
 2. INFORMATION ARCHITECTURE + VISUAL IDENTITY — completed
-3. UX / PAGE ARCHITECTURE — next
+3. UX / PAGE ARCHITECTURE — completed
 4. WIREFRAMES + VISUAL COMPOSITION
+4A. HOME PAGE (user-directed implementation milestone) — in progress
 5. BRAND SYSTEM
 6. COMPONENT / DESIGN SYSTEM ARCHITECTURE
 7. APPLICATION INITIALIZATION
@@ -134,3 +135,5 @@ Do NOT skip ahead. The project proceeds in defined phases (see [ROADMAP.md](./RO
 16. FINAL REVIEW
 
 If a task implies skipping a phase (e.g., jumping to implementation before sitemap/wireframe/identity decisions), stop and flag it.
+
+This list is a coarse map only. [ROADMAP.md](./ROADMAP.md) is the authoritative source for granular phase status — do not rely on this list being kept in lockstep with it manually; check ROADMAP.md before every task.

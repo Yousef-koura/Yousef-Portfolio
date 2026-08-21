@@ -19,6 +19,8 @@
 | Backend | NONE (unless a genuinely necessary feature is identified later) |
 | CMS | NONE |
 
+Note: Three.js / React Three Fiber / Drei are **approved and reserved** for later use (the full WebGL/3D visual language remains a Phase 12 decision — [DECISIONS.md](./DECISIONS.md) #13/#29). They are not currently installed or in use: the Home hero uses a CSS-3D layered technique with no WebGL dependency.
+
 ## Architecture principle
 
 The portfolio is intentionally a **repository-based, content-driven application**. Content lives in the repository (structured data / markdown) and is rendered by the Next.js app.
