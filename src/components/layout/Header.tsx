@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import { site } from "@/content/site";
 
 const desktopNav = site.nav.filter((item) => item.href !== "/");
@@ -92,19 +93,25 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 ${
-        scrolled || open ? "border-b border-line bg-obsidian/70 backdrop-blur-xl" : "border-b border-transparent"
-      }`}
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 ${scrolled || open ? "border-b border-line bg-obsidian/70 backdrop-blur-xl" : "border-b border-transparent"
+        }`}
     >
       <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left bg-champagne" style={{ transform: `scaleX(${progress})` }} />
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8 lg:h-20">
-        {/* Bold display wordmark — the header carries real typographic weight */}
+        {/* Logo mark — links home */}
         <Link
           href="/"
-          className="font-display text-[17px] font-bold tracking-tight text-ink transition-colors duration-300 hover:text-champagne sm:text-xl lg:text-2xl"
+          className="transition-opacity duration-300 hover:opacity-80"
           aria-label="Yousef Koura — home"
         >
-          {site.name}
+          <Image
+            src="/logo.png"
+            alt=""
+            width={1668}
+            height={276}
+            priority
+            className="-my-4 w-[42vw] h-auto sm:-my-6 sm:h-28 sm:w-auto lg:-my-14 lg:-ml-5 lg:h-52"
+          />
         </Link>
 
         {/* Capsule-grouped quiet links + one solid CTA pill */}
@@ -115,9 +122,8 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive(item.href) ? "page" : undefined}
-                className={`rounded-full px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${
-                  isHighlighted(item.href) ? "bg-raised/80 text-champagne" : "text-muted hover:text-ink"
-                }`}
+                className={`rounded-full px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${isHighlighted(item.href) ? "bg-raised/80 text-champagne" : "text-muted hover:text-ink"
+                  }`}
               >
                 {item.label}
               </Link>
@@ -127,9 +133,8 @@ export function Header() {
             <Link
               href={contactItem.href}
               aria-current={isActive(contactItem.href) ? "page" : undefined}
-              className={`rounded-full bg-champagne px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-obsidian transition-all duration-300 hover:bg-champagne-light ${
-                isHighlighted(contactItem.href) ? "ring-1 ring-inset ring-champagne-light/60" : ""
-              }`}
+              className={`rounded-full bg-champagne px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-obsidian transition-all duration-300 hover:bg-champagne-light ${isHighlighted(contactItem.href) ? "ring-1 ring-inset ring-champagne-light/60" : ""
+                }`}
             >
               {contactItem.label}
             </Link>
@@ -171,9 +176,8 @@ export function Header() {
                     href={item.href}
                     onClick={() => setOpen(false)}
                     aria-current={isActive(item.href) ? "page" : undefined}
-                    className={`flex items-center justify-between border-b border-line/60 py-4 font-display text-2xl tracking-tight transition-colors ${
-                      isActive(item.href) ? "text-champagne" : "text-ink hover:text-champagne"
-                    }`}
+                    className={`flex items-center justify-between border-b border-line/60 py-4 font-display text-2xl tracking-tight transition-colors ${isActive(item.href) ? "text-champagne" : "text-ink hover:text-champagne"
+                      }`}
                   >
                     {item.label}
                     <span aria-hidden="true" className="font-mono text-xs text-muted">
