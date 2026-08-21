@@ -112,18 +112,22 @@ Do not animate everything. Motion should communicate hierarchy or interaction an
 - Performance-conscious: compressed textures, optimized models, GPU-friendly transforms.
 - Reduce complexity when necessary, especially on mobile.
 
-### Implemented treatment (Home hero portrait — Phase 4A)
+### Implemented treatment (Home hero portrait — Phase 4A, duotone editorial)
 
-The Home hero portrait uses a **CSS-3D layered technique with no WebGL dependency** (see [DECISIONS.md](./DECISIONS.md) #29):
+The Home hero portrait is a **duotone editorial composition** with no WebGL and zero client-side JS (originally a CSS-3D layered technique per [DECISIONS.md](./DECISIONS.md) #29; simplified per **#30**; evolved into the current treatment per **#32**):
 
-- A `perspective` container with a `preserve-3d` group.
-- A Z-offset echo/depth layer (duplicated, blurred, darkened) that creates parallax depth when the group rotates.
-- The main portrait plane, soft-edged via a radial mask so its near-black background melts into Obsidian.
-- A champagne rim-light layer and a foreground detail layer (light guide, technical readout, corner ticks) at a positive Z offset.
-- Framer Motion drives a restrained idle sway and a spring-smoothed pointer-follow parallax.
-- `prefers-reduced-motion` and coarse-pointer devices get a static, polished composition with no rotation/parallax.
+- **Duotone grade:** an Obsidian gradient bed acts as the duotone shadow end; the grayscaled photo is composited via `mix-blend-luminosity` so shadows melt into Obsidian; a low-opacity (~30%) champagne `soft-light` layer warms highlights. The photo is graded into the palette, not dropped on a dark background.
+- **Asymmetric editorial crop:** taller `aspect-[3/4]` frame with a single diagonal cut across the top-right corner (`clip-path` polygon); on desktop it bleeds past the hero grid's right edge and rises slightly above its cell — deliberately composed, contained by the hero's `overflow-hidden`. Mobile stays contained/centered.
+- **One-time load reveal:** the frame wipes open via inset clip-path while the plane settles from a slight scale; plays once, then the portrait is fully static (no parallax/sway/pointer motion). Declared only under `prefers-reduced-motion: no-preference` — reduced-motion visitors see the final state immediately.
 
 The exact WebGL/3D visual language (Phase 12) remains an open decision; this treatment does not commit to it.
+
+### Implemented signature patterns (Phase 4A)
+
+Two documented patterns introduced during the Phase 4A iterations ([DECISIONS.md](./DECISIONS.md) #33):
+
+- **`GhostType` ghost-typography motif** (`src/components/ui/GhostType.tsx`) — oversized display type at `text-ink/[0.05]` with slow reduce-gated scroll drift; aria-hidden and non-interactive. A recurring-but-sparse signature device: **exactly three instances on Home** (Interlude "Profile", Selected Work index "Index", Profile pull-quote glyph). Do not add instances without a logged decision.
+- **`EvidenceChart` evidence visualization** (`src/components/ui/EvidenceChart.tsx`) — one bounded interactive Recharts comparison of confirmed project metrics from static `src/content/evidence.ts`; keyboard-operable row overlays, visually-hidden data table equivalent, reduce-gated entrance animation, no network dependency. Champagne appears only in the active/emphasized state.
 
 ## Responsive philosophy
 

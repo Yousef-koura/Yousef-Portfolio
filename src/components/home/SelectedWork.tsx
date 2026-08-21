@@ -4,6 +4,8 @@ import { SectionFrame } from "@/components/ui/SectionFrame";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealImage } from "@/components/ui/RevealImage";
 import { QuietLink } from "@/components/ui/QuietLink";
+import { GhostType } from "@/components/ui/GhostType";
+import { EvidenceChart } from "@/components/ui/EvidenceChart";
 import { SecondaryProjectRow } from "@/components/cards/ProjectCard";
 import { featuredProject, secondaryProjects } from "@/content/projects";
 
@@ -14,9 +16,7 @@ export function SelectedWork() {
   return (
     <SectionFrame
       id="work"
-      index="01"
       label="Selected Work"
-      title="Evidence, not adjectives."
       action={<QuietLink href="/work">All work</QuietLink>}
     >
       {/* Movenue — the primary visual proof. The product leads; words stay out of its way. */}
@@ -24,7 +24,7 @@ export function SelectedWork() {
         <article className="group">
           {/* Caption row — name left, live status + domain right */}
           <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-            <h3 className="font-display text-5xl leading-none tracking-tight text-ink sm:text-6xl lg:text-7xl">
+            <h3 className="font-display text-4xl leading-none tracking-tight text-ink sm:text-5xl lg:text-6xl">
               {featuredProject.name}
             </h3>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pb-1 font-mono text-[10px] uppercase tracking-[0.22em]">
@@ -61,7 +61,7 @@ export function SelectedWork() {
             </RevealImage>
           </div>
 
-          {/* Hairline info strip — one sentence, one metric, one line of tags */}
+          {/* Hairline info strip — one sentence, one metric, role/timeframe */}
           <div className="grid gap-6 border-t border-line pt-6 sm:grid-cols-[1fr_auto] sm:gap-16">
             <p className="max-w-xl text-sm leading-relaxed text-muted">{featuredProject.summary}</p>
             <div className="sm:text-right">
@@ -71,14 +71,22 @@ export function SelectedWork() {
               </p>
             </div>
           </div>
-          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted/70">
-            {featuredProject.tags.join(" · ")}
-          </p>
         </article>
       </Reveal>
 
-      {/* Secondary projects — minimal numbered index */}
-      <div className="mt-20 border-t border-line sm:mt-24">
+      {/* Confirmed metrics — one bounded interactive comparison (DECISIONS #33).
+          Static data from src/content/evidence.ts; keyboard + screen-reader equivalent. */}
+      <Reveal>
+        <div className="mt-16 max-w-2xl sm:mt-20">
+          <EvidenceChart />
+        </div>
+      </Reveal>
+
+      {/* Secondary projects — minimal numbered index, ghost "Index" signature behind */}
+      <div className="relative mt-24 border-t border-line sm:mt-28">
+        <GhostType className="justify-end pr-[2%]" textClassName="text-[clamp(5rem,13vw,11rem)]">
+          Index
+        </GhostType>
         <p className="sr-only">More projects</p>
         {secondaryProjects.map((project, index) => (
           <Reveal key={project.name} delay={0.05 * (index + 1)} y={20}>

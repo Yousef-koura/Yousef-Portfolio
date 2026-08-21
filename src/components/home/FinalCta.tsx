@@ -7,9 +7,9 @@ import { site } from "@/content/site";
 export function FinalCta() {
   return (
     <SectionFrame
-      index="06"
+      id="contact"
       label="Contact"
-      className="relative pb-36 pt-40 sm:pb-44 sm:pt-48 lg:pb-48 lg:pt-64"
+      className="relative pb-40 pt-48 sm:pb-48 sm:pt-56 lg:pb-52 lg:pt-72"
     >
       <div
         aria-hidden="true"
@@ -31,14 +31,8 @@ export function FinalCta() {
             {site.email}
             <ArrowUpRight size={20} aria-hidden="true" />
           </a>
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-14 flex justify-center">
             <ButtonLink href="/contact">Get in touch</ButtonLink>
-            <ButtonLink href={site.github} external variant="ghost">
-              GitHub
-            </ButtonLink>
-            <ButtonLink href={site.linkedin} external variant="ghost">
-              LinkedIn
-            </ButtonLink>
           </div>
         </div>
       </Reveal>

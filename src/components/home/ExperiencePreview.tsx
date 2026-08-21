@@ -6,7 +6,7 @@ import { experience } from "@/content/experience";
 export function ExperiencePreview() {
   return (
     <SectionFrame
-      index="04"
+      id="experience"
       label="Experience"
       action={<QuietLink href="/experience">Full experience</QuietLink>}
     >

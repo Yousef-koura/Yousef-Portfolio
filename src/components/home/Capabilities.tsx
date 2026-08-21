@@ -4,7 +4,7 @@ import { capabilities } from "@/content/experience";
 
 export function Capabilities() {
   return (
-    <SectionFrame index="05" label="Capabilities">
+    <SectionFrame label="Capabilities">
       <div className="grid gap-10 sm:grid-cols-3 sm:gap-8 lg:gap-12">
         {capabilities.map((group, index) => (
           <Reveal key={group.title} delay={0.06 * index} y={18}>

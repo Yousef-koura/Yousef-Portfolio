@@ -1,6 +1,7 @@
 import { SectionFrame } from "@/components/ui/SectionFrame";
 import { Reveal } from "@/components/ui/Reveal";
 import { QuietLink } from "@/components/ui/QuietLink";
+import { GhostType } from "@/components/ui/GhostType";
 
 const facts = [
   { label: "Education", value: "B.Sc. Mechatronics — MSA · Greenwich" },
@@ -12,17 +13,20 @@ const facts = [
 
 export function AboutPreview() {
   return (
-    <SectionFrame index="02" label="Profile">
+    <SectionFrame id="about" label="Profile">
       <div className="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-24">
-        {/* The statement carries the section */}
+        {/* The statement carries the section — ghost quote-glyph signature behind
+            (third and final GhostType instance; see DECISIONS #33) */}
         <Reveal>
-          <h2 className="font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
-            An ML engineer who thinks end-to-end.
-          </h2>
-          <p className="mt-7 max-w-md text-base leading-relaxed text-muted">
-            From sensor to deployment — machine learning, computer vision, and data engineering.
-          </p>
-          <div className="mt-9">
+          <div className="relative">
+            <GhostType className="items-start justify-start" textClassName="text-[clamp(6rem,12vw,10rem)]" drift={24}>
+              &rdquo;
+            </GhostType>
+            <h2 className="relative font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
+              An ML engineer who thinks end-to-end.
+            </h2>
+          </div>
+          <div className="mt-10">
             <QuietLink href="/about">More about me</QuietLink>
           </div>
         </Reveal>

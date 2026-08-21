@@ -62,74 +62,20 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* Technical marquee — pure CSS loop, no JS, no <marquee> */
-.marquee {
-  overflow: hidden;
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee-scroll 64s linear infinite;
-  will-change: transform;
-}
-
-.marquee-group {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-
-/* Edge fade masks — hard stop at the edges, no horizontal overflow */
-.marquee-mask {
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
-}
-
-@keyframes marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* Scroll cue — a slow, quiet drift instead of a busy bounce */
-@keyframes scroll-cue-drift {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.9;
-  }
-  50% {
-    transform: translateY(6px);
-    opacity: 0.5;
-  }
-}
-
-.scroll-cue-icon {
-  animation: scroll-cue-drift 2.6s ease-in-out infinite;
-}
-
 /* ─── Hero editorial composition ─── */
 .hero-grid {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 3.5rem;
 }
 
 @media (min-width: 1024px) {
   .hero-grid {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-columns: 1.1fr 0.9fr;
     grid-template-rows: auto auto;
     align-items: center;
-    column-gap: 2.5rem;
+    column-gap: 4rem;
   }
 }
 
@@ -149,30 +95,51 @@ html.lenis body {
   grid-row: 2;
 }
 
-/* Name — editorial scale */
+/* Name — subordinate to the header wordmark's role change; the positioning
+   line now carries the hero's dominant weight (DECISIONS #31) */
 .hero-name {
-  font-size: clamp(3.5rem, 8vw + 0.5rem, 10rem);
+  font-size: clamp(2.75rem, 4.5vw + 1rem, 5.75rem);
 }
 
-/* Mobile: name is still dominant but scaled for viewport */
+/* Mobile */
 @media (max-width: 639px) {
   .hero-name {
-    font-size: clamp(3.2rem, 14vw, 5rem);
+    font-size: clamp(2.6rem, 12vw, 4rem);
   }
 }
 
 /* Tablet */
 @media (min-width: 640px) and (max-width: 1023px) {
   .hero-name {
-    font-size: clamp(4rem, 8vw, 7rem);
+    font-size: clamp(3.25rem, 6vw, 5rem);
   }
 }
 
-/* Portrait bleed on desktop — extends slightly beyond the grid cell */
-@media (min-width: 1024px) {
-  .hero-portrait {
-    margin-left: -2rem;
-    margin-right: -3rem;
+/* ─── Portrait one-time load reveal (DECISIONS #32) ───
+   The frame wipes open while the graded plane settles from a slight scale.
+   Plays once on load, then the portrait is fully static. Declared only under
+   no-preference — reduced-motion visitors get the final state immediately. */
+@keyframes portrait-wipe {
+  to {
+    clip-path: inset(0 0 0% 0);
+  }
+}
+
+@keyframes portrait-settle {
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .portrait-reveal {
+    clip-path: inset(0 0 100% 0);
+    animation: portrait-wipe 1.15s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+  }
+
+  .portrait-settle {
+    transform: scale(1.055);
+    animation: portrait-settle 1.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
   }
 }
 
@@ -186,8 +153,17 @@ html.lenis body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-
-  .marquee-track {
-    animation: none;
-  }
 }
+
+/* Home / portal archive. Kept independent so the document's non-home pages
+   retain their quiet editorial system. */
+.portal-home { --p-ink:#f3f0e8; --p-muted:#a9a9a3; --p-gold:#c9a86a; --p-line:#2a2c30; background:#0b0c0e; color:var(--p-ink); overflow:clip; font-family:var(--font-sans); }
+.portal-home * { box-sizing:border-box; }
+.portal-kicker,.deck-hint,.deck-card span,.deck-card small,.deck-dots,.dates-head{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-decoration:none;text-transform:uppercase}
+.portal-hero{border-bottom:1px solid var(--p-line);height:210svh;position:relative}.portal-stage{height:100svh;isolation:isolate;overflow:hidden;position:sticky;top:0}.portal-portrait-frame{bottom:0;height:calc(100svh - 88px);left:50%;max-width:clamp(280px,44vw,540px);position:absolute;transform:translateX(-50%);width:calc((100svh - 88px) * .53);z-index:0}.portal-stage__image{object-fit:contain;object-position:center bottom}.portal-panel{background:#0b0c0e;height:100%;position:absolute;top:0;width:51%;z-index:2}.portal-panel--left{left:0}.portal-panel--right{right:0}.portal-meta{color:var(--p-muted);font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;line-height:1.55;position:absolute;text-transform:uppercase;z-index:4}.portal-meta--top{left:5vw;top:105px}.portal-meta--bottom{bottom:28px;right:5vw}.portal-title{display:flex;font-family:var(--font-display);font-size:clamp(5rem,17vw,17rem);font-weight:700;justify-content:center;left:0;line-height:.75;margin:0;position:absolute;top:46%;transform-origin:center;white-space:nowrap;width:100%;z-index:3}.portal-title span{display:inline-block;transition:none}
+.portal-statement{align-items:center;display:flex;min-height:100vh;overflow:hidden;padding:15vw 13vw;position:relative}.portal-kicker{color:var(--p-gold);display:block}.portal-statement>.portal-kicker{align-self:flex-start;position:absolute;top:12vw}.portal-statement__copy{font-family:var(--font-display);font-size:clamp(2rem,4.1vw,4.4rem);letter-spacing:-.055em;line-height:1.02;max-width:22ch;position:relative;z-index:1}.portal-statement em,.portal-releases h2 em,.portal-close h2 em{color:var(--p-gold);font-style:normal}.portal-index{color:transparent;font-family:var(--font-display);font-size:clamp(10rem,26vw,31rem);font-weight:700;line-height:.7;position:absolute;right:5vw;-webkit-text-stroke:1px var(--p-line)}.portal-statement__portrait{border-radius:50%;filter:grayscale(1);height:35vw;max-height:430px;object-fit:cover;opacity:.35;position:absolute;right:-10vw;transform:rotate(18deg);width:35vw;max-width:430px}
+.portal-releases{border-top:1px solid var(--p-line);display:grid;gap:8vw;grid-template-columns:1fr 1fr;padding:10vw 8vw}.portal-releases h2,.portal-close h2{font-family:var(--font-display);font-size:clamp(3.5rem,8vw,9rem);letter-spacing:-.08em;line-height:.78;margin:2.7rem 0}.portal-releases__intro>p:not(.portal-kicker){color:var(--p-muted);font-size:15px;line-height:1.6;max-width:36ch}.portal-releases__intro>div,.portal-close>div:not(.portal-close__fine):not(.portal-close__word){display:flex;flex-wrap:wrap;gap:12px;margin-top:35px}.portal-action{align-items:center;background:var(--p-gold);color:#0b0c0e;display:inline-flex;font-family:var(--font-mono);font-size:10px;gap:10px;letter-spacing:.12em;padding:13px 15px;text-decoration:none}.portal-action--quiet{background:transparent;border:1px solid var(--p-line);color:var(--p-ink)}.deck-wrap{align-self:center}.deck-hint{color:var(--p-muted);margin-bottom:18px}.portal-deck{aspect-ratio:1/1;outline:none;position:relative;touch-action:pan-y;user-select:none;width:min(100%,570px)}.deck-card{cursor:grab;inset:0;overflow:hidden;position:absolute;transition:transform .36s cubic-bezier(.2,.8,.2,1);will-change:transform}.deck-card:active{cursor:grabbing}.deck-card img{object-fit:cover}.deck-card__wash{background:linear-gradient(180deg,transparent 25%,rgba(11,12,14,.9));inset:0;position:absolute}.deck-card__content{bottom:20px;left:21px;position:absolute}.deck-card__content span,.deck-card__content small{color:var(--p-gold)}.deck-card__content h3{font-family:var(--font-display);font-size:clamp(2rem,4vw,4rem);letter-spacing:-.07em;line-height:.9;margin:12px 0}.deck-dots{display:flex;gap:8px;margin-top:19px}.deck-dots button{background:var(--p-line);border:0;border-radius:50%;height:6px;padding:0;width:6px}.deck-dots .is-active{background:var(--p-gold);width:23px;border-radius:8px}
+.portal-roster,.portal-dates{padding:10vw 8vw}.portal-roster{border-top:1px solid var(--p-line)}.roster-row{align-items:center;border-bottom:1px solid var(--p-line);display:grid;gap:20px;grid-template-columns:.75fr 2.2fr 1fr;padding:23px 0}.roster-row span,.roster-row i{color:var(--p-muted);font-family:var(--font-mono);font-size:10px;font-style:normal;letter-spacing:.1em;text-transform:uppercase}.roster-row span{color:var(--p-gold)}.roster-row i{text-align:right}.roster-row strong,.date-row strong{font-family:var(--font-display);font-size:clamp(1.9rem,4vw,4.5rem);font-weight:600;letter-spacing:-.06em;line-height:.85}.portal-dates{background:#14161a}.dates-head,.date-row{display:grid;grid-template-columns:.75fr 1.25fr 2fr}.dates-head{border-bottom:1px solid var(--p-line);color:var(--p-muted);padding:20px 0}.date-row{align-items:center;border-bottom:1px solid var(--p-line);gap:20px;padding:23px 0}.date-row span{color:var(--p-muted);font-size:12px}.date-row span:first-child{color:var(--p-gold);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em}
+.portal-text-link{align-items:center;color:var(--p-gold);display:inline-flex;font-family:var(--font-mono);font-size:10px;gap:8px;letter-spacing:.14em;margin-top:30px;text-decoration:none}.portal-publication{background:#0b0c0e;border-top:1px solid var(--p-line);padding:10vw 8vw}.portal-publication>div{display:grid;grid-template-columns:.45fr 2fr 1fr;gap:3vw;margin-top:4vw}.publication-number{color:var(--p-gold);font-family:var(--font-display);font-size:clamp(3rem,7vw,8rem);line-height:.7}.portal-publication h2{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,5rem);letter-spacing:-.07em;line-height:.9;margin:0}.portal-publication p{color:var(--p-muted);font-size:14px;line-height:1.5;margin:0}.portal-publication .publication-date{color:var(--p-gold);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em}.portal-publication .portal-action{align-self:start;grid-column:2}
+.portal-close{border-top:1px solid var(--p-line);min-height:68vh;padding:11vw 8vw;position:relative}.portal-close>p:not(.portal-kicker){color:var(--p-muted);font-size:15px;margin-top:-1.2rem}
+@media (max-width:760px){.portal-hero{height:175svh}.portal-portrait-frame{height:calc(100svh - 105px);max-width:76vw;width:calc((100svh - 105px) * .53)}.portal-meta--top{left:7vw;top:88px}.portal-meta--bottom{bottom:22px;right:7vw}.portal-title{font-size:25vw;top:46%}.portal-statement{min-height:78vh;padding:25vw 8vw}.portal-statement__portrait{height:54vw;right:-15vw;top:12vw;width:54vw}.portal-releases{grid-template-columns:1fr;padding:22vw 8vw}.portal-releases h2{font-size:17vw}.portal-deck{width:100%}.portal-roster,.portal-dates,.portal-publication{padding:22vw 8vw}.roster-row{grid-template-columns:1fr;padding:20px 0}.roster-row i{text-align:left}.dates-head{display:none}.date-row{grid-template-columns:1fr 1fr;padding:20px 0}.date-row span:last-child{grid-column:1/-1}.portal-publication>div{grid-template-columns:1fr;gap:22px;margin-top:12vw}.portal-publication .portal-action{grid-column:auto}.portal-close{min-height:58vh;padding:22vw 8vw}.portal-close h2{font-size:15vw}}

@@ -102,7 +102,7 @@ Status labels:
 ## Available assets
 
 - **CONFIRMED** — `projects&certificate_images/` contains: `Agribot.png`, `breast cancer.jpg`, `dhub certificate.png`, `FMCG dashboard.png`, `ITI MLAl Certificate .png`, `iugrc publication certificate.png`, `personal_rag_assistant.png`, `piopetro certificate.png`, `movenue.png`, `Yousef personal photo 2.jpeg`, `Yousef personal photo.png`.
-- **CONFIRMED** — Portrait (raw assets in `projects&certificate_images/`): `Yousef personal photo 2.jpeg` (1024×1024) and `Yousef personal photo.png` (1024×1024); the public copy used by the site (`public/portrait/yousef-portrait.jpeg`) is byte-identical to `Yousef personal photo 2.jpeg` — **approved for and used in the Home hero** as a dimensional 3D/art-directed object (see DECISIONS #28–29). Portrait use on ABOUT remains a later-milestone decision.
+- **CONFIRMED** — Portrait (raw assets in `projects&certificate_images/`): `Yousef personal photo 2.jpeg` (1024×1024) and `Yousef personal photo.png` (1024×1024); the public copy used by the site (`public/portrait/yousef-portrait.jpeg`) is byte-identical to `Yousef personal photo 2.jpeg` — **approved for and used in the Home hero**, presented as a duotone-graded asymmetric editorial crop with a one-time load reveal (see DECISIONS #28–32). Portrait use on ABOUT remains a later-milestone decision.
 - **MISSING** — Favicon / logo mark / brand assets (expected to be designed in Phase 3).
 
 ---
