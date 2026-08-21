@@ -107,7 +107,11 @@ export function PortalArchive() {
 
       <section className="portal-statement" data-reveal>
         <p className="portal-kicker">01 — SIGNAL / INTENT</p>
-        <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
+        {/* Positioning line — user-directed ("Machine Learning Engineer"); still provisional pending the final statement */}
+        <div className="portal-statement__body">
+          <p className="portal-statement__role">Machine Learning Engineer</p>
+          <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
+        </div>
         <span className="portal-index" aria-hidden="true">01</span>
         <Image className="portal-statement__portrait" src="/portrait/personal-image-mobile.png" alt="" width={394} height={634} />
       </section>
