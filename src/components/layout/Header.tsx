@@ -326,7 +326,12 @@ export function Header() {
               exit={{ height: 0, opacity: 0, transition: { duration: 0.18, ease: "easeIn" } }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               style={{ willChange: "transform" }}
-              className="col-span-full row-start-2 mt-2 w-[min(100%,20rem)] justify-self-center overflow-hidden rounded-2xl bg-ink shadow-[0px_2px_10px_rgba(0,0,0,0.45),0px_14px_28px_-16px_rgba(0,0,0,0.85)]"
+              /* self-start pins the reveal to the row's top edge: the h-16
+                 grid gives row 2 only the container's leftover height (the
+                 overflow-hidden item contributes no automatic minimum), so
+                 default centering hoists the panel up behind the bar. Top-
+                 anchoring lets it grow straight down out of that track. */
+              className="col-span-full row-start-2 mt-2 w-[min(100%,20rem)] justify-self-center self-start overflow-hidden rounded-2xl bg-ink shadow-[0px_2px_10px_rgba(0,0,0,0.45),0px_14px_28px_-16px_rgba(0,0,0,0.85)]"
             >
               <nav
                 className="grid grid-cols-2 gap-1 p-2.5"
