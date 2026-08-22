@@ -3,7 +3,7 @@
 ## Status
 
 **PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY: COMPLETED.**
-The visual direction is approved and the color palette is decided. Typography and detailed design tokens remain OPEN (Phase 5 — BRAND SYSTEM). This document records the approved direction and open items. It does not lock typography or final branding.
+The visual direction is approved and the color palette is decided, including its approved light-theme mirror ([DECISIONS.md](./DECISIONS.md) #40). Typography and detailed design tokens remain OPEN (Phase 5 — BRAND SYSTEM). This document records the approved direction and open items. It does not lock typography or final branding.
 
 ## Design goal
 
@@ -62,6 +62,60 @@ Do NOT turn the website gold.
 - Rainbow gradients
 - Generic "AI neon" aesthetics
 - Excessive glow effects
+
+## Light/dark theming (approved — DECISIONS #40)
+
+The palette ships in two themes. **Dark is the brand/default theme**; light is a full mirror using the same token structure. The site does NOT follow `prefers-color-scheme` — first visit is always dark.
+
+### Theme tokens
+
+| Token | Dark (default) | Light |
+| --- | --- | --- |
+| Background (Obsidian) | `#0B0C0E` | `#F3F0E8` |
+| Surface | `#14161A` | `#EAE6DC` |
+| Raised * | `#1A1D22` | `#E1DCCD` |
+| Primary text (Ink) | `#F3F0E8` | `#14161A` |
+| Secondary text (Muted) | `#A9A9A3` | `#6E6E66` |
+| Accent (Champagne) | `#C9A86A` | `#8C6A2E` |
+| Accent highlight | `#E3C98E` | `#C9A86A` |
+| Border (Line) | `#2A2C30` | `#DDD8CC` |
+
+\* Raised is an implementation token (icon chips, elevated pills) outside the approved seven-token table. Its light value `#E1DCCD` was **ratified by the user during the Phase 2 sweep** — confirmed as-is. In light mode, brighter `#C9A86A` may be used for decorative non-text accents only; text/interactive accents must use a token that passes AA at its rendered size.
+
+### Derived context shades (Phase 2 sweep — DECISIONS #41)
+
+Three additional implementation tokens cover contexts where an approved hex measures below AA-small on its actual rendered composite. Their dark values are byte-identical mirrors of the approved tokens — zero dark-mode visual change:
+
+| Token | Dark | Light | Purpose |
+| --- | --- | --- | --- |
+| Muted strong (`--tk-muted-strong`) | `#A9A9A3` (= Muted) | `#65655D` | Small muted text on tinted composites (nav capsule, Surface sections) |
+| Champagne strong (`--tk-champagne-strong`) | `#C9A86A` (= Accent) | `#7A5B23` | Small champagne text (kickers, labels, links, active nav) |
+| On-accent (`--tk-on-accent`) | `#0B0C0E` (= Background) | `#FFFDF7` | Labels resting on accent fills (CONTACT pill, portal actions) |
+
+Direction note: on the mid-tone bronze `#8C6A2E`, darkening text can never reach AA-small (pure black tops out at 4.22:1), so the on-accent fix legitimately lightens instead. Large display accents keep regular Accent (AA-large 3:1).
+
+### Behavior rules
+
+- **Dark always defaults** — absent/invalid stored value renders dark; never read `prefers-color-scheme`.
+- An explicit toggle choice persists in `localStorage["theme"]` and applies pre-paint via an inline init script (no flash, no hydration mismatch).
+- Implementation: runtime variables `--tk-*` scoped by `[data-theme]` in `globals.css`; Tailwind color names map to them via `@theme inline`, so existing utilities (`bg-surface/70`, `text-muted`, opacity variants) re-theme automatically when `<html data-theme>` flips. `src/lib/theme.ts` applies/stores the theme and syncs `<meta name="theme-color">`. Do not hardcode palette hexes in components — use token utilities so both themes stay coherent.
+- Scope note: Phase 1 themed the global shell + Header; **Phase 2 completed the sweep** — all `.portal-home` Home content (hero through footer) now resolves runtime tokens, with per-theme adjustments only for dark-tuned decoration (glow alphas, deck wash scrim, certificate elevation, hover tints).
+
+### Measured contrast (light mode)
+
+Measured against rendered composites (headless browser), not flat swatches:
+
+| Pair | Ratio | WCAG |
+| --- | --- | --- |
+| Muted text on plain cream background | 4.51:1 | AA pass (small text) |
+| CTA hover pairing (ink on champagne-light) | 8.01:1 | AAA |
+| Muted nav text on capsule composite (~Surface/70 over cream) | 4.24 → **4.85:1** via Muted strong | AA pass (Phase 2 ruling) |
+| Active nav accent on raised pill | 3.73 → **4.69:1** via Champagne strong | AA pass (Phase 2 ruling) |
+| CONTACT pill label on bronze | 4.37 → **4.90:1** via On-accent | AA pass (Phase 2 ruling) |
+| Small champagne text on cream / Surface (kickers, labels, links) | 4.37 / ~4.13 → **5.51 / 5.03:1** via Champagne strong | AA pass (sweep) |
+| Muted text on Surface (experience section) | ~4.13 → **4.72:1** via Muted strong | AA pass (sweep) |
+
+Dark-mode baseline pairs measure ≥7.48:1. The three Phase-1-flagged pairs were resolved by the user's Phase 2 ruling (adjust specific usage/shade, approved hexes untouched — see Derived context shades above); all ratios re-measured headlessly against rendered composites with translucent layers composited from live computed styles, at each pair's actual rendered size (10px mono → AA-small applies).
 
 ## Typography
 

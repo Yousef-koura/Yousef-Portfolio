@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { Moon, Sun, Volume2, VolumeX } from "lucide-react";
 import { site } from "@/content/site";
+import { applyTheme, readStoredTheme, storeTheme, type Theme } from "@/lib/theme";
 
 const desktopNav = site.nav.filter((item) => item.href !== "/");
 const capsuleNav = desktopNav.filter((item) => item.href !== "/contact");
@@ -33,6 +34,22 @@ const PANEL_OVERHANG_PX = 16;
    immediate. */
 const SCROLL_CLOSE_PX = 8;
 
+/* Theme state reads the applied html attribute itself (single source of
+   truth, shared by mobile + desktop chips). The server snapshot is dark —
+   the SSR default and brand default; useSyncExternalStore re-renders with
+   the real value right after hydration, no mismatch. */
+function subscribeToTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+  return () => observer.disconnect();
+}
+const getAppliedTheme = (): Theme =>
+  document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+const getServerTheme = (): Theme => "dark";
+
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -43,9 +60,10 @@ export function Header() {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
-  // Theme toggle — UI-only stub: the click flips the glyph so the control is
-  // ready to wire up later; it deliberately touches no real theming yet.
-  const [darkMode, setDarkMode] = useState(true);
+  // Real theming (DECISIONS #40): the layout's init script applies the
+  // stored theme before first paint (dark = brand default, no
+  // prefers-color-scheme); this component tracks the applied attribute.
+  const theme = useSyncExternalStore(subscribeToTheme, getAppliedTheme, getServerTheme);
   /* Live width of the mobile bar's layout box. While open, the dropdown
      panel derives its own width from it (bar + PANEL_OVERHANG_PX per side)
      since the bar hugs logo + controls — a width no fixed value predicts.
@@ -83,6 +101,21 @@ export function Header() {
         .catch(() => setPlaying(false));
     }
   };
+
+  // Theme toggle (mobile chip + desktop chip share this): flips the html
+  // attribute the token system responds to and persists the choice; the
+  // MutationObserver subscription re-renders the glyphs/labels.
+  const toggleTheme = () => {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    storeTheme(next);
+  };
+
+  // Re-apply after React's dev-only Strict Mode remount, which resets <html>
+  // attributes it manages from JSX and would drop the script-corrected one.
+  useLayoutEffect(() => {
+    applyTheme(readStoredTheme() ?? "dark");
+  }, []);
 
   useEffect(() => {
     const onScroll = () => { setScrolled(window.scrollY > 24); const height = document.documentElement.scrollHeight - window.innerHeight; setProgress(height > 0 ? window.scrollY / height : 0); };
@@ -227,7 +260,7 @@ export function Header() {
           aria-label="Yousef Koura — home"
         >
           <Image
-            src="/logo-wordmark.png"
+            src={theme === "dark" ? "/logo-wordmark.png" : "/logo-wordmark-dark.png"}
             alt=""
             width={1671}
             height={271}
@@ -244,7 +277,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive(item.href) ? "page" : undefined}
-                className={`rounded-full px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${isHighlighted(item.href) ? "bg-raised/80 text-champagne" : "text-muted hover:text-ink"
+                className={`rounded-full px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${isHighlighted(item.href) ? "bg-raised/80 text-champagne-strong" : "text-muted-strong hover:text-ink"
                   }`}
               >
                 {item.label}
@@ -255,7 +288,13 @@ export function Header() {
             <Link
               href={contactItem.href}
               aria-current={isActive(contactItem.href) ? "page" : undefined}
-              className={`rounded-full bg-champagne px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-obsidian transition-all duration-300 hover:bg-champagne-light ${isHighlighted(contactItem.href) ? "ring-1 ring-inset ring-champagne-light/60" : ""
+              className={`rounded-full bg-champagne px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-on-accent transition-all duration-300 ${theme === "dark"
+                // Light mode: resting label is a warm near-white (4.9:1 — cream
+                // measured 4.37); on hover the pill brightens to champagne-light
+                // and the label flips to Ink (8.0:1).
+                ? "hover:bg-champagne-light"
+                : "hover:bg-champagne-light hover:text-ink"
+                } ${isHighlighted(contactItem.href) ? "ring-1 ring-inset ring-champagne-light/60" : ""
                 }`}
             >
               {contactItem.label}
@@ -277,16 +316,16 @@ export function Header() {
               <Volume2 size={14} aria-hidden="true" />
             )}
           </button>
-          {/* Theme toggle stub — mirrors the mobile pill's control exactly
-              (same state, same labels) so real theming can be wired for both
-              in one pass later. Desktop keeps its own smaller chip rhythm. */}
+          {/* Theme toggle — real theming (DECISIONS #40): flips the html
+              data-theme attribute and persists the choice. Mirrors the
+              mobile pill's control exactly (same state, same labels). */}
           <button
             type="button"
-            onClick={() => setDarkMode((v) => !v)}
-            aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             className="flex h-7 w-7 items-center justify-center rounded-full border border-line text-muted transition-colors duration-300 hover:text-ink"
           >
-            {darkMode ? (
+            {theme === "dark" ? (
               <Sun size={14} aria-hidden="true" />
             ) : (
               <Moon size={14} aria-hidden="true" />
@@ -349,7 +388,7 @@ export function Header() {
               className="flex items-center"
             >
               <Image
-                src="/logo-wordmark-dark.png"
+                src={theme === "dark" ? "/logo-wordmark-dark.png" : "/logo-wordmark.png"}
                 alt=""
                 width={1665}
                 height={266}
@@ -384,11 +423,11 @@ export function Header() {
             </button>
             <button
               type="button"
-              onClick={() => setDarkMode((v) => !v)}
-              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-raised text-muted transition-colors duration-300 hover:text-ink"
             >
-              {darkMode ? (
+              {theme === "dark" ? (
                 <Sun size={16} aria-hidden="true" />
               ) : (
                 <Moon size={16} aria-hidden="true" />

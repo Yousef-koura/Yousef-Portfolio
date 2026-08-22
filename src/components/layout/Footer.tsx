@@ -42,11 +42,11 @@ export function Footer() {
           </div>
 
           <nav aria-label="Footer">
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-champagne">Menu</p>
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-champagne-strong">Menu</p>
             <ul className="mt-5 flex flex-col gap-3">
               {site.nav.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-sm text-muted transition-colors hover:text-champagne">
+                  <Link href={item.href} className="text-sm text-muted transition-colors hover:text-champagne-strong">
                     {item.label}
                   </Link>
                 </li>
@@ -55,12 +55,12 @@ export function Footer() {
           </nav>
 
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-champagne">Connect</p>
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-champagne-strong">Connect</p>
             <ul className="mt-5 flex flex-col gap-3">
               <li>
                 <a
                   href={`mailto:${site.email}`}
-                  className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-champagne"
+                  className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-champagne-strong"
                 >
                   <Mail size={14} aria-hidden="true" />
                   {site.email}
@@ -71,7 +71,7 @@ export function Footer() {
                   href={site.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-champagne"
+                  className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-champagne-strong"
                 >
                   <LinkedinIcon />
                   LinkedIn
@@ -83,7 +83,7 @@ export function Footer() {
                   href={site.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-champagne"
+                  className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-champagne-strong"
                 >
                   <GithubIcon />
                   GitHub

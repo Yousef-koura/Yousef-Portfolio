@@ -1,16 +1,69 @@
 @import "tailwindcss";
 
-@theme {
-  /* Obsidian + Champagne palette — approved in Phase 2 */
-  --color-obsidian: #0b0c0e;
-  --color-surface: #14161a;
-  --color-raised: #1a1d22;
-  --color-ink: #f3f0e8;
-  --color-muted: #a9a9a3;
-  --color-champagne: #c9a86a;
-  --color-champagne-light: #e3c98e;
-  --color-line: #2a2c30;
+/* ─── Runtime theme tokens (DECISIONS #40) ───
+   Dark is the brand default AND the first-visit default (no
+   prefers-color-scheme reading). A single data-theme attribute on <html>
+   flips every token; utilities below resolve through these variables.
+   Hex values are user-approved — do not adjust them silently. */
+:root,
+[data-theme="dark"] {
+  --tk-background: #0b0c0e;
+  --tk-surface: #14161a;
+  --tk-raised: #1a1d22;
+  --tk-ink: #f3f0e8;
+  --tk-muted: #a9a9a3;
+  --tk-champagne: #c9a86a;
+  --tk-champagne-light: #e3c98e;
+  --tk-line: #2a2c30;
+  /* Derived context shades (Phase 2 sweep): dark values mirror the approved
+     tokens exactly — zero visual change in dark mode. */
+  --tk-muted-strong: #a9a9a3;
+  --tk-champagne-strong: #c9a86a;
+  --tk-on-accent: #0b0c0e;
+  color-scheme: dark;
+}
 
+/* Light palette approved by user (DECISIONS #40); --tk-raised #E1DCCD was
+   ratified by the user during the Phase 2 sweep — confirmed as-is. The three
+   derived shades below resolve the light-mode sub-AA pairs flagged in Phase 1
+   (muted-on-capsule 4.24, active-nav-on-pill 3.73, CONTACT pill text 4.37):
+   they darken the approved Muted/Accent one step for small-text contexts and
+   lighten the on-accent label (on the mid-tone bronze, darkening can never
+   pass — pure black tops out at 4.22). Measured ratios live in
+   DESIGN_SYSTEM.md. Approved hexes themselves are untouched. */
+[data-theme="light"] {
+  --tk-background: #f3f0e8;
+  --tk-surface: #eae6dc;
+  --tk-raised: #e1dccd;
+  --tk-ink: #14161a;
+  --tk-muted: #6e6e66;
+  --tk-champagne: #8c6a2e;
+  --tk-champagne-light: #c9a86a;
+  --tk-line: #ddd8cc;
+  --tk-muted-strong: #65655d;
+  --tk-champagne-strong: #7a5b23;
+  --tk-on-accent: #fffdf7;
+  color-scheme: light;
+}
+
+@theme inline {
+  /* Color aliases → runtime tokens so one <html> attribute re-themes
+     every component that uses the utilities (opacity modifiers resolve
+     through color-mix at runtime). */
+  --color-obsidian: var(--tk-background);
+  --color-surface: var(--tk-surface);
+  --color-raised: var(--tk-raised);
+  --color-ink: var(--tk-ink);
+  --color-muted: var(--tk-muted);
+  --color-muted-strong: var(--tk-muted-strong);
+  --color-champagne: var(--tk-champagne);
+  --color-champagne-strong: var(--tk-champagne-strong);
+  --color-champagne-light: var(--tk-champagne-light);
+  --color-on-accent: var(--tk-on-accent);
+  --color-line: var(--tk-line);
+}
+
+@theme {
   /* Provisional typefaces — pending Phase 5 brand system decision */
   --font-sans: var(--font-inter);
   --font-display: var(--font-space-grotesk);
@@ -18,12 +71,12 @@
 }
 
 :root {
-  --background: #0b0c0e;
-  --foreground: #f3f0e8;
+  --background: var(--tk-background);
+  --foreground: var(--tk-ink);
 }
 
 html {
-  scrollbar-color: #2a2c30 #0b0c0e;
+  scrollbar-color: var(--tk-line) var(--tk-background);
 }
 
 body {
@@ -35,12 +88,12 @@ body {
 }
 
 ::selection {
-  background: rgba(201, 168, 106, 0.28);
-  color: #f3f0e8;
+  background: color-mix(in srgb, var(--tk-champagne) 28%, transparent);
+  color: var(--tk-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-champagne);
+  outline: 2px solid var(--tk-champagne);
   outline-offset: 3px;
 }
 
@@ -156,17 +209,19 @@ html.lenis body {
 }
 
 /* Home / portal archive. Kept independent so the document's non-home pages
-   retain their quiet editorial system. */
-.portal-home { --p-ink:#f3f0e8; --p-muted:#a9a9a3; --p-gold:#c9a86a; --p-line:#2a2c30; background:#0b0c0e; color:var(--p-ink); overflow:clip; font-family:var(--font-sans); }
+   retain their quiet editorial system. The --p-* mirrors are Phase-2-wired to
+   the runtime theme tokens: one <html data-theme> flip re-themes every portal
+   section. Dark values are byte-identical to the pre-sweep literals. */
+.portal-home { --p-ink:var(--tk-ink); --p-muted:var(--tk-muted); --p-gold:var(--tk-champagne); --p-gold-text:var(--tk-champagne-strong); --p-line:var(--tk-line); background:var(--tk-background); color:var(--p-ink); overflow:clip; font-family:var(--font-sans); }
 .portal-home * { box-sizing:border-box; }
 .portal-kicker,.deck-hint,.deck-card span,.deck-card small,.deck-dots,.dates-head{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-decoration:none;text-transform:uppercase}
-.portal-hero{border-bottom:1px solid var(--p-line);height:210svh;position:relative}.portal-stage{height:100svh;isolation:isolate;overflow:hidden;position:sticky;top:0}.portal-portrait-frame{bottom:0;height:calc(100svh - 88px);left:50%;max-width:clamp(280px,44vw,540px);position:absolute;transform:translateX(-50%);width:calc((100svh - 88px) * .53);z-index:0}.portal-stage__image{position:absolute;inset:0;height:100%;width:100%;object-fit:contain;object-position:center bottom}.portal-panel{background:#0b0c0e;height:100%;position:absolute;top:0;width:51%;z-index:2}.portal-panel--left{left:0}.portal-panel--right{right:0}.portal-meta{color:var(--p-muted);font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;line-height:1.55;position:absolute;text-transform:uppercase;z-index:4}.portal-meta--top{left:5vw;top:105px}.portal-meta--bottom{bottom:28px;right:5vw}.portal-title{display:flex;font-family:var(--font-display);font-size:clamp(5rem,17vw,17rem);font-weight:700;justify-content:center;left:0;line-height:.75;margin:0;position:absolute;top:46%;transform-origin:center;white-space:nowrap;width:100%;z-index:3}.portal-title span{display:inline-block;transition:none}
-.portal-statement{align-items:center;display:flex;min-height:100vh;overflow:hidden;padding:15vw 13vw;position:relative}.portal-kicker{color:var(--p-gold);display:block}.portal-statement>.portal-kicker{align-self:flex-start;position:absolute;top:12vw}.portal-statement__copy{font-family:var(--font-display);font-size:clamp(2rem,4.1vw,4.4rem);letter-spacing:-.055em;line-height:1.02;max-width:22ch;position:relative;z-index:1}.portal-statement em,.portal-releases h2 em,.portal-close h2 em{color:var(--p-gold);font-style:normal}.portal-index{color:transparent;font-family:var(--font-display);font-size:clamp(10rem,26vw,31rem);font-weight:700;line-height:.7;position:absolute;right:5vw;-webkit-text-stroke:1px var(--p-line)}.portal-statement__schematic{display:block;height:auto;pointer-events:none;position:absolute;right:-7vw;width:clamp(340px,44vw,640px)}.portal-statement__schematic--mobile{display:none}
+.portal-hero{border-bottom:1px solid var(--p-line);height:210svh;position:relative}.portal-stage{height:100svh;isolation:isolate;overflow:hidden;position:sticky;top:0}.portal-portrait-frame{bottom:0;height:calc(100svh - 88px);left:50%;max-width:clamp(280px,44vw,540px);position:absolute;transform:translateX(-50%);width:calc((100svh - 88px) * .53);z-index:0}.portal-stage__image{position:absolute;inset:0;height:100%;width:100%;object-fit:contain;object-position:center bottom}.portal-panel{background:var(--tk-background);height:100%;position:absolute;top:0;width:51%;z-index:2}.portal-panel--left{left:0}.portal-panel--right{right:0}.portal-meta{color:var(--p-muted);font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;line-height:1.55;position:absolute;text-transform:uppercase;z-index:4}.portal-meta--top{left:5vw;top:105px}.portal-meta--bottom{bottom:28px;right:5vw}.portal-title{display:flex;font-family:var(--font-display);font-size:clamp(5rem,17vw,17rem);font-weight:700;justify-content:center;left:0;line-height:.75;margin:0;position:absolute;top:46%;transform-origin:center;white-space:nowrap;width:100%;z-index:3}.portal-title span{display:inline-block;transition:none}
+.portal-statement{align-items:center;display:flex;min-height:100vh;overflow:hidden;padding:15vw 13vw;position:relative}.portal-kicker{color:var(--p-gold-text);display:block}.portal-statement>.portal-kicker{align-self:flex-start;position:absolute;top:12vw}.portal-statement__copy{font-family:var(--font-display);font-size:clamp(2rem,4.1vw,4.4rem);letter-spacing:-.055em;line-height:1.02;max-width:22ch;position:relative;z-index:1}.portal-statement em,.portal-releases h2 em,.portal-close h2 em{color:var(--p-gold);font-style:normal}.portal-index{color:transparent;font-family:var(--font-display);font-size:clamp(10rem,26vw,31rem);font-weight:700;line-height:.7;position:absolute;right:5vw;-webkit-text-stroke:1px var(--p-line)}.portal-statement__schematic{display:block;height:auto;pointer-events:none;position:absolute;right:-7vw;width:clamp(340px,44vw,640px)}.portal-statement__schematic--mobile{display:none}
 .portal-statement__body{position:relative;z-index:1}
 .portal-statement__role{color:var(--p-ink);font-family:var(--font-display);font-size:clamp(1rem,.8rem + .9vw,1.45rem);font-weight:500;letter-spacing:-.02em;margin:0 0 clamp(14px,2.2vw,26px)}
-.portal-releases{border-top:1px solid var(--p-line);display:grid;gap:8vw;grid-template-columns:1fr 1fr;padding:10vw 8vw}.portal-releases h2,.portal-close h2{font-family:var(--font-display);font-size:clamp(3.5rem,8vw,9rem);letter-spacing:-.08em;line-height:.78;margin:2.7rem 0}.portal-releases__intro>p:not(.portal-kicker){color:var(--p-muted);font-size:15px;line-height:1.6;max-width:36ch}.portal-releases__intro>div,.portal-close>div:not(.portal-close__fine):not(.portal-close__word){display:flex;flex-wrap:wrap;gap:12px;margin-top:35px}.portal-action{align-items:center;background:var(--p-gold);color:#0b0c0e;display:inline-flex;font-family:var(--font-mono);font-size:10px;gap:10px;letter-spacing:.12em;padding:13px 15px;text-decoration:none}.portal-action--quiet{background:transparent;border:1px solid var(--p-line);color:var(--p-ink)}.deck-wrap{align-self:center}.deck-hint{color:var(--p-muted);margin-bottom:18px}.portal-deck{aspect-ratio:1/1;outline:none;position:relative;touch-action:pan-y;user-select:none;width:min(100%,570px)}.deck-card{cursor:grab;inset:0;overflow:hidden;position:absolute;transition:transform .36s cubic-bezier(.2,.8,.2,1);will-change:transform}.deck-card:active{cursor:grabbing}.deck-card img{object-fit:cover}.deck-card__wash{background:linear-gradient(180deg,transparent 25%,rgba(11,12,14,.9));inset:0;position:absolute}.deck-card__content{bottom:20px;left:21px;position:absolute}.deck-card__content span,.deck-card__content small{color:var(--p-gold)}.deck-card__content h3{font-family:var(--font-display);font-size:clamp(2rem,4vw,4rem);letter-spacing:-.07em;line-height:.9;margin:12px 0}.deck-dots{display:flex;gap:8px;margin-top:19px}.deck-dots button{background:var(--p-line);border:0;border-radius:50%;height:6px;padding:0;width:6px}.deck-dots .is-active{background:var(--p-gold);width:23px;border-radius:8px}
-.portal-roster,.portal-dates{padding:10vw 8vw}.portal-roster{border-top:1px solid var(--p-line)}.portal-roster>p:not(.portal-kicker){color:var(--p-muted);font-size:15px;line-height:1.6;margin:14px 0 36px}.roster-row{align-items:center;border-bottom:1px solid var(--p-line);display:grid;gap:20px;grid-template-columns:.75fr 2.2fr 1fr;padding:23px 0}.roster-row span,.roster-row i{color:var(--p-muted);font-family:var(--font-mono);font-size:10px;font-style:normal;letter-spacing:.1em;text-transform:uppercase}.roster-row span{color:var(--p-gold)}.roster-row i{text-align:right}.roster-row strong,.date-row strong{font-family:var(--font-display);font-size:clamp(1.9rem,4vw,4.5rem);font-weight:600;letter-spacing:-.06em;line-height:.85}.portal-dates{background:#14161a}.dates-head,.date-row{display:grid;grid-template-columns:.75fr 1.25fr 2fr}.dates-head{border-bottom:1px solid var(--p-line);color:var(--p-muted);padding:20px 0}.date-row{align-items:center;border-bottom:1px solid var(--p-line);gap:20px;padding:23px 0}.date-row span{color:var(--p-muted);font-size:12px}.date-row span:first-child{color:var(--p-gold);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em}
-.portal-text-link{align-items:center;color:var(--p-gold);display:inline-flex;font-family:var(--font-mono);font-size:10px;gap:8px;letter-spacing:.14em;margin-top:30px;text-decoration:none}.portal-publication{background:#0b0c0e;border-top:1px solid var(--p-line);padding:10vw 8vw}.portal-publication>div{display:grid;grid-template-columns:.45fr 2fr 1fr;gap:3vw;margin-top:4vw}.publication-number{color:var(--p-gold);font-family:var(--font-display);font-size:clamp(3rem,7vw,8rem);line-height:.7}.portal-publication h2{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,5rem);letter-spacing:-.07em;line-height:.9;margin:0}.portal-publication p{color:var(--p-muted);font-size:14px;line-height:1.5;margin:0}.portal-publication .publication-date{color:var(--p-gold);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em}.portal-publication .portal-action{align-self:start;grid-column:2}
+.portal-releases{border-top:1px solid var(--p-line);display:grid;gap:8vw;grid-template-columns:1fr 1fr;padding:10vw 8vw}.portal-releases h2,.portal-close h2{font-family:var(--font-display);font-size:clamp(3.5rem,8vw,9rem);letter-spacing:-.08em;line-height:.78;margin:2.7rem 0}.portal-releases__intro>p:not(.portal-kicker){color:var(--p-muted);font-size:15px;line-height:1.6;max-width:36ch}.portal-releases__intro>div,.portal-close>div:not(.portal-close__fine):not(.portal-close__word){display:flex;flex-wrap:wrap;gap:12px;margin-top:35px}.portal-action{align-items:center;background:var(--p-gold);color:var(--tk-on-accent);display:inline-flex;font-family:var(--font-mono);font-size:10px;gap:10px;letter-spacing:.12em;padding:13px 15px;text-decoration:none}.portal-action--quiet{background:transparent;border:1px solid var(--p-line);color:var(--p-ink)}.deck-wrap{align-self:center}.deck-hint{color:var(--p-muted);margin-bottom:18px}.portal-deck{aspect-ratio:1/1;outline:none;position:relative;touch-action:pan-y;user-select:none;width:min(100%,570px)}.deck-card{cursor:grab;inset:0;overflow:hidden;position:absolute;transition:transform .36s cubic-bezier(.2,.8,.2,1);will-change:transform}.deck-card:active{cursor:grabbing}.deck-card img{object-fit:cover}.deck-card__wash{background:linear-gradient(180deg,transparent 25%,color-mix(in srgb,var(--tk-background) 90%,transparent));inset:0;position:absolute}.deck-card__content{bottom:20px;left:21px;position:absolute}.deck-card__content span,.deck-card__content small{color:var(--p-gold-text)}.deck-card__content h3{font-family:var(--font-display);font-size:clamp(2rem,4vw,4rem);letter-spacing:-.07em;line-height:.9;margin:12px 0}.deck-dots{display:flex;gap:8px;margin-top:19px}.deck-dots button{background:var(--p-line);border:0;border-radius:50%;height:6px;padding:0;width:6px}.deck-dots .is-active{background:var(--p-gold);width:23px;border-radius:8px}
+.portal-roster,.portal-dates{padding:10vw 8vw}.portal-roster{border-top:1px solid var(--p-line)}.portal-roster>p:not(.portal-kicker){color:var(--p-muted);font-size:15px;line-height:1.6;margin:14px 0 36px}.roster-row{align-items:center;border-bottom:1px solid var(--p-line);display:grid;gap:20px;grid-template-columns:.75fr 2.2fr 1fr;padding:23px 0}.roster-row span,.roster-row i{color:var(--p-muted);font-family:var(--font-mono);font-size:10px;font-style:normal;letter-spacing:.1em;text-transform:uppercase}.roster-row span{color:var(--p-gold-text)}.roster-row i{text-align:right}.roster-row strong,.date-row strong{font-family:var(--font-display);font-size:clamp(1.9rem,4vw,4.5rem);font-weight:600;letter-spacing:-.06em;line-height:.85}.portal-dates{--p-muted:var(--tk-muted-strong);background:var(--tk-surface)}.dates-head,.date-row{display:grid;grid-template-columns:.75fr 1.25fr 2fr}.dates-head{border-bottom:1px solid var(--p-line);color:var(--p-muted);padding:20px 0}.date-row{align-items:center;border-bottom:1px solid var(--p-line);gap:20px;padding:23px 0}.date-row span{color:var(--p-muted);font-size:12px}.date-row span:first-child{color:var(--p-gold-text);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em}
+.portal-text-link{align-items:center;color:var(--p-gold-text);display:inline-flex;font-family:var(--font-mono);font-size:10px;gap:8px;letter-spacing:.14em;margin-top:30px;text-decoration:none}.portal-publication{background:var(--tk-background);border-top:1px solid var(--p-line);padding:10vw 8vw}.portal-publication>div{display:grid;grid-template-columns:.45fr 2fr 1fr;gap:3vw;margin-top:4vw}.publication-number{color:var(--p-gold);font-family:var(--font-display);font-size:clamp(3rem,7vw,8rem);line-height:.7}.portal-publication h2{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,5rem);letter-spacing:-.07em;line-height:.9;margin:0}.portal-publication p{color:var(--p-muted);font-size:14px;line-height:1.5;margin:0}.portal-publication .publication-date{color:var(--p-gold-text);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em}.portal-publication .portal-action{align-self:start;grid-column:2}
 .portal-close{border-top:1px solid var(--p-line);min-height:68vh;padding:11vw 8vw;position:relative}.portal-close>p:not(.portal-kicker){color:var(--p-muted);font-size:15px;margin-top:-1.2rem}
 @media (max-width:760px){.portal-hero{height:175svh}.portal-portrait-frame{height:calc(100svh - 105px);max-width:76vw;width:calc((100svh - 105px) * .53)}.portal-meta--top{left:7vw;top:88px}.portal-meta--bottom{bottom:22px;right:7vw}.portal-title{font-size:22vw;top:46%}.portal-statement{min-height:78vh;padding:25vw 8vw}.portal-statement__schematic--desktop{display:none}.portal-statement__schematic--mobile{display:block;bottom:8vw;right:8vw;width:84vw}.portal-releases{grid-template-columns:1fr;padding:22vw 8vw}.portal-releases h2{font-size:17vw}.portal-deck{width:100%}.portal-roster,.portal-dates,.portal-publication{padding:22vw 8vw}.roster-row{grid-template-columns:1fr;padding:20px 0}.roster-row i{text-align:left}.dates-head{display:none}.date-row{grid-template-columns:1fr 1fr;padding:20px 0}.date-row span:last-child{grid-column:1/-1}.portal-publication>div{grid-template-columns:1fr;gap:22px;margin-top:12vw}.portal-publication .portal-action{grid-column:auto}.portal-close{min-height:58vh;padding:22vw 8vw}.portal-close h2{font-size:15vw}}
 
@@ -176,9 +231,28 @@ html.lenis body {
   .portal-home [data-reveal].is-revealed { opacity:1; transform:none; }
 }
 .portal-hero__glow{background:radial-gradient(ellipse at 50% 47%,rgba(201,168,106,.19),transparent 58%);inset:0;pointer-events:none;position:absolute;z-index:-1}.portal-stage{background:radial-gradient(ellipse at 50% 72%,rgba(201,168,106,.055),transparent 50%)}
-.portal-action{transition:transform .22s ease,background-color .22s ease,box-shadow .22s ease}.portal-action:hover{background:var(--p-gold);box-shadow:0 12px 28px rgba(201,168,106,.16);transform:translate3d(3px,-3px,0)}.portal-action--quiet:hover{color:#0b0c0e}.portal-text-link:hover{color:var(--p-ink);text-decoration:underline;text-underline-offset:5px}
-.deck-card{transform-style:preserve-3d}.deck-card:has(.deck-card__detail:hover),.deck-card:focus-within{filter:drop-shadow(0 18px 24px rgba(0,0,0,.48))}.deck-card__detail{max-height:0;opacity:0;overflow:hidden;transition:max-height .28s ease,opacity .22s ease}.deck-card:hover .deck-card__detail,.deck-card:focus-within .deck-card__detail{max-height:90px;opacity:1}.deck-card__detail p{color:var(--p-ink);font-size:11px;line-height:1.4;margin:9px 0}.deck-card__detail a{align-items:center;color:var(--p-gold);display:flex;font-family:var(--font-mono);font-size:9px;gap:6px;letter-spacing:.12em;text-decoration:none}
+
+/* Light-mode decorative tuning — these glows were alpha-tuned against
+   Obsidian; at dark-mode strength they read as stains on cream. Brighter
+   champagne (#C9A86A) stays permitted for non-text decoration in light mode,
+   so only the alphas step down. */
+[data-theme="light"] .portal-hero__glow{background:radial-gradient(ellipse at 50% 47%,rgba(201,168,106,.12),transparent 58%)}
+[data-theme="light"] .portal-stage{background:radial-gradient(ellipse at 50% 72%,rgba(201,168,106,.04),transparent 50%)}
+.portal-action{transition:transform .22s ease,background-color .22s ease,box-shadow .22s ease}.portal-action:hover{background:var(--p-gold);box-shadow:0 12px 28px rgba(201,168,106,.16);transform:translate3d(3px,-3px,0)}.portal-action--quiet:hover{color:var(--tk-on-accent)}.portal-text-link:hover{color:var(--p-ink);text-decoration:underline;text-underline-offset:5px}
+
+/* Light-mode hover tuning — the champagne cast shadow is tuned for Obsidian;
+   on cream it softens to a bronze-tinted whisper. */
+[data-theme="light"] .portal-action:hover{box-shadow:0 12px 28px rgba(140,106,46,.14)}
+[data-theme="light"] .date-row:hover,[data-theme="light"] .date-row:focus-within{background:rgba(140,106,46,.07)}
+.deck-card{transform-style:preserve-3d}.deck-card:has(.deck-card__detail:hover),.deck-card:focus-within{filter:drop-shadow(0 18px 24px rgba(0,0,0,.48))}.deck-card__detail{max-height:0;opacity:0;overflow:hidden;transition:max-height .28s ease,opacity .22s ease}.deck-card:hover .deck-card__detail,.deck-card:focus-within .deck-card__detail{max-height:90px;opacity:1}.deck-card__detail p{color:var(--p-ink);font-size:11px;line-height:1.4;margin:9px 0}.deck-card__detail a{align-items:center;color:var(--p-gold-text);display:flex;font-family:var(--font-mono);font-size:9px;gap:6px;letter-spacing:.12em;text-decoration:none}
 .date-row{cursor:default;transition:background-color .25s ease,padding .25s ease}.date-row:hover,.date-row:focus-within{background:rgba(201,168,106,.045);padding-left:12px}.experience-summary{color:var(--p-muted);display:block;font-size:0;line-height:1.45;max-height:0;overflow:hidden;transition:font-size .25s ease,max-height .3s ease,margin .25s ease}.date-row:hover .experience-summary,.date-row:focus .experience-summary{font-size:12px;max-height:90px;margin-top:8px}
-.portal-publication>div{grid-template-columns:minmax(210px,.85fr) 2fr}.publication-image{border:1px solid var(--p-line);filter:grayscale(1) contrast(.9);height:auto;opacity:.72;transition:filter .3s ease,opacity .3s ease,transform .3s ease;width:100%}.portal-publication:hover .publication-image{filter:grayscale(0);opacity:1;transform:translateY(-4px)}.portal-publication>div>div{display:grid;gap:14px}.portal-publication .portal-action{grid-column:auto;justify-self:start}
-@media (hover:none){.deck-card__detail{max-height:90px;opacity:1}.deck-card__content h3{margin-bottom:7px}.date-row:active{background:rgba(201,168,106,.06)}.experience-summary{font-size:12px;max-height:90px;margin-top:8px}}
+.portal-publication>div{grid-template-columns:minmax(210px,.85fr) 2fr}.publication-image{border:1px solid var(--p-line);filter:grayscale(1) contrast(.9);height:auto;opacity:.72;transition:filter .3s ease,opacity .3s ease,transform .3s ease;width:100%}
+
+/* Certificate matting in light mode — the archival-plate treatment relies on
+   figure/ground pop that a white-paper artifact cannot get from a cream page
+   (measured: interior-vs-bg luminance delta 150 in dark, 14 in light). A
+   whisper of ink-alpha elevation restores the frame's read without touching
+   geometry, the crop, or the hover reveal. */
+[data-theme="light"] .publication-image{opacity:.78;box-shadow:0 1px 0 rgba(20,22,26,.06),0 10px 24px rgba(20,22,26,.08)}.portal-publication:hover .publication-image{filter:grayscale(0);opacity:1;transform:translateY(-4px)}.portal-publication>div>div{display:grid;gap:14px}.portal-publication .portal-action{grid-column:auto;justify-self:start}
+@media (hover:none){.deck-card__detail{max-height:90px;opacity:1}.deck-card__content h3{margin-bottom:7px}.date-row:active{background:rgba(201,168,106,.06)}.experience-summary{font-size:12px;max-height:90px;margin-top:8px}[data-theme="light"] .date-row:active{background:rgba(140,106,46,.09)}}
 @media (max-width:760px){.portal-publication>div{grid-template-columns:1fr}.deck-card__detail p{font-size:10px}}
