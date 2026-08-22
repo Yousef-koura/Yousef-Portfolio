@@ -222,6 +222,21 @@ export function Header() {
               <Volume2 size={14} aria-hidden="true" />
             )}
           </button>
+          {/* Theme toggle stub — mirrors the mobile pill's control exactly
+              (same state, same labels) so real theming can be wired for both
+              in one pass later. Desktop keeps its own smaller chip rhythm. */}
+          <button
+            type="button"
+            onClick={() => setDarkMode((v) => !v)}
+            aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-line text-muted transition-colors duration-300 hover:text-ink"
+          >
+            {darkMode ? (
+              <Sun size={14} aria-hidden="true" />
+            ) : (
+              <Moon size={14} aria-hidden="true" />
+            )}
+          </button>
         </nav>
 
         {/* Mobile floating shapes — TWO elements share one design language:
