@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { site } from "@/content/site";
 
@@ -93,24 +92,42 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 ${scrolled || open ? "border-b border-line bg-obsidian/70 backdrop-blur-xl" : "border-b border-transparent"
-        }`}
+      className={`fixed inset-x-0 top-0 z-50 ${open
+        ? // Open state (mobile only). No color transition while open: the bar
+          // must be bare immediately, never compositing a surface slab over
+          // the hero mid-animation — the floating menu shape owns all color.
+          // Scoped with lg overrides so a desktop window (where the toggle
+          // cannot exist, e.g. after opening below lg and resizing up) always
+          // keeps the closed appearance; desktop also never paints a border.
+          `border-b border-transparent bg-transparent ${scrolled
+            ? "lg:border-line lg:bg-obsidian/70 lg:backdrop-blur-xl"
+            : "lg:border-transparent"
+          }`
+        : `transition-[background-color,border-color] duration-500 ${scrolled
+          ? "border-b border-line bg-obsidian/70 backdrop-blur-xl lg:border-transparent"
+          : "border-b border-transparent"
+        }`
+      }`}
     >
       <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left bg-champagne" style={{ transform: `scaleX(${progress})` }} />
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8 lg:h-20">
-        {/* Logo mark — links home */}
+      {/* Mobile: single-column flow — the pill trigger spans the full row
+          between the container's side padding; desktop (lg) reverts to the
+          flex justify-between layout with logo + nav only. */}
+      <div className="relative mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 lg:flex lg:h-20 lg:justify-between">
+        {/* Desktop logo mark — links home. Hidden on mobile, where the
+            wordmark lives inside the pill trigger below instead. */}
         <Link
           href="/"
-          className="transition-opacity duration-300 hover:opacity-80"
+          className="relative z-10 hidden justify-self-start transition-opacity duration-300 hover:opacity-80 lg:block"
           aria-label="Yousef Koura — home"
         >
           <Image
-            src="/logo.png"
+            src="/logo-wordmark.png"
             alt=""
-            width={1668}
-            height={276}
+            width={1671}
+            height={271}
             priority
-            className="-my-4 w-[42vw] h-auto sm:-my-6 sm:h-28 sm:w-auto lg:-my-14 lg:-ml-5 lg:h-52"
+            className="h-9 w-auto lg:-ml-4"
           />
         </Link>
 
@@ -141,55 +158,116 @@ export function Header() {
           ) : null}
         </nav>
 
-        <button
-          ref={menuButtonRef}
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          aria-label={open ? "Close menu" : "Open menu"}
-          className="flex h-10 w-10 items-center justify-center border border-line text-ink transition-colors hover:border-champagne hover:text-champagne lg:hidden"
+        {/* Mobile single-shape trigger — replaces both the standalone wordmark
+            and the hamburger. The OUTER motion.div is the only element that
+            owns visuals (one background, one border-radius, one shadow), so
+            the open state reads as a single continuous silhouette whose top
+            zone holds the brand and bottom zone holds the nav grid, joined by
+            a hairline Border-token divider INSIDE the shape. The persistent
+            <motion.button> carries only geometry: `layout` morphs it between
+            full-width pill content and the compact top-zone chip without
+            remounting, so focus-return keeps working; the inner span holds
+            the logo at natural size while two glyphs crossfade as the shape's
+            background flips ink→surface. The rounded-full/bg-ink/shadow
+            classes are a pre-hydration fallback only — Framer's inline
+            styles own these properties after mount. */}
+        <motion.div
+          layout
+          initial={false}
+          /* Backgrounds mirror the Surface/Ink tokens from globals.css —
+             literal values because Framer cannot interpolate between var()
+             endpoints; keep in sync with the @theme block. */
+          animate={{
+            backgroundColor: open ? "#14161a" : "#f3f0e8",
+            borderRadius: open ? 16 : 9999,
+            boxShadow: open
+              ? "0px 2px 10px rgba(0,0,0,0.45), 0px 14px 28px -16px rgba(0,0,0,0.85)"
+              : "0px 1px 3px rgba(0,0,0,0.35), 0px 14px 28px -16px rgba(0,0,0,0)",
+          }}
+          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          className={`relative z-10 col-span-full row-start-1 justify-self-stretch rounded-full bg-ink shadow-[0px_1px_3px_rgba(0,0,0,0.35)] lg:hidden ${open ? "self-start" : "self-center"}`}
         >
-          {open ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
-        </button>
-      </div>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-line bg-obsidian/95 backdrop-blur-xl lg:hidden"
+          <motion.button
+            ref={menuButtonRef}
+            type="button"
+            layout
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            className={`flex items-center justify-center ${open
+              ? "mx-auto w-fit px-3 py-2"
+              : "w-full px-4 py-2.5"
+              }`}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
-            <nav className="flex flex-col gap-1 px-5 py-6" aria-label="Mobile">
-              {site.nav.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * index, duration: 0.25 }}
+            <motion.span layout="position" className="relative flex items-center">
+              <Image
+                src="/logo-wordmark-dark.png"
+                alt=""
+                width={1665}
+                height={266}
+                priority
+                className={`h-5 w-auto transition-opacity duration-200 sm:h-6 ${open ? "opacity-0" : "opacity-100"}`}
+              />
+              <Image
+                src="/logo-wordmark.png"
+                alt=""
+                width={1671}
+                height={271}
+                className={`absolute left-1/2 top-1/2 h-5 w-auto -translate-x-1/2 -translate-y-1/2 transition-opacity duration-200 sm:h-6 ${open ? "opacity-100" : "opacity-0"}`}
+              />
+            </motion.span>
+          </motion.button>
+
+          <AnimatePresence initial={false}>
+            {open && (
+              /* Height-reveal INSIDE the single shape: the grid is an internal
+                 zone, so no independent background/radius/shadow of its own —
+                 only the subtle Border-token hairline divider at the join.
+                 Slide-free reveal keeps every painted frame fully opaque. */
+              <motion.div
+                id="mobile-menu"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0, transition: { duration: 0.18, ease: "easeIn" } }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+                style={{ willChange: "transform" }}
+              >
+                <nav
+                  className="grid grid-cols-2 gap-1 border-t border-line p-2.5"
+                  aria-label="Mobile"
                 >
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    aria-current={isActive(item.href) ? "page" : undefined}
-                    className={`flex items-center justify-between border-b border-line/60 py-4 font-display text-2xl tracking-tight transition-colors ${isActive(item.href) ? "text-champagne" : "text-ink hover:text-champagne"
-                      }`}
-                  >
-                    {item.label}
-                    <span aria-hidden="true" className="font-mono text-xs text-muted">
-                      0{index + 1}
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  {site.nav.map((item, index) => (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.04 * index, duration: 0.25 }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={isActive(item.href) ? "page" : undefined}
+                        className={`group flex items-center gap-2 whitespace-nowrap rounded-lg px-2.5 py-3 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors duration-300 ${isActive(item.href) ? "text-champagne" : "text-muted hover:text-ink"
+                          }`}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`h-1 w-1 shrink-0 rounded-full transition-colors duration-300 ${isActive(item.href) ? "bg-champagne" : "bg-muted group-hover:bg-champagne"
+                            }`}
+                        />
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
     </header>
   );
 }
