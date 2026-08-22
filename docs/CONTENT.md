@@ -19,10 +19,10 @@ Status labels:
 
 ## Professional positioning
 
-- **PROVISIONAL** — Prior AI Fluency work defined audience ("ML hiring managers/recruiters") and a core claim ("I can ship production ML systems, not just notebooks."). The portfolio represents a **complete professional**, not only an ML engineer. Final positioning statement not yet confirmed.
+- **PROVISIONAL** — Prior AI Fluency work defined audience ("ML hiring managers/recruiters") and a core claim ("I can ship production ML systems, not just notebooks."). The portfolio represents a **complete professional**, not only an ML engineer.
 - **CONFIRMED** — Approved high-level sitemap: HOME, WORK, ABOUT, EXPERIENCE, PUBLICATIONS, CONTACT. RESUME is a persistent action, not a mandatory page. No standalone Skills page (skills appear contextually). See [DECISIONS.md](./DECISIONS.md) #14–15.
-- **MISSING** — Confirmed final positioning statement.
-- **IMPLEMENTED (user-directed, Aug 2026)** — The role line **"Machine Learning Engineer"** is now live in the Home arrival flow (portal statement section, above the provisional positioning copy; see `PortalArchive.tsx`). This implements the role identity only; the final positioning statement above remains open and may still evolve — do not treat this line as its resolution.
+- **CONFIRMED** — Final positioning statement (decided 2026-08-22): "I build the systems beneath a useful interface: models, data, and decisions brought into the same room." Live in the Home "01 — SIGNAL / INTENT" statement section (`PortalArchive.tsx`) with the section's single champagne `<em>` accent on "models, data, and decisions". See [DECISIONS.md](./DECISIONS.md) #39.
+- **IMPLEMENTED (user-directed, Aug 2026)** — The role line **"Machine Learning Engineer"** is now live in the Home arrival flow (portal statement section, above the confirmed positioning copy; see `PortalArchive.tsx`). This implements the role identity only; it is separate from the now-confirmed positioning statement above ([DECISIONS.md](./DECISIONS.md) #39) and does not replace it.
 
 ## Projects
 

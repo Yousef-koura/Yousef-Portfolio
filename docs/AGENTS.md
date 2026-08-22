@@ -44,7 +44,7 @@ If information is missing, flag it instead of inventing it.
 
 ## Content conflicts
 
-Content conflicts previously flagged between the resume, LinkedIn, and the old site have been **resolved** using resume-authoritative values (see [CONTENT.md](./CONTENT.md)). Do not re-open them unless the source files reveal a genuine contradiction. Remaining content decisions — which old-site-only projects to include, whether to present military service as an experience entry, and the final positioning statement — are user decisions; flag them, do not decide silently.
+Content conflicts previously flagged between the resume, LinkedIn, and the old site have been **resolved** using resume-authoritative values (see [CONTENT.md](./CONTENT.md)). Do not re-open them unless the source files reveal a genuine contradiction. Remaining content decisions — which old-site-only projects to include and whether to present military service as an experience entry — are user decisions; flag them, do not decide silently.
 
 ## Git commit convention
 

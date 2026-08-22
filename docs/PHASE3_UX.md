@@ -384,7 +384,7 @@ Same backbone: HOME → WORK/detail → ABOUT → CONTACT, with additional route
 
 These remain user decisions. They are deliberately NOT resolved in this document:
 
-1. **Final positioning statement.** Currently provisional; the exact headline/positioning copy for the hero is a pending user decision.
+1. **Final positioning statement.** RESOLVED 2026-08-22 — confirmed as "I build the systems beneath a useful interface: models, data, and decisions brought into the same room." (see [DECISIONS.md](./DECISIONS.md) #39 and [CONTENT.md](./CONTENT.md) "Professional positioning").
 2. **Resume destination URL.** No resume URL has been confirmed. Do not invent one. Must be resolved before resume CTAs are wired (before Phase 13 content integration).
 3. **Portrait approval (HOME resolved, ABOUT open).** The portrait asset (`Yousef personal photo.jpeg`) is **approved for the Home hero** (DECISIONS #28). Whether/where the portrait also appears on ABOUT is a later-milestone decision — do not assume it applies elsewhere.
 4. **Inclusion of old-site-only provisional projects.** Ball Tracking Robot, Steganography Detector, standalone Breast Cancer AI repo, ML Projects collection, PotatoScan, SQL Projects — which (if any) are included is a pending user decision. Source still says "verify before including".

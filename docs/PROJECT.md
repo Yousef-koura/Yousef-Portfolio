@@ -106,7 +106,6 @@ Full log: [DECISIONS.md](./DECISIONS.md).
 - Component inventory
 - Motion choreography
 - Exact 3D concept
-- Final positioning statement (currently provisional)
 - Which old-site-only projects to include
 - Whether to present military service as an experience entry
 

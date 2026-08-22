@@ -107,7 +107,7 @@ export function PortalArchive() {
 
       <section className="portal-statement" data-reveal>
         <p className="portal-kicker">01 — SIGNAL / INTENT</p>
-        {/* Positioning line — user-directed ("Machine Learning Engineer"); still provisional pending the final statement */}
+        {/* Positioning line — user-directed ("Machine Learning Engineer"); positioning statement confirmed 2026-08-22 (DECISIONS.md #39) */}
         <div className="portal-statement__body">
           <p className="portal-statement__role">Machine Learning Engineer</p>
           <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
