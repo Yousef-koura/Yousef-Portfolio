@@ -28,6 +28,10 @@ const SECTION_ORDER = Object.keys(SECTION_NAV);
    cancel out geometrically and render zero overhang. 16 matches the mt-4
    bar-panel gap so the pair reads as one spacing rhythm. */
 const PANEL_OVERHANG_PX = 16;
+/* Scroll delta (px) from open-time position that dismisses the dropdown.
+   Large enough to ignore momentum/rubber-band jitter, small enough to feel
+   immediate. */
+const SCROLL_CLOSE_PX = 8;
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -133,6 +137,24 @@ export function Header() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  // Scrolling the page also closes the menu (Escape and click/tap-outside
+  // above are untouched). The listener exists only while the menu is open,
+  // measures against the scroll position captured at open time, and needs
+  // only a small delta — body scroll is normally locked while open, so this
+  // mostly guards browsers where that lock leaks (iOS overscroll/bounce).
+  useEffect(() => {
+    if (!open) return;
+    const startY = window.scrollY;
+    const onScroll = () => {
+      if (Math.abs(window.scrollY - startY) >= SCROLL_CLOSE_PX) {
+        setOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, [open]);
 
   // Click/tap outside the bar or panel also closes the menu. pointerdown is
