@@ -113,7 +113,76 @@ export function PortalArchive() {
           <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
         </div>
         <span className="portal-index" aria-hidden="true">01</span>
-        <Image className="portal-statement__portrait" src="/portrait/personal-image-mobile.png" alt="" width={394} height={634} />
+        {/* Abstract signal schematic replaces the reused statement portrait (user-directed):
+            decorative instrument motif echoing the SIGNAL label; static, so reduced-motion safe. */}
+        <svg className="portal-statement__schematic portal-statement__schematic--desktop" viewBox="0 0 720 300" fill="none" aria-hidden="true" focusable="false">
+          <path d="M24 60h672M24 120h672M24 180h672" stroke="#F3F0E8" strokeOpacity=".05" />
+          <path d="M24 240h672" stroke="#2A2C30" strokeWidth="1.25" />
+          <path
+            d="M60 234v6M96 234v6M168 234v6M204 234v6M276 234v6M312 234v6M384 234v6M420 234v6M492 234v6M528 234v6M600 234v6M636 234v6"
+            stroke="#A9A9A3"
+            strokeOpacity=".35"
+          />
+          <path
+            d="M24 228v12M132 228v12M240 228v12M348 228v12M456 228v12M564 228v12M672 228v12"
+            stroke="#A9A9A3"
+            strokeOpacity=".55"
+          />
+          <path
+            d="M468 87v153"
+            stroke="#C9A86A"
+            strokeOpacity=".22"
+            strokeDasharray="3 5"
+          />
+          <path
+            d="M24 214c56-4 86 4 126-2s70-6 110 2 70-6 110-1c25 3 40-23 60-63 15-32 22-66 38-72 12-4 20 30 32 62 12 30 30 56 60 66s80 6 130 3"
+            stroke="#F3F0E8"
+            strokeOpacity=".34"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <circle cx="150" cy="212" r="2.5" fill="#A9A9A3" fillOpacity=".55" />
+          <circle cx="260" cy="214" r="2.5" fill="#A9A9A3" fillOpacity=".55" />
+          <circle cx="370" cy="213" r="2.5" fill="#A9A9A3" fillOpacity=".55" />
+          <circle cx="572" cy="207" r="2.5" fill="#A9A9A3" fillOpacity=".55" />
+          <circle cx="468" cy="87" r="9" stroke="#C9A86A" strokeOpacity=".35" />
+          <circle cx="468" cy="78" r="4" fill="#C9A86A" />
+        </svg>
+        {/* ≤760px composition: recomposed compact canvas so the schematic sits fully inside
+            the viewport (the wide desktop plate bled past the right edge and clipped);
+            the champagne peak marker stays the single accent anchor. Static + aria-hidden. */}
+        <svg className="portal-statement__schematic portal-statement__schematic--mobile" viewBox="0 0 340 160" fill="none" aria-hidden="true" focusable="false">
+          <path d="M14 48h312M14 96h312" stroke="#F3F0E8" strokeOpacity=".05" />
+          <path d="M14 128h312" stroke="#2A2C30" strokeWidth="1.25" />
+          <path
+            d="M34 122v6M58 122v6M98 122v6M122 122v6M162 122v6M186 122v6M226 122v6M250 122v6M290 122v6M314 122v6"
+            stroke="#A9A9A3"
+            strokeOpacity=".35"
+          />
+          <path
+            d="M14 116v12M89 116v12M164 116v12M239 116v12M314 116v12"
+            stroke="#A9A9A3"
+            strokeOpacity=".55"
+          />
+          <path
+            d="M206 50v78"
+            stroke="#C9A86A"
+            strokeOpacity=".22"
+            strokeDasharray="3 5"
+          />
+          <path
+            d="M14 112c30-3 48 4 68-1s38-6 58 2c20 5 34-17 46-41 8-16 13-29 20-30 7-1 12 12 18 28 8 21 19 35 37 42s40 6 65 3"
+            stroke="#F3F0E8"
+            strokeOpacity=".34"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <circle cx="76" cy="111" r="2.5" fill="#A9A9A3" fillOpacity=".55" />
+          <circle cx="150" cy="112" r="2.5" fill="#A9A9A3" fillOpacity=".55" />
+          <circle cx="286" cy="110" r="2.5" fill="#A9A9A3" fillOpacity=".55" />
+          <circle cx="206" cy="42" r="7" stroke="#C9A86A" strokeOpacity=".35" />
+          <circle cx="206" cy="34" r="4" fill="#C9A86A" />
+        </svg>
       </section>
 
       <section className="portal-releases" id="work" data-reveal>
