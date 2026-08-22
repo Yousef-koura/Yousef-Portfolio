@@ -25,8 +25,9 @@ const SECTION_NAV: Record<string, string> = {
 const SECTION_ORDER = Object.keys(SECTION_NAV);
 /* Dropdown overhang beyond each bar edge, px. Applied as explicit width
    (bar width + 2× this) — negative margins on a width-matched centered box
-   cancel out geometrically and render zero overhang. */
-const PANEL_OVERHANG_PX = 12;
+   cancel out geometrically and render zero overhang. 16 matches the mt-4
+   bar-panel gap so the pair reads as one spacing rhythm. */
+const PANEL_OVERHANG_PX = 16;
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -402,7 +403,7 @@ export function Header() {
                 willChange: "transform",
                 ...(barWidth !== null ? { width: barWidth + PANEL_OVERHANG_PX * 2 } : null),
               }}
-              className="mt-4 w-[min(calc(100%_+_1.5rem),21.5rem)] self-center overflow-hidden rounded-2xl bg-ink shadow-[0px_2px_10px_rgba(0,0,0,0.45),0px_14px_28px_-16px_rgba(0,0,0,0.85)] lg:hidden"
+              className="mt-4 w-[min(calc(100%_+_2rem),22rem)] self-center overflow-hidden rounded-2xl bg-ink shadow-[0px_2px_10px_rgba(0,0,0,0.45),0px_14px_28px_-16px_rgba(0,0,0,0.85)] lg:hidden"
             >
               <nav
                 className="grid grid-cols-2 gap-1 p-2.5"
