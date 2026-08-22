@@ -23,6 +23,10 @@ const SECTION_NAV: Record<string, string> = {
   contact: "/contact",
 };
 const SECTION_ORDER = Object.keys(SECTION_NAV);
+/* Dropdown overhang beyond each bar edge, px. Applied as explicit width
+   (bar width + 2× this) — negative margins on a width-matched centered box
+   cancel out geometrically and render zero overhang. */
+const PANEL_OVERHANG_PX = 12;
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -37,6 +41,15 @@ export function Header() {
   // Theme toggle — UI-only stub: the click flips the glyph so the control is
   // ready to wire up later; it deliberately touches no real theming yet.
   const [darkMode, setDarkMode] = useState(true);
+  /* Live width of the mobile bar's layout box. While open, the dropdown
+     panel derives its own width from it (bar + PANEL_OVERHANG_PX per side)
+     since the bar hugs logo + controls — a width no fixed value predicts.
+     offsetWidth is used — unlike getBoundingClientRect it ignores Framer's
+     transient morph transforms and reports the settled box; the observer
+     also tracks resizes and the sm wordmark step. Zero widths (bar
+     display:none after a below-lg resize-up) are ignored so the CSS
+     fallback survives. */
+  const [barWidth, setBarWidth] = useState<number | null>(null);
   const pathname = usePathname();
 
   /* Intro audio — user-initiated only (never autoplay). The ended listener
@@ -135,6 +148,18 @@ export function Header() {
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
+  // Track the mobile bar's rendered width for the panel's edge alignment
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      const w = el.offsetWidth;
+      setBarWidth(w > 0 ? w : null);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   // Route match OR the section currently in view on Home — visual only
   const isHighlighted = (href: string) => isActive(href) || (pathname === "/" && sectionHref === href);
@@ -153,17 +178,24 @@ export function Header() {
             : "lg:border-transparent"
           }`
         : `transition-[background-color,border-color] duration-500 ${scrolled
-          ? "border-b border-line bg-obsidian/70 backdrop-blur-xl lg:border-transparent"
+          ? "border-b border-transparent bg-transparent lg:bg-obsidian/70 lg:backdrop-blur-xl"
           : "border-b border-transparent"
         }`
       }`}
     >
-      <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left bg-champagne" style={{ transform: `scaleX(${progress})` }} />
-      {/* Mobile single-column flow — the bar spans the full row between the
-          container's side padding while closed and hugs its content when the
-          menu is open; desktop (lg) reverts to the flex justify-between
-          layout with logo + nav only. */}
-      <div className="relative mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 lg:flex lg:h-20 lg:justify-between">
+      {/* Scroll-progress hairline — desktop only. It reads as the bottom rule
+          of the lg-only backgrounded strip, which still exists there; on
+          mobile that strip is gone, so the mobile bar hosts its own copy
+          (see the span inside the pill below). */}
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-px origin-left bg-champagne lg:block" style={{ transform: `scaleX(${progress})` }} />
+      {/* Mobile single-column flow — plain block flow with NO fixed height:
+          each child sizes to its own content, so opening the panel grows
+          the header naturally instead of overflowing a strip sized for one
+          row (a fixed h-16 grid collapsed both rows flush to y=0 once bar
+          + panel exceeded it). pt-3 keeps clear space above the bar in BOTH
+          states. Desktop (lg) keeps the fixed h-20 justify-between strip
+          pixel-identical to before. */}
+      <div className="relative mx-auto flex max-w-6xl flex-col px-5 pt-3 sm:px-8 lg:h-20 lg:flex-row lg:items-center lg:justify-between lg:pt-0">
         {/* Desktop logo mark — links home. Hidden on mobile, where the
             wordmark lives inside the pill trigger below instead. */}
         <Link
@@ -264,8 +296,19 @@ export function Header() {
               : "0px 1px 3px rgba(0,0,0,0.35), 0px 14px 28px -16px rgba(0,0,0,0)",
           }}
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-          className={`relative z-10 col-span-full row-start-1 flex items-center self-center gap-2 rounded-2xl bg-ink p-1.5 pl-4 shadow-[0px_1px_3px_rgba(0,0,0,0.35)] lg:hidden ${open ? "justify-self-center" : "justify-self-stretch"}`}
+          className={`relative z-10 flex items-center overflow-hidden gap-2 rounded-2xl bg-ink p-1.5 pl-4 shadow-[0px_1px_3px_rgba(0,0,0,0.35)] lg:hidden ${open ? "self-center" : "self-stretch"}`}
         >
+          {/* Scroll-progress hairline — anchored to the bar itself. The
+              full-width header strip it used to sit on no longer paints on
+              mobile, so the line hugs the pill's bottom edge and clips to
+              its radius instead, reading as part of the floating bar at
+              every width (including the shrunk open state). */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left bg-champagne"
+            style={{ transform: `scaleX(${progress})` }}
+          />
+
           <motion.button
             ref={menuButtonRef}
             type="button"
@@ -277,7 +320,11 @@ export function Header() {
             className={`flex items-center py-2 ${open ? "flex-none px-3" : "min-w-0 flex-1 pr-2"}`}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.span layout="position" className="flex items-center">
+            <motion.span
+              layout="position"
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center"
+            >
               <Image
                 src="/logo-wordmark-dark.png"
                 alt=""
@@ -293,7 +340,11 @@ export function Header() {
               spacing/hover/focus convention so they read as a single control
               cluster. Raised surface + hairline border read against any page
               backdrop behind the light bar. */}
-          <motion.div layout="position" className="flex shrink-0 items-center gap-2">
+          <motion.div
+            layout="position"
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="flex shrink-0 items-center gap-2"
+          >
             <button
               type="button"
               onClick={toggleAudio}
@@ -324,13 +375,20 @@ export function Header() {
         </motion.div>
 
         {/* Dropdown panel — its own shape below the bar: same Ink-token
-            background as the pill, same radius/shadow language, sized to the
-            two-column content and centered under the shrunk bar. Height-reveal
-            stays slide-free so every painted frame is fully opaque. On this
-            light panel the active item INVERTS to a Surface pill with Ink
-            content (16.4:1); inactive items move to Obsidian text (17.7:1 —
-            Muted fails contrast on Ink at 2.1:1) with Border-tone dots that
-            warm to champagne on hover (accent discipline kept). */}
+            background as the pill, same radius/shadow language. Its width is
+            computed explicitly as the bar's live measured width plus
+            PANEL_OVERHANG_PX per side, so it reads as the wider of the two
+            related shapes while staying centered on the bar; the Tailwind
+            width class only covers the window before the first measurement
+            lands and reserves the same overhang room. The mt-4 gap is real
+            rendered spacing now that nothing collapses rows together.
+            Height-reveal stays slide-free so every painted frame is fully
+            opaque, and being in flow the header grows with it instead of
+            clipping. On this light panel the active item INVERTS to a
+            Surface pill with Ink content (16.4:1); inactive items move to
+            Obsidian text (17.7:1 — Muted fails contrast on Ink at 2.1:1)
+            with Border-tone dots that warm to champagne on hover (accent
+            discipline kept). */}
         <AnimatePresence initial={false}>
           {open && (
             <motion.div
@@ -340,13 +398,11 @@ export function Header() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0, transition: { duration: 0.18, ease: "easeIn" } }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              style={{ willChange: "transform" }}
-              /* self-start pins the reveal to the row's top edge: the h-16
-                 grid gives row 2 only the container's leftover height (the
-                 overflow-hidden item contributes no automatic minimum), so
-                 default centering hoists the panel up behind the bar. Top-
-                 anchoring lets it grow straight down out of that track. */
-              className="col-span-full row-start-2 mt-2 w-[min(100%,20rem)] justify-self-center self-start overflow-hidden rounded-2xl bg-ink shadow-[0px_2px_10px_rgba(0,0,0,0.45),0px_14px_28px_-16px_rgba(0,0,0,0.85)]"
+              style={{
+                willChange: "transform",
+                ...(barWidth !== null ? { width: barWidth + PANEL_OVERHANG_PX * 2 } : null),
+              }}
+              className="mt-4 w-[min(calc(100%_+_1.5rem),21.5rem)] self-center overflow-hidden rounded-2xl bg-ink shadow-[0px_2px_10px_rgba(0,0,0,0.45),0px_14px_28px_-16px_rgba(0,0,0,0.85)] lg:hidden"
             >
               <nav
                 className="grid grid-cols-2 gap-1 p-2.5"
