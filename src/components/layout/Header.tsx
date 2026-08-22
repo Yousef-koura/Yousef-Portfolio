@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import { Volume2, VolumeX } from "lucide-react";
 import { site } from "@/content/site";
 
 const desktopNav = site.nav.filter((item) => item.href !== "/");
@@ -29,7 +30,36 @@ export function Header() {
   const [sectionHref, setSectionHref] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
   const pathname = usePathname();
+
+  /* Intro audio — user-initiated only (never autoplay). The ended listener
+     keeps the toggle state honest when the track finishes; unmount pauses. */
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el) return;
+    const onEnded = () => setPlaying(false);
+    el.addEventListener("ended", onEnded);
+    return () => {
+      el.removeEventListener("ended", onEnded);
+      el.pause();
+    };
+  }, []);
+
+  const toggleAudio = () => {
+    const el = audioRef.current;
+    if (!el) return;
+    if (playing) {
+      el.pause();
+      setPlaying(false);
+    } else {
+      // play() rejects if the browser blocks it — fall back to idle state
+      el.play()
+        .then(() => setPlaying(true))
+        .catch(() => setPlaying(false));
+    }
+  };
 
   useEffect(() => {
     const onScroll = () => { setScrolled(window.scrollY > 24); const height = document.documentElement.scrollHeight - window.innerHeight; setProgress(height > 0 ? window.scrollY / height : 0); };
@@ -156,6 +186,22 @@ export function Header() {
               {contactItem.label}
             </Link>
           ) : null}
+          {/* Intro audio toggle — quiet round chip matching the capsule's
+              height rhythm; champagne only while playing (accent discipline). */}
+          <button
+            type="button"
+            onClick={toggleAudio}
+            aria-label={playing ? "Pause intro audio" : "Play intro audio"}
+            aria-pressed={playing}
+            className={`flex h-7 w-7 items-center justify-center rounded-full border transition-colors duration-300 ${playing ? "border-champagne/50 text-champagne" : "border-line text-muted hover:text-ink"
+              }`}
+          >
+            {playing ? (
+              <VolumeX size={14} aria-hidden="true" />
+            ) : (
+              <Volume2 size={14} aria-hidden="true" />
+            )}
+          </button>
         </nav>
 
         {/* Mobile single-shape trigger — replaces both the standalone wordmark
@@ -270,7 +316,30 @@ export function Header() {
             )}
           </AnimatePresence>
         </motion.div>
+
+        {/* Mobile intro audio chip — additive absolute overlay docked to the
+            row's right edge so the pill trigger, wordmark, and open/close
+            morph geometry are untouched in every state. Raised surface +
+            hairline border read on both pill backgrounds (closed ink pill,
+            open surface panel). */}
+        <button
+          type="button"
+          onClick={toggleAudio}
+          aria-label={playing ? "Pause intro audio" : "Play intro audio"}
+          aria-pressed={playing}
+          className={`absolute right-5 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-raised transition-colors duration-300 sm:right-8 lg:hidden ${playing ? "border-champagne/50 text-champagne" : "border-line text-muted hover:text-ink"
+            }`}
+        >
+          {playing ? (
+            <VolumeX size={16} aria-hidden="true" />
+          ) : (
+            <Volume2 size={16} aria-hidden="true" />
+          )}
+        </button>
       </div>
+
+      {/* Filename contains a space — keep it URL-encoded in the src. */}
+      <audio ref={audioRef} src="/audio/intro%20voice.mp3" preload="none" className="hidden" />
     </header>
   );
 }
