@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/layout/Providers";
@@ -22,6 +22,13 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
 });
+
+/* Browser chrome (status/address bar) must match the Obsidian environment —
+   without it, mobile browsers paint a light default bar above the page. */
+export const viewport: Viewport = {
+  themeColor: "#0B0C0E",
+  colorScheme: "dark",
+};
 
 export const metadata: Metadata = {
   title: {
