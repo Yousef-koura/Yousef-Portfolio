@@ -246,16 +246,19 @@ export function Header() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.04 * index, duration: 0.25 }}
                     >
+                      {/* Active item reads as a raised light card on the dark
+                          panel (Ink token surface, Obsidian content); inactive
+                          items stay bare dot + label directly on the panel. */}
                       <Link
                         href={item.href}
                         onClick={() => setOpen(false)}
                         aria-current={isActive(item.href) ? "page" : undefined}
-                        className={`group flex items-center gap-2 whitespace-nowrap rounded-lg px-2.5 py-3 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors duration-300 ${isActive(item.href) ? "text-champagne" : "text-muted hover:text-ink"
+                        className={`group flex items-center gap-2 whitespace-nowrap rounded-lg px-2.5 py-3 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors duration-300 ${isActive(item.href) ? "bg-ink text-obsidian" : "text-muted hover:text-ink"
                           }`}
                       >
                         <span
                           aria-hidden="true"
-                          className={`h-1 w-1 shrink-0 rounded-full transition-colors duration-300 ${isActive(item.href) ? "bg-champagne" : "bg-muted group-hover:bg-champagne"
+                          className={`h-1 w-1 shrink-0 rounded-full transition-colors duration-300 ${isActive(item.href) ? "bg-obsidian" : "bg-muted group-hover:bg-champagne"
                             }`}
                         />
                         {item.label}
