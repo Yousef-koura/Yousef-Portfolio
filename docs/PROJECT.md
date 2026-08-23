@@ -21,9 +21,11 @@ A single, premium, highly visual web experience that frames the person and the w
 
 ## Current project phase
 
-**PHASE 4A — HOME PAGE (IMPLEMENTATION) — IN PROGRESS**
+**PHASE 4B — WORK PAGE (IMPLEMENTATION) — IN PROGRESS**
 
-The application is initialized (Next.js 16 + TypeScript + Tailwind) and the Home page is implemented as the first implementation milestone, following the approved Phase 3 architecture. Only HOME is built; WORK, ABOUT, EXPERIENCE, PUBLICATIONS, and CONTACT remain later milestones (currently honest placeholder pages so navigation never breaks).
+The application is initialized (Next.js 16 + TypeScript + Tailwind); the Home page is implemented (Phase 4A, pending review) and the WORK page is now implemented as the second implementation milestone in its expanded form: a recomposed WORK index (flagship composition + uniform card grid for seven projects) plus ALL SEVEN project detail pages under `/work/[slug]`, with three real demo-capture videos embedded and a sourced tech-stack icon row. ABOUT, EXPERIENCE, PUBLICATIONS, and CONTACT remain later milestones (currently honest placeholder pages so navigation never breaks).
+
+The WORK index leads with Movenue as the full-width flagship linking into its detail page; the remaining six builds sit in a uniform responsive grid of tiles, each opening its own page. Detail pages render Problem → Methodology → Solution → Results → Stack → Links → prev/next from one data-driven template, with short pages (PotatoScan, Steganography Detector) rendering only the sections their sourced content supports (DECISIONS #42–#44).
 
 The Home opening integrates the **approved portrait** as art-directed transparent cutouts (desktop/mobile pair via `<picture>` — see DECISIONS #34) and features **Movenue** as the featured SaaS project (live at https://movenue.vercel.app/).
 
@@ -35,6 +37,7 @@ Phase history:
 - **PHASE 2 — INFORMATION ARCHITECTURE + VISUAL IDENTITY: COMPLETED** — approved sitemap, visual direction, color palette, and interaction philosophy recorded.
 - **PHASE 3 — UX / PAGE ARCHITECTURE: COMPLETED** — approved page-level UX architecture recorded in PHASE3_UX.md.
 - **PHASE 4A — HOME PAGE: IN PROGRESS** — Home page implemented (user-directed implementation milestone ahead of the roadmap's wireframe-first sequence; see ROADMAP.md).
+- **PHASE 4B — WORK PAGE: IN PROGRESS** — WORK index recomposed as flagship + card grid, and ALL SEVEN `/work/[slug]` detail pages implemented via a shared data-driven template; three real demo-capture videos encoded and embedded (MP4 + posters); tech-stack icon row added (`@icons-pack/react-simple-icons` + Lucide fallbacks) (DECISIONS #44, amending #42–#43). Pending user visual sign-off.
 
 ## Core principles
 

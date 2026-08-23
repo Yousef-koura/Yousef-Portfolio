@@ -256,3 +256,24 @@ html.lenis body {
 [data-theme="light"] .publication-image{opacity:.78;box-shadow:0 1px 0 rgba(20,22,26,.06),0 10px 24px rgba(20,22,26,.08)}.portal-publication:hover .publication-image{filter:grayscale(0);opacity:1;transform:translateY(-4px)}.portal-publication>div>div{display:grid;gap:14px}.portal-publication .portal-action{grid-column:auto;justify-self:start}
 @media (hover:none){.deck-card__detail{max-height:90px;opacity:1}.deck-card__content h3{margin-bottom:7px}.date-row:active{background:rgba(201,168,106,.06)}.experience-summary{font-size:12px;max-height:90px;margin-top:8px}[data-theme="light"] .date-row:active{background:rgba(140,106,46,.09)}}
 @media (max-width:760px){.portal-publication>div{grid-template-columns:1fr}.deck-card__detail p{font-size:10px}}
+
+/* ─── WORK demo-video play affordance (HoverVideo) ───
+   Touch and reduced-motion users always see the control. On fine pointers
+   with motion allowed it appears on frame hover/focus so the resting poster
+   stays clean; it remains a real, focusable button in every state. */
+.hovervideo__control {
+  opacity: 1;
+  transition: opacity 0.25s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hovervideo:not(:hover):not(:focus-within) .hovervideo__control {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.hovervideo__control:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}

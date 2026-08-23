@@ -283,10 +283,49 @@ Open / unresolved (carried from Phase 3, do not resolve silently):
 - Resume destination URL — RESUME CTA intentionally omitted until it exists.
 - Portrait use on ABOUT — the portrait is approved for the Home hero; whether it also appears on ABOUT is a later-milestone decision (PHASE 4A covers HOME only).
 - Military service presentation — included as identity context ("Military service · completed") only, not as an experience entry.
-- Which old-site-only projects to include on WORK later.
+- ~~Which old-site-only projects to include on WORK later.~~ RESOLVED 2026-08-23 (DECISIONS #42): PotatoScan + Steganography Detector included on WORK's secondary index; the other four old-site-only projects excluded.
 - Typography finalization (Phase 5), full 3D visual language/WebGL concept (Phase 12), metadataBase/deployment URL (Phase 15).
 
-Next step: real-theming Phase 2 complete (DECISIONS #41) — pending user visual sign-off of the per-section sweep screenshots; the WORK page milestone remains queued after the Home work concludes.
+Next step: real-theming Phase 2 complete (DECISIONS #41) — pending user visual sign-off of the per-section sweep screenshots; the WORK page milestone was subsequently implemented under **PHASE 4B** below.
+
+---
+
+## PHASE 4B — WORK PAGE (IMPLEMENTATION MILESTONE)
+**Status: IN PROGRESS** (implemented — pending user visual/UX review)
+
+A **user-directed implementation milestone**, sibling to Phase 4A. Originally scoped to the WORK index plus exactly ONE project detail page (`/work/movenue`); expanded in the final 2026-08-23 session (DECISIONS #44, update log below) so ALL SEVEN project detail pages are now implemented alongside a recomposed index grid. Phase 4 (wireframes) and Phase 10 (WORK/PROJECTS full scope: filtering, media model, richer per-project content) remain open.
+
+Completed (2026-08-23, see DECISIONS #42 for full detail):
+- WORK index (`src/app/work/page.tsx`) rewritten from the Phase-4A placeholder into a quiet editorial system: header block ("Work." display H1, 07 projects · 01 case study metadata, factual intro), five primary entries numbered 01–05 separated by hairlines and deliberately non-uniform (Movenue as dominant full-width feature with champagne case-study link; Agri-Bot, PneumoScan, Personal RAG Chatbot, FMCG Pipeline as alternating asymmetric two-column rows with metrics strips), then a secondary numbered index "Further builds" (06–07: PotatoScan, Steganography Detector via `SecondaryProjectRow`) honestly labeled as slimmer-documentation entries pending verification, and a closing forward path (Get in touch pill + direct email) so the page never dead-ends.
+- Data layer added to `src/content/projects.ts`: `WorkProject` type, ordered `workProjects` (Movenue entry derives shared fields from `featuredProject`), narrow `WorkIndexEntry` type + `workIndexProjects`, and `movenueCaseStudy`; existing exports untouched (Home unaffected); `SecondaryProjectRow` prop narrowed to `WorkIndexEntry` (optional timeframe).
+- Detail route `src/app/work/[slug]/page.tsx` + `MovenueCaseStudy.tsx` per PHASE3_UX §7: breadcrumb back-link, hero header (role/timeframe/status/stack meta grid + solid-champagne "Visit Movenue" pill), full-width masked-reveal screenshot, Overview / Role & ownership / Approach / Evidence sections, closing nav. `generateStaticParams` pre-renders ONLY movenue; `dynamicParams = false` 404s every other slug. No next-project link (only one detail page exists).
+- Content integrity held: all metrics/dates/tags/links verbatim from `yousef-portfolio-content.md` §6; PneumoScan's anomalous source figures rendered verbatim where shown and still flagged in CONTENT.md; no Movenue repo link invented.
+- Demo-capture video plan corrected before shipping: the assumed `public/videos/*.mp4` assets do NOT exist anywhere in the repo or git history (earlier investigation note was wrong); the click-to-load player component was removed and entries render static captures only (PneumoScan: quiet labeled frame). Player deferred until real assets exist.
+- Verified: production build clean (`/work` static, `/work/movenue` SSG), `tsc --noEmit`, ESLint clean, SSR content assertions (metrics/links/404 handling/UTF-8/Home regression), asset availability checks, desktop+mobile screenshots captured for manual review.
+
+Open / unresolved (status as of the #44 session — see the update log below for what changed):
+- ~~Six remaining project detail pages (Agri-Bot, PneumoScan, RAG Assistant, FMCG Pipeline, PotatoScan, Steganography Detector)~~ RESOLVED 2026-08-23 — all seven detail pages implemented (DECISIONS #44); fuller verified content for PotatoScan/Steganography remains desirable but their pages render only sourced material.
+- PneumoScan data anomalies ("85.1–85%" figure, dual-date timeframe) — user correction requested, rendered verbatim meanwhile.
+- ~~Demo-capture videos for project entries — no assets exist yet; reintroduce player when provided.~~ RESOLVED 2026-08-23 — three real captures encoded and embedded (DECISIONS #44).
+- Final visual sign-off of this page by the user.
+
+Update (2026-08-23, later session — compositional redesign + copy fix + dormant video infra, see DECISIONS #43):
+- `/work` recomposed from per-entry template reuse into SIX distinct compositions, user-approved in planning: Movenue full-bleed breakout media band (the page's only full-bleed element); Agri-Bot hardware-dominant asymmetric grid with vertical metrics rail; PneumoScan metrics-forward typographic band (no image asset exists — none invented); RAG Chatbot quiet UI-forward smaller-scale mirror; FMCG dashboard-led `<figure>`+figcaption strip with its large metric; secondary tier as calm numbered rows. Shared primitives extracted to `src/components/work/entry-parts.tsx` (`StatusChip`, `EntryHeader`, `EntryMedia`, `TagLine`, `MetricFigure`, `EntryActions`); the retired template component was deleted.
+- Leaked internal-process copy fixed: the secondary-tier label became "Additional builds", the process-note intro line was removed entirely, and both entries carry real one-line descriptions sourced from `yousef-portfolio-content.md` §6 (PotatoScan full-stack FastAPI+React framing; Steganography 90% accuracy). `SecondaryProjectRow` renders the sourced summary.
+- Demo-video infrastructure built DORMANT (user decision: "infra now, activate later"): `HoverVideo` client component (mount-on-intent `<video muted loop playsinline preload="none">` over the poster; hover-in/out on fine pointers, tap affordance on touch, focusable button keyboard toggle, reduced-motion blocks hover autoplay only, load failure reverts to poster) + optional `ProjectVideo` data field, unset everywhere until real encoded assets land in `public/videos/`. Zero footprint while dormant (verified).
+- Verified headlessly against production builds: tsc/ESLint clean; 18/18 composition×breakpoint checks (375/820/1440 — no horizontal overflow, no clipped children); 18/18 HoverVideo behavioral assertions via request-level harness with genuinely decodable media generated in-browser (hover play with advancing currentTime, leave unmount, Enter/Space toggle, reduced-motion gating confirmed active, touch tap, real-404 failed→poster fallback); leak scan clean; Home regression checked. Final visual sign-off remains manual.
+
+Update (2026-08-23, final session — index grid + ALL SEVEN detail pages live, see DECISIONS #44):
+- `/work` recomposed as an index grid per the approved plan: one full-width flagship composition for Movenue (capture linking into its detail page, summary + verbatim metric lines, champagne "Read the project page"), then a uniform responsive card grid (sm:2 / lg:3) for the remaining six builds — each tile links to its own `/work/[slug]` page and shows number/status/name/kind/sourced summary/timeframe; builds without a capture get a quiet labeled panel. The #43 six-compositions scroll, `entry-parts.tsx`, `MovenueCaseStudy.tsx`, and their data blocks (`workProjects`, `movenueCaseStudy`, `workIndexProjects`) are retired.
+- ALL SEVEN project detail pages now live (`/work/movenue|agri-bot|pneumoscan|personal-rag-chatbot|fmcg-pipeline|potatoscan|steganography-detector`) via one data-driven template (`ProjectDetailPage.tsx` over new `projectDetails` in `projects.ts`): Problem → Methodology → Solution → Results → Stack → Links → curated prev/next nav. Short pages render only the sections their sourced content supports (PotatoScan, Steganography Detector stay honest instead of padded). `generateStaticParams` covers all seven slugs; `dynamicParams = false`.
+- Real demo videos shipped: three raw AVI captures in `public/videos/` re-encoded to H.264 MP4 + poster stills (agribot-demo 5.9 MB, fmcg-pipeline-demo 1.3 MB, rag-chatbot-demo 3.97 MB; WebM dropped as larger); embedded via `HoverVideo` inside Solution sections and index tiles, held in a pure-CSS laptop bezel on detail pages. `HoverVideo` gained an optional explicit `aspect` prop.
+- Tech-stack icon row added to detail pages: `@icons-pack/react-simple-icons` brand marks for confirmed technologies, neutral Lucide glyph chips for concepts without marks (new dependency recorded in TECH_STACK.md).
+- Content integrity held throughout: every figure/description/tag/link traces to `yousef-portfolio-content.md` §6; anomalies rendered verbatim and still flagged in CONTENT.md; no Movenue repo link invented.
+- Verified: production build clean (`/work` static + all seven `/work/[slug]` SSG paths), `tsc --noEmit`, ESLint clean; prerendered-HTML content assertions passed on all eight routes including section-presence AND absence checks on short pages.
+
+Open / unresolved:
+- PneumoScan data anomalies ("85.1–85%" figure, dual-date timeframe) — user correction requested, rendered verbatim meanwhile.
+- Final visual sign-off of this page by the user.
 
 ---
 
@@ -681,8 +720,9 @@ If there is a conflict:
 - PHASE 2 — COMPLETED
 - PHASE 3 — COMPLETED
 - PHASE 4A — HOME PAGE (user-directed implementation milestone) — IN PROGRESS (Home implemented, pending review)
+- PHASE 4B — WORK PAGE (user-directed implementation milestone) — IN PROGRESS (WORK index grid + ALL SEVEN project detail pages implemented; real demo videos embedded; pending user visual sign-off — DECISIONS #44)
 - PHASES 4, 6–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED)
 
 The project is currently in:
 
-**PHASE 4A — HOME PAGE (IMPLEMENTATION MILESTONE)**
+**PHASE 4B — WORK PAGE (IMPLEMENTATION MILESTONE)**

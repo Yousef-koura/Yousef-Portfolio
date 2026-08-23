@@ -1,12 +1,13 @@
 import { ArrowUpRight } from "lucide-react";
-import type { Project } from "@/content/projects";
+import type { WorkIndexEntry } from "@/content/projects";
 
 /**
  * Secondary project — a minimal numbered index row. The whole row is the link;
- * one metric line carries the evidence. Deliberately silent next to the
- * Movenue feature so the section reads as a curated index, not a card wall.
+ * the one-line description carries the substance. Deliberately quiet next to
+ * the primary compositions so the tier reads as a curated index, not a card
+ * wall — with real descriptions and no internal process notes.
  */
-export function SecondaryProjectRow({ project, index }: { project: Project; index: number }) {
+export function SecondaryProjectRow({ project, index }: { project: WorkIndexEntry; index: number }) {
   const primaryLink = project.links[0];
 
   return (
@@ -25,12 +26,14 @@ export function SecondaryProjectRow({ project, index }: { project: Project; inde
           {project.name}
           <span className="sr-only"> (opens in a new tab)</span>
         </h3>
-        <p className="mt-1.5 font-mono text-xs text-muted sm:text-sm">{project.evidence}</p>
+        <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-muted sm:text-sm">{project.summary}</p>
       </div>
 
       <div className="hidden text-right sm:block">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">{project.domain}</p>
-        <p className="mt-1 font-mono text-[10px] tracking-[0.14em] text-muted/70">{project.timeframe}</p>
+        {project.timeframe ? (
+          <p className="mt-1 font-mono text-[10px] tracking-[0.14em] text-muted/70">{project.timeframe}</p>
+        ) : null}
       </div>
 
       <ArrowUpRight

@@ -1,16 +1,224 @@
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import { PagePlaceholder } from "@/components/layout/PagePlaceholder";
+import Image from "next/image";
+import Link from "next/link";
+import { Reveal } from "@/components/ui/Reveal";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { QuietLink } from "@/components/ui/QuietLink";
+import { HoverVideo } from "@/components/work/HoverVideo";
+import { projectDetails } from "@/content/projects";
 
 export const metadata: Metadata = {
   title: "Work",
+  description:
+    "Seven real projects — machine learning, computer vision, LLM systems, data engineering, and a live SaaS platform. Every entry links to real repositories and running products.",
 };
 
-export default function WorkPage() {
+function StatusChip({ status }: { status: string }) {
   return (
-    <PagePlaceholder
-      eyebrow="Work"
-      title="Selected projects"
-      description="The full project catalog is part of a later milestone. In the meantime, the selected work on the home page links directly to live evidence — the Movenue platform and the project repositories."
-    />
+    <span className="inline-flex items-center gap-2 text-champagne">
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-champagne" />
+      {status}
+    </span>
+  );
+}
+
+/**
+ * WORK index — PHASE 4B grid. One full-width flagship composition leads;
+ * the remaining six builds sit in a uniform responsive grid of cards, each
+ * linking to its own `/work/[slug]` detail page. Builds without a capture
+ * get a quiet labeled panel — no imagery is invented.
+ */
+export default function WorkPage() {
+  const [flagship, ...tiles] = projectDetails;
+
+  return (
+    <>
+      {/* Page header */}
+      <section className="mx-auto max-w-6xl px-5 pt-36 sm:px-8 sm:pt-44">
+        <div className="border-t border-line pt-4">
+          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">Work</span>
+        </div>
+        <div className="mt-14 flex flex-col gap-10 sm:mt-20 lg:flex-row lg:items-end lg:justify-between">
+          <h1 className="font-display text-6xl leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl">
+            Work<span className="text-champagne">.</span>
+          </h1>
+          <p className="font-mono text-[11px] uppercase leading-loose tracking-[0.22em] text-muted lg:text-right">
+            07 projects · 07 pages
+            <br />
+            2023 — 2026
+          </p>
+        </div>
+        <p className="mt-8 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+          Machine learning, computer vision, LLM systems, data engineering, and one live SaaS product —
+          every entry opens into its own project page.
+        </p>
+      </section>
+
+      {/* ─── Flagship · Movenue, full-width composition ─── */}
+      {flagship ? (
+        <Reveal>
+          <section aria-label={`${flagship.name} — flagship build`} className="mx-auto mt-24 max-w-6xl px-5 sm:mt-32 sm:px-8">
+            <div className="border-t border-line pt-4">
+              <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4 pt-6 sm:pt-8">
+                <h2 className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+                  <span aria-hidden="true" className="font-mono text-xs text-champagne-strong">01</span>
+                  <span className="font-display text-5xl leading-none tracking-tight text-ink sm:text-7xl">
+                    {flagship.name}
+                  </span>
+                </h2>
+                <div className="pb-1 text-right font-mono text-[10px] uppercase tracking-[0.22em]">
+                  <p className="text-muted">{flagship.kind}</p>
+                  {flagship.status ? (
+                    <p className="mt-1.5">
+                      <StatusChip status={flagship.status} />
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+
+            {/* The capture links straight into the detail page */}
+            {flagship.image ? (
+              <Link
+                href={`/work/${flagship.slug}`}
+                aria-label={`Open ${flagship.name} project page`}
+                className="group/fl mt-10 block overflow-hidden border border-line bg-surface sm:mt-12"
+              >
+                <Image
+                  src={flagship.image.src}
+                  alt={flagship.image.alt}
+                  width={flagship.image.width}
+                  height={flagship.image.height}
+                  priority
+                  sizes="(min-width: 1152px) 1088px, 100vw"
+                  className="h-auto w-full transition-transform duration-700 group-hover/fl:scale-[1.01]"
+                />
+              </Link>
+            ) : null}
+
+            <div className="grid gap-8 border-b border-line pt-8 pb-10 sm:grid-cols-[1.2fr_1fr] sm:gap-16">
+              <p className="max-w-xl text-sm leading-relaxed text-muted sm:text-base">{flagship.summary}</p>
+              <div className="sm:text-right">
+                {flagship.results?.map((metric) => (
+                  <p key={metric.value} className="font-mono text-xs leading-relaxed text-ink">
+                    <span className="text-champagne-strong">{metric.value}</span> {metric.label}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="font-mono text-[11px] text-muted">{flagship.timeframe}</p>
+              <Link
+                href={`/work/${flagship.slug}`}
+                className="group/cs inline-flex items-center gap-2 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-champagne-strong transition-colors duration-300 hover:text-champagne"
+              >
+                Read the project page
+                <ArrowRight size={12} aria-hidden="true" className="transition-transform duration-300 group-hover/cs:translate-x-1" />
+              </Link>
+            </div>
+          </section>
+        </Reveal>
+      ) : null}
+
+      {/* ─── Grid · six uniform tiles, one per build ─── */}
+      <section aria-label="All projects" className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="mt-24 border-t border-line pt-4 sm:mt-32">
+          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">All projects</span>
+        </div>
+
+        <div className="mt-10 grid gap-6 pb-4 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          {tiles.map((project, i) => (
+            <Reveal key={project.slug} delay={0.05 * ((i % 3) + 1)} y={20}>
+              <Link
+                href={`/work/${project.slug}`}
+                className="group/tile flex h-full flex-col border border-line bg-surface transition-colors duration-300 hover:border-champagne/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne"
+              >
+                {/* Thumb — the build's own capture, or a quiet labeled panel */}
+                <div className="relative overflow-hidden border-b border-line">
+                  {project.image ? (
+                    project.video ? (
+                      <HoverVideo
+                        video={project.video}
+                        poster={project.image}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        label={`${project.name} demo`}
+                        aspect="16 / 9"
+                        className="border-0"
+                      />
+                    ) : (
+                      <div className="aspect-video overflow-hidden">
+                        <Image
+                          src={project.image.src}
+                          alt=""
+                          width={project.image.width}
+                          height={project.image.height}
+                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover/tile:scale-[1.03]"
+                        />
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-surface px-6 text-center">
+                      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-champagne/70" />
+                      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
+                        {project.domain}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex grow flex-col p-6 sm:p-7">
+                  <div className="flex items-center justify-between font-mono text-xs">
+                    <span aria-hidden="true" className="text-champagne-strong">
+                      {String(i + 2).padStart(2, "0")}
+                    </span>
+                    {project.status ? <StatusChip status={project.status} /> : null}
+                  </div>
+
+                  <h3 className="mt-5 font-display text-2xl leading-tight tracking-tight text-ink">
+                    {project.name}
+                  </h3>
+                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
+                    {project.kind}
+                  </p>
+
+                  <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-muted">{project.summary}</p>
+
+                  <div className="mt-auto flex items-center justify-between pt-6">
+                    <span className="font-mono text-[11px] text-muted/80">{project.timeframe ?? project.domain}</span>
+                    <ArrowRight
+                      size={14}
+                      aria-hidden="true"
+                      className="text-muted transition-all duration-300 group-hover/tile:translate-x-1 group-hover/tile:text-champagne"
+                    />
+                  </div>
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Forward path — the page must not dead-end */}
+      <section aria-label="Contact" className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="mb-32 mt-28 border-t border-line pt-20 sm:mb-40 sm:mt-36 sm:pt-24">
+          <h2 className="font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl">
+            Questions about any build above are welcome<span className="text-champagne">.</span>
+          </h2>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted">
+            Architecture, metrics, or code — reach out directly for a deeper walkthrough.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <ButtonLink href="/contact" variant="ghost">
+              Get in touch
+            </ButtonLink>
+            <QuietLink href="mailto:yousefahmed.ae20@gmail.com" external>
+              Email directly
+            </QuietLink>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

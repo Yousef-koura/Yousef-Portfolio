@@ -12,6 +12,7 @@
 | Smooth scrolling | Lenis |
 | 3D | Three.js, React Three Fiber, Drei |
 | Icons | Lucide React |
+| Brand icons | @icons-pack/react-simple-icons (tree-shakeable named imports; used only for confirmed technologies on WORK detail pages — concepts without a brand mark fall back to Lucide glyphs) |
 | Fonts | next/font |
 | Version control | Git + GitHub |
 | Deployment | Vercel |
