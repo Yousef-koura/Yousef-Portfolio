@@ -43,7 +43,7 @@ export function Footer() {
 
           <nav aria-label="Footer">
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-champagne-strong">Menu</p>
-            <ul className="mt-5 flex flex-col gap-3">
+            <ul className="mt-5 grid grid-cols-2 grid-flow-col grid-rows-3 gap-x-8 gap-y-3">
               {site.nav.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className="text-sm text-muted transition-colors hover:text-champagne-strong">
