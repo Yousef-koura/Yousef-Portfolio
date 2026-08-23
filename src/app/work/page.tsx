@@ -74,7 +74,7 @@ export default function WorkPage() {
                   alt={flagship.image.alt}
                   width={flagship.image.width}
                   height={flagship.image.height}
-                  priority
+                  preload
                   sizes="(min-width: 960px) 896px, 100vw"
                   className="h-auto w-full transition-transform duration-700 group-hover/fl:scale-[1.01]"
                 />
@@ -127,7 +127,7 @@ export default function WorkPage() {
                     project.video ? (
                       <DemoVideo
                         video={project.video}
-                        poster={project.image}
+                        poster={project.video.poster ?? project.image}
                         sizes="(min-width: 1024px) 33vw, 50vw"
                         label={`${project.name} demo`}
                         aspect="16 / 9"

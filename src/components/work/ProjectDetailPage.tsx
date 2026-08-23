@@ -64,7 +64,7 @@ function DetailMedia({ detail }: { detail: ProjectDetail }) {
       <LaptopFrame>
         <DemoVideo
           video={detail.video}
-          poster={detail.image}
+          poster={detail.video.poster ?? detail.image}
           sizes="(min-width: 1152px) 1088px, 100vw"
           label={`${detail.name} demo`}
           aspect="16 / 9"
@@ -81,7 +81,7 @@ function DetailMedia({ detail }: { detail: ProjectDetail }) {
           alt={detail.image.alt}
           width={detail.image.width}
           height={detail.image.height}
-          priority
+          preload
           sizes="(min-width: 1152px) 1088px, 100vw"
           className="h-auto w-full"
         />

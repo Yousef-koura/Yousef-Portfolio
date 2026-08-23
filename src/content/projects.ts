@@ -31,8 +31,8 @@ export const featuredProject: Project = {
   image: {
     src: "/projects/movenue.png",
     alt: "Movenue — court management and booking platform",
-    width: 1898,
-    height: 848,
+    width: 988,
+    height: 681,
   },
 };
 
@@ -114,7 +114,17 @@ export type WorkMetric = { value: string; label: string };
  * project image as poster/resting state. Never point at files that don't
  * exist.
  */
-export type ProjectVideo = { mp4: string; webm?: string };
+export type ProjectVideo = {
+  mp4: string;
+  webm?: string;
+  /**
+   * Optional dedicated still for the player's resting state — a real encoded
+   * capture from `public/videos/` matching the clip's frame ratio. When set,
+   * callers render it instead of the project screenshot, avoiding awkward
+   * `object-cover` crops of mismatched-aspect sources.
+   */
+  poster?: Project["image"];
+};
 
 /**
  * WORK detail pages (`/work/[slug]`) — PHASE 4B grid + detail milestone.
@@ -292,7 +302,15 @@ export const projectDetails: ProjectDetail[] = [
       width: 450,
       height: 600,
     },
-    video: { mp4: "/videos/agribot-demo.mp4" },
+    video: {
+      mp4: "/videos/agribot-demo.mp4",
+      poster: {
+        src: "/videos/agribot-demo-poster.jpg",
+        alt: "Agri-Bot demo capture — robot detecting and classifying crop disease",
+        width: 1280,
+        height: 720,
+      },
+    },
   },
   {
     slug: "pneumoscan",
@@ -354,6 +372,21 @@ export const projectDetails: ProjectDetail[] = [
         external: true,
       },
     ],
+    image: {
+      src: "/projects/Pneumonia.png",
+      alt: "PneumoScan — chest X-ray diagnosis with confidence score in the React frontend",
+      width: 1772,
+      height: 792,
+    },
+    video: {
+      mp4: "/videos/pneumoscan-demo.mp4",
+      poster: {
+        src: "/videos/pneumoscan-demo-poster.jpg",
+        alt: "PneumoScan demo capture — chest X-ray diagnosis flow",
+        width: 1280,
+        height: 720,
+      },
+    },
   },
   {
     slug: "personal-rag-chatbot",
@@ -504,6 +537,21 @@ export const projectDetails: ProjectDetail[] = [
         external: true,
       },
     ],
+    image: {
+      src: "/projects/PotatoScan.png",
+      alt: "PotatoScan — potato leaf disease diagnosis in the React frontend",
+      width: 1772,
+      height: 790,
+    },
+    video: {
+      mp4: "/videos/potatoscan-demo.mp4",
+      poster: {
+        src: "/videos/potatoscan-demo-poster.jpg",
+        alt: "PotatoScan demo capture — leaf disease diagnosis flow",
+        width: 1280,
+        height: 720,
+      },
+    },
   },
   {
     slug: "steganography-detector",
@@ -527,6 +575,12 @@ export const projectDetails: ProjectDetail[] = [
         external: true,
       },
     ],
+    image: {
+      src: "/projects/stegnography.webp",
+      alt: "Steganography Detector — hidden-data classification interface",
+      width: 800,
+      height: 373,
+    },
   },
 ];
 
