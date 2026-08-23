@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { QuietLink } from "@/components/ui/QuietLink";
-import { HoverVideo } from "@/components/work/HoverVideo";
+import { DemoVideo } from "@/components/work/DemoVideo";
 import { projectDetails } from "@/content/projects";
 
 export const metadata: Metadata = {
@@ -78,12 +78,14 @@ export default function WorkPage() {
               </div>
             </div>
 
-            {/* The capture links straight into the detail page */}
+            {/* The capture links straight into the detail page — contained
+                within the section (max-w-4xl) so it reads as the flagship
+                visual without going full-bleed edge to edge */}
             {flagship.image ? (
               <Link
                 href={`/work/${flagship.slug}`}
                 aria-label={`Open ${flagship.name} project page`}
-                className="group/fl mt-10 block overflow-hidden border border-line bg-surface sm:mt-12"
+                className="group/fl mx-auto mt-10 block w-full max-w-4xl overflow-hidden rounded-2xl border border-line bg-surface sm:mt-12"
               >
                 <Image
                   src={flagship.image.src}
@@ -91,7 +93,7 @@ export default function WorkPage() {
                   width={flagship.image.width}
                   height={flagship.image.height}
                   priority
-                  sizes="(min-width: 1152px) 1088px, 100vw"
+                  sizes="(min-width: 960px) 896px, 100vw"
                   className="h-auto w-full transition-transform duration-700 group-hover/fl:scale-[1.01]"
                 />
               </Link>
@@ -127,24 +129,27 @@ export default function WorkPage() {
           <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">All projects</span>
         </div>
 
-        <div className="mt-10 grid gap-6 pb-4 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+        {/* Two columns from the smallest breakpoint up (user-directed density
+            change); three from lg. Half-width reflow handled per-element below. */}
+        <div className="mt-10 grid grid-cols-2 gap-4 pb-4 sm:gap-8 lg:grid-cols-3">
           {tiles.map((project, i) => (
             <Reveal key={project.slug} delay={0.05 * ((i % 3) + 1)} y={20}>
-              <Link
-                href={`/work/${project.slug}`}
-                className="group/tile flex h-full flex-col border border-line bg-surface transition-colors duration-300 hover:border-champagne/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne"
-              >
+              {/* Card is a positioned container rather than the link itself so
+                  the video controls are real, independently focusable buttons
+                  (no button-in-anchor nesting); the title link stretches across
+                  the card via its inset pseudo-element instead. */}
+              <div className="group/tile relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-colors duration-300 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-champagne hover:border-champagne/40">
                 {/* Thumb — the build's own capture, or a quiet labeled panel */}
                 <div className="relative overflow-hidden border-b border-line">
                   {project.image ? (
                     project.video ? (
-                      <HoverVideo
+                      <DemoVideo
                         video={project.video}
                         poster={project.image}
-                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        sizes="(min-width: 1024px) 33vw, 50vw"
                         label={`${project.name} demo`}
                         aspect="16 / 9"
-                        className="border-0"
+                        className="bg-transparent"
                       />
                     ) : (
                       <div className="aspect-video overflow-hidden">
@@ -153,13 +158,13 @@ export default function WorkPage() {
                           alt=""
                           width={project.image.width}
                           height={project.image.height}
-                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                          sizes="(min-width: 1024px) 33vw, 50vw"
                           className="h-full w-full object-cover transition-transform duration-700 group-hover/tile:scale-[1.03]"
                         />
                       </div>
                     )
                   ) : (
-                    <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-surface px-6 text-center">
+                    <div className="flex aspect-video flex-col items-center justify-center gap-2 bg-surface px-4 text-center sm:gap-3 sm:px-6">
                       <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-champagne/70" />
                       <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
                         {project.domain}
@@ -168,33 +173,42 @@ export default function WorkPage() {
                   )}
                 </div>
 
-                <div className="flex grow flex-col p-6 sm:p-7">
-                  <div className="flex items-center justify-between font-mono text-xs">
+                <div className="flex grow flex-col p-4 sm:p-7">
+                  <div className="flex items-center justify-between gap-2 font-mono text-xs">
                     <span aria-hidden="true" className="text-champagne-strong">
                       {String(i + 2).padStart(2, "0")}
                     </span>
                     {project.status ? <StatusChip status={project.status} /> : null}
                   </div>
 
-                  <h3 className="mt-5 font-display text-2xl leading-tight tracking-tight text-ink">
-                    {project.name}
+                  <h3 className="mt-4 font-display text-base leading-tight tracking-tight text-ink sm:mt-5 sm:text-2xl">
+                    <Link
+                      href={`/work/${project.slug}`}
+                      className="after:absolute after:inset-0 after:content-['']"
+                    >
+                      {project.name}
+                    </Link>
                   </h3>
-                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
+                  <p className="mt-1.5 font-mono text-[10px] uppercase leading-relaxed tracking-[0.22em] text-muted sm:mt-2">
                     {project.kind}
                   </p>
 
-                  <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-muted">{project.summary}</p>
+                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted sm:mt-4">
+                    {project.summary}
+                  </p>
 
-                  <div className="mt-auto flex items-center justify-between pt-6">
-                    <span className="font-mono text-[11px] text-muted/80">{project.timeframe ?? project.domain}</span>
+                  <div className="mt-auto flex items-end justify-between gap-2 pt-5 sm:pt-6">
+                    <span className="font-mono text-[10px] leading-snug text-muted/80 sm:text-[11px]">
+                      {project.timeframe ?? project.domain}
+                    </span>
                     <ArrowRight
                       size={14}
                       aria-hidden="true"
-                      className="text-muted transition-all duration-300 group-hover/tile:translate-x-1 group-hover/tile:text-champagne"
+                      className="shrink-0 text-muted transition-all duration-300 group-hover/tile:translate-x-1 group-hover/tile:text-champagne"
                     />
                   </div>
                 </div>
-              </Link>
+              </div>
             </Reveal>
           ))}
         </div>

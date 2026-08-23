@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { QuietLink } from "@/components/ui/QuietLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealImage } from "@/components/ui/RevealImage";
-import { HoverVideo } from "@/components/work/HoverVideo";
+import { DemoVideo } from "@/components/work/DemoVideo";
 import { TechStackRow } from "@/components/work/tech-icons";
 import type { ProjectDetail } from "@/content/projects";
 
@@ -62,7 +62,7 @@ function DetailMedia({ detail }: { detail: ProjectDetail }) {
   if (detail.video && detail.image) {
     return (
       <LaptopFrame>
-        <HoverVideo
+        <DemoVideo
           video={detail.video}
           poster={detail.image}
           sizes="(min-width: 1152px) 1088px, 100vw"

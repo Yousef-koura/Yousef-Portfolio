@@ -109,9 +109,10 @@ export type WorkMetric = { value: string; label: string };
 
 /**
  * Optional demo-capture clip for an entry. Real encoded captures live in
- * `public/videos/` (H.264 MP4, long edge ≤1280px, faststart); when set,
- * media renders via HoverVideo with the project image as poster/fallback.
- * Never point at files that don't exist.
+ * `public/videos/` (H.264 MP4 + AAC audio — voiceover preserved, long edge
+ * ≤1280px, faststart); when set, media renders via DemoVideo with the
+ * project image as poster/resting state. Never point at files that don't
+ * exist.
  */
 export type ProjectVideo = { mp4: string; webm?: string };
 
