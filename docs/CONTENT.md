@@ -14,6 +14,8 @@ Status labels:
 ## Identity
 
 - **CONFIRMED** — Name: Yousef Koura (also goes by Yousef Ahmed); Title: Junior / early-career Machine Learning Engineer; Location: Menoufia, Egypt; Military service: completed.
+- **CONFIRMED (user-provided, 2026-08-23 — not present in `yousef-portfolio-content.md`; DECISIONS #51)** — Born 2002; lived in the UAE (Sharjah and Dubai) until 2019, then moved to Egypt for university. Live on `/about` as plain biographical statements in the "Who I am" copy — no traits or claims attached to them.
+- **CONFIRMED (user-provided, 2026-08-23 — not present in `yousef-portfolio-content.md`; DECISIONS #51)** — Played football at Emirates Club (UAE) youth academy, ages 15–18, position: left wing. Same rendering rule as above.
 - **CONFIRMED** — B.Sc. Mechatronics Systems Engineering background.
 - **CONFIRMED** — GPA: 3.62/4.0 (resume-authoritative; LinkedIn alternative superseded).
 
@@ -37,7 +39,7 @@ Status labels:
 ## Experience
 
 - **CONFIRMED** — Machine Learning Intern, FlyRank AI (Chicago, USA · Remote; Jun 2026–present). Data warehouse analysis, temporal train/test split, Decision Tree model, MCP/Claude training, AI Fluency (4D framework).
-- **CONFIRMED** — Technical Office Engineer, License Department, Egyptian Armed Forces Engineering Authority (Cairo, Egypt; Jan 2025–Mar 2026, mandatory military service). **User decision needed:** include as an experience entry or only as "Military service completed".
+- **CONFIRMED** — Technical Office Engineer, License Department, Egyptian Armed Forces Engineering Authority (Cairo, Egypt; Jan 2025–Mar 2026, mandatory military service). **RESOLVED for ABOUT (2026-08-23, DECISIONS #49):** presented on `/about` as a narrative prose paragraph describing the actual role content (technical-office support, engineering documentation, licensing-department administrative processes, cross-function coordination) — not as a title/org/dates timeline entry. EXPERIENCE's future milestone inherits this ruling.
 - **CONFIRMED** — Machine Learning Intern, PioPetro (Ohio, USA · Remote; Jun–Aug 2024). 4+ predictive models, up to 87% R².
 - **CONFIRMED** — Machine Learning Intern, ITI (Menoufia, Egypt; Jul–Sep 2023). 6+ scikit-learn models, up to 97% F1.
 - **CONFIRMED** — AI Intern, Digital HUB (D-HUB) (Cairo, Egypt; Aug 2023). Breast cancer classifier, 96% accuracy, 3rd place in ERI challenge. Resume framing is authoritative.
@@ -63,7 +65,7 @@ Status labels:
 ## Certifications
 
 - **CONFIRMED** — ML Specialization (Coursera/DeepLearning.AI, 2023); Python 101 for Data Science (IBM/Cognitive Class, Mar 2021, has credential ID); Arduino Platform & C Programming (Coursera, Apr 2022); Intro to Containers w/ Docker/Kubernetes/OpenShift (IBM, Jun 2026, has credential ID); Claude & MCP Training (2026); AI Fluency — 4D Framework (2026).
-- **PROVISIONAL** — Presentation/selection of certifications (which to show, in what depth) is an open presentation decision. Old site's inflated "8 certifications" figure is rejected. Certificate images available in `projects&certificate_images/`.
+- **RESOLVED for ABOUT (2026-08-23, DECISIONS #50)** — Certifications appear on `/about` ONLY as contextual inline mentions inside the trajectory narrative (ML Specialization at the ITI moment; IBM Containers/Docker/Kubernetes/OpenShift at FlyRank). No standalone certification list/block exists on ABOUT; certifications without a woven moment there are intentionally omitted from that page. The old site's inflated "8 certifications" figure remains rejected. Certificate images remain available in `public/certificates/` for future phases. Presentation depth on other pages (EXPERIENCE/CONTACT/resume) remains a per-milestone decision.
 
 ## Achievements
 
@@ -84,7 +86,7 @@ Status labels:
 ## Other relevant work
 
 - **CONFIRMED** — Movenue (founder/product work, bilingual SaaS) — relevant to product/engineering story.
-- **CONFIRMED** — Military service engineering-office work (presentation decision pending — see Experience).
+- **CONFIRMED** — Military service engineering-office work (ABOUT presentation resolved — see Experience; DECISIONS #49).
 - **CONFIRMED** — MCP / Claude platform training and applied building.
 
 ## Contact information
@@ -108,7 +110,7 @@ Status labels:
 - **CONFIRMED** — Raw-source archive retained in `projects&certificate_images/`: `Yousef personal photo.png` (1024×1024 raw portrait source; DECISIONS #34) and `movenue.png` (1898×848 full-page capture of the live Movenue site — the sole full-res source of the served `movenue.png` crop; not a duplicate). Do not delete or move these.
 - **CONFIRMED** — Certificate images for the future Certifications/Experience presentation (Phase 11) relocated to `public/certificates/`: `iti-mlal-certificate.png`, `piopetro-certificate.png`, `dhub-certificate.png`. Not yet referenced in code.
 - **AWAITING USER DECISION** — Unreferenced, undocumented candidates flagged by the 2026-08-23 audit (still in `projects&certificate_images/`): `breast cancer.jpg` (illustration tied to the excluded Breast Cancer AI project, DECISIONS #42) and `logo - white.png` / `logo - black.jpeg` (possible Phase 5 brand inputs; differ from the `logo-wordmark*.png` pair actually used).
-- **CONFIRMED** — Portrait: the site uses the transparent PNG pair in `public/portrait/` — `personal-image-desktop.png` (365×684, ≥761px viewports) and `personal-image-mobile.png` (394×634, below) — **approved for and used in the Home opening**, presented as clean cutouts at native aspect ratio via `<picture>` art direction with a one-time load reveal (see DECISIONS #28–34). The previously-listed raw exports (`Yousef personal photo 2.jpeg`, `personal image desktop.jpg`, `personal image mobile.jpg`) no longer exist anywhere in the repo. Portrait use on ABOUT remains a later-milestone decision.
+- **CONFIRMED** — Portrait: the site uses the transparent PNG pair in `public/portrait/` — `personal-image-desktop.png` (365×684, ≥761px viewports) and `personal-image-mobile.png` (394×634, below) — **approved for the Home opening** (clean cutouts at native aspect ratio via `<picture>` art direction with a one-time load reveal, DECISIONS #28–34) **and for ABOUT** (2026-08-23, DECISIONS #48) as a small static inline figure beside the opening statement.
 - **CONFIRMED** — Demo media in `public/videos/`: three encoded MP4s + poster stills in active use (`agribot-demo.mp4`, `rag-chatbot-demo.mp4`, `fmcg-pipeline-demo.mp4`) and their source AVI captures, intentionally retained on disk per DECISIONS #44(c). Voice intro at `public/audio/intro voice.mp3`.
 - **MISSING** — Favicon / logo mark / brand assets (expected in Phase 5 Brand System; two candidate raw logo files flagged above).
 

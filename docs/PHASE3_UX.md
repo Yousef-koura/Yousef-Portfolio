@@ -247,15 +247,15 @@ ABOUT makes the professional identity human and complete: the person behind the 
 
 ### Architecture
 
-- **Personal/professional story.** Who Yousef is, professional and personal context (e.g., based in Menoufia, Egypt; military service completed). Portrait usage here is **pending user decision** — do not assume the portrait is approved.
+- **Personal/professional story.** Who Yousef is, professional and personal context (e.g., based in Menoufia, Egypt; military service completed). Portrait usage here is **pending user decision** — do not assume the portrait is approved. *(Resolved 2026-08-23 — DECISIONS #48: approved as a small inline figure; PHASE 4C.)*
 - **Engineering trajectory.** The path from Mechatronics Systems Engineering (B.Sc., MSA University, in partnership with University of Greenwich, UK) through ML internships and into product/engineering work — the arc that explains breadth.
 - **Education.** B.Sc. Mechatronics Systems Engineering (Sep 2019–Jul 2024), GPA 3.62/4.0 (resume-authoritative).
 - **Skills / capabilities where appropriate.** Contextual capability framing — not a standalone skill list.
-- **Supporting evidence.** Certifications (presentation of which to show and in what depth is an **open presentation decision**), achievements (e.g., D-HUB 3rd place, ERI challenge), and links to real profiles (LinkedIn, GitHub).
+- **Supporting evidence.** Certifications (presentation of which to show and in what depth is an **open presentation decision** — *(resolved for ABOUT 2026-08-23, DECISIONS #50: contextual inline mentions)*), achievements (e.g., D-HUB 3rd place, ERI challenge), and links to real profiles (LinkedIn, GitHub).
 
 ### Rules
 
-- Military service: whether to include it as a formal experience entry or only as "Military service completed" is a **pending user decision** — flag, do not decide.
+- Military service: whether to include it as a formal experience entry or only as "Military service completed" is a **pending user decision** — flag, do not decide. *(Resolved for ABOUT 2026-08-23 — DECISIONS #49: narrative prose paragraph, not a timeline entry.)*
 - Every claim must be supported by the source; no invented facts.
 - ABOUT must not duplicate EXPERIENCE wholesale — it frames the story; EXPERIENCE carries the timeline detail.
 
@@ -386,10 +386,10 @@ These remain user decisions. They are deliberately NOT resolved in this document
 
 1. **Final positioning statement.** RESOLVED 2026-08-22 — confirmed as "I build the systems beneath a useful interface: models, data, and decisions brought into the same room." (see [DECISIONS.md](./DECISIONS.md) #39 and [CONTENT.md](./CONTENT.md) "Professional positioning").
 2. **Resume destination URL.** No resume URL has been confirmed. Do not invent one. Must be resolved before resume CTAs are wired (before Phase 13 content integration).
-3. **Portrait approval (HOME resolved, ABOUT open).** The portrait asset (`Yousef personal photo.jpeg`) is **approved for the Home hero** (DECISIONS #28). Whether/where the portrait also appears on ABOUT is a later-milestone decision — do not assume it applies elsewhere.
+3. **Portrait approval (HOME resolved, ABOUT open).** The portrait asset (`Yousef personal photo.jpeg`) is **approved for the Home hero** (DECISIONS #28). Whether/where the portrait also appears on ABOUT is a later-milestone decision — do not assume it applies elsewhere. **RESOLVED 2026-08-23** — portrait approved for ABOUT as a small static inline figure beside the opening statement (DECISIONS #48; PHASE 4C).
 4. **Inclusion of old-site-only provisional projects.** Ball Tracking Robot, Steganography Detector, standalone Breast Cancer AI repo, ML Projects collection, PotatoScan, SQL Projects — which (if any) are included is a pending user decision. Source still says "verify before including".
-5. **Military service presentation.** Whether the Armed Forces Engineering Authority role is a full experience entry or only "Military service completed" is a pending user decision.
-6. **Certifications presentation.** Which certifications to show and in what depth is an open presentation decision.
+5. **Military service presentation.** Whether the Armed Forces Engineering Authority role is a full experience entry or only "Military service completed" is a pending user decision. **RESOLVED 2026-08-23** — presented on ABOUT as narrative prose (not a timeline entry); EXPERIENCE inherits the ruling (DECISIONS #49; PHASE 4C).
+6. **Certifications presentation.** Which certifications to show and in what depth is an open presentation decision. **RESOLVED for ABOUT 2026-08-23** — contextual inline mentions woven into the trajectory narrative only, no standalone list/block on ABOUT (DECISIONS #50; PHASE 4C). Other pages decide their own depth per milestone.
 7. **Phone number display.** Whether/how the phone number appears on CONTACT is a presentation detail to confirm.
 8. **WORK filtering/category strategy.** Considered, not decided — decide deliberately in Phase 4 if retained.
 9. **Contact mechanism beyond direct links.** Optional booking/contact mechanism is considered but not decided; no backend/CMS/form infrastructure is approved.
