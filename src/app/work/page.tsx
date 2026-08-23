@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { QuietLink } from "@/components/ui/QuietLink";
 import { DemoVideo } from "@/components/work/DemoVideo";
+import { WorkHero } from "@/components/work/WorkHero";
 import { projectDetails } from "@/content/projects";
 
 export const metadata: Metadata = {
@@ -34,32 +35,13 @@ export default function WorkPage() {
 
   return (
     <>
-      {/* Page header */}
-      <section className="mx-auto max-w-6xl px-5 pt-36 sm:px-8 sm:pt-44">
-        <div className="border-t border-line pt-4">
-          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">Work</span>
-        </div>
-        <div className="mt-14 flex flex-col gap-10 sm:mt-20 lg:flex-row lg:items-end lg:justify-between">
-          <h1 className="font-display text-6xl leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl">
-            Work<span className="text-champagne">.</span>
-          </h1>
-          <p className="font-mono text-[11px] uppercase leading-loose tracking-[0.22em] text-muted lg:text-right">
-            07 projects · 07 pages
-            <br />
-            2023 — 2026
-          </p>
-        </div>
-        <p className="mt-8 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-          Machine learning, computer vision, LLM systems, data engineering, and one live SaaS product —
-          every entry opens into its own project page.
-        </p>
-      </section>
+      <WorkHero />
 
       {/* ─── Flagship · Movenue, full-width composition ─── */}
       {flagship ? (
         <Reveal>
           <section aria-label={`${flagship.name} — flagship build`} className="mx-auto mt-24 max-w-6xl px-5 sm:mt-32 sm:px-8">
-            <div className="border-t border-line pt-4">
+            <div className="border-t border-line">
               <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4 pt-6 sm:pt-8">
                 <h2 className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
                   <span aria-hidden="true" className="font-mono text-xs text-champagne-strong">01</span>
@@ -193,7 +175,9 @@ export default function WorkPage() {
                     {project.kind}
                   </p>
 
-                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted sm:mt-4">
+                  {/* Summary is a desktop-only density affordance — half-width
+                      mobile cards stay compact (title/status/tags/date only) */}
+                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted hidden lg:block sm:mt-4">
                     {project.summary}
                   </p>
 

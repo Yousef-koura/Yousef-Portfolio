@@ -1,6 +1,8 @@
 "use client";
 
+import { Fragment } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { MaskedLineReveal } from "@/components/ui/MaskedLineReveal";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { QuietLink } from "@/components/ui/QuietLink";
 import { PortraitObject } from "@/components/home/PortraitObject";
@@ -15,17 +17,6 @@ const container = {
 const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const } },
-};
-
-/* Masked editorial line reveal — each name line rises out of its own clip */
-const lineWrap = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
-};
-
-const line = {
-  hidden: { y: "112%" },
-  show: { y: "0%", transition: { duration: 1.05, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export function Hero() {
@@ -54,23 +45,16 @@ export function Hero() {
           animate="show"
           className="hero-identity"
         >
-          <motion.h1
-            variants={lineWrap}
-            initial={reduce ? false : "hidden"}
-            animate="show"
-            className="hero-name font-display leading-[0.92] tracking-tight text-ink"
-          >
-            <span className="block overflow-hidden pb-[0.07em] -mb-[0.07em]">
-              <motion.span variants={line} className="block">
-                Yousef
-              </motion.span>
-            </span>
-            <span className="block overflow-hidden pb-[0.07em] -mb-[0.07em]">
-              <motion.span variants={line} className="block text-champagne">
-                Koura
-              </motion.span>
-            </span>
-          </motion.h1>
+          <h1 className="hero-name font-display leading-[0.92] tracking-tight text-ink">
+            <MaskedLineReveal
+              lines={[
+                <Fragment key="line-1">Yousef</Fragment>,
+                <Fragment key="line-2">
+                  <span className="text-champagne">Koura</span>
+                </Fragment>,
+              ]}
+            />
+          </h1>
 
           <motion.p variants={item} className="mt-6 font-display text-xl tracking-tight text-ink sm:text-2xl lg:text-[1.65rem]">
             Machine Learning Engineer
