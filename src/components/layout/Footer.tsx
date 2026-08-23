@@ -25,7 +25,7 @@ export function Footer() {
   return (
     <footer className="border-t border-line">
       <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="grid gap-14 sm:gap-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-12">
           <div>
             <p className="flex items-center gap-2.5 font-display text-2xl tracking-tight text-ink">
               <span aria-hidden="true" className="inline-block h-2 w-2 bg-champagne" />

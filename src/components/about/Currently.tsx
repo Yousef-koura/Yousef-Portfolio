@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { QuietLink } from "@/components/ui/QuietLink";
 import { SectionFrame } from "@/components/ui/SectionFrame";
 import { site } from "@/content/site";
 
@@ -8,13 +9,16 @@ type NowEntry = {
   period: string;
   caption: string;
   prose: React.ReactNode;
+  /** Quiet mono link under the entry (e.g. "Building →" for Movenue) */
+  link?: { href: string; label: string };
 };
 
 /**
  * NOW — chapter 05. The present tense, as one connected pair rather than two
  * separate entries: FlyRank (systems learning from data) and Movenue
  * (products learning from people). Mobile links them with a spine; sm+ sets
- * them as mirrored columns divided by a shared hairline.
+ * them as mirrored columns divided by a shared hairline. Movenue carries a
+ * "building" link — it's the thing being actively built.
  */
 const ENTRIES: NowEntry[] = [
   {
@@ -29,6 +33,7 @@ const ENTRIES: NowEntry[] = [
     role: "Founder & Developer",
     period: "Jun 2026 — Present",
     caption: "teaching me how products learn from people",
+    link: { href: site.movenue, label: "Building" },
     prose: (
       <>
         Building a SaaS product for sports venues and players in Egypt — court management, booking, owner analytics.
@@ -74,7 +79,10 @@ export function Currently() {
             <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.2em] text-champagne-strong">{entry.role}</p>
             <time className="mt-1 block font-mono text-[11px] tracking-[0.16em] text-muted">{entry.period}</time>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-muted/90 sm:text-base">{entry.prose}</p>
-            <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.18em] text-muted/60">{entry.caption}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+              <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-muted/60">{entry.caption}</p>
+              {entry.link ? <QuietLink href={entry.link.href} external>{entry.link.label}</QuietLink> : null}
+            </div>
           </Reveal>
         ))}
       </div>

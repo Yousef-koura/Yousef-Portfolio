@@ -44,11 +44,38 @@ export function QuestionPath() {
   const arrowRef = useRef<HTMLSpanElement | null>(null);
   const pathRef = useRef<HTMLDivElement | null>(null);
   const fillRef = useRef<HTMLSpanElement | null>(null);
+  /* Mobile scrub targets (opacity only — zero layout impact) */
+  const mQuestionsRef = useRef<HTMLDivElement | null>(null);
+  const mq1Ref = useRef<HTMLDivElement | null>(null);
+  const mq2Ref = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const mm = gsap.matchMedia();
+
+    /* Mobile/tablet — the question swap as a quiet scroll-linked beat:
+       first question dims slightly while the second comes forward.
+       Opacity-only, scrubbed inside the block's own bounds — no pinning,
+       no transforms that could shift neighbouring sections. */
+    mm.add("(max-width: 1023px)", () => {
+      const wrap = mQuestionsRef.current;
+      const q1 = mq1Ref.current;
+      const q2 = mq2Ref.current;
+      if (!wrap || !q1 || !q2) return;
+
+      const tween = gsap
+        .timeline({
+          scrollTrigger: { trigger: wrap, start: "top 70%", end: "top 20%", scrub: true },
+        })
+        .to(q1, { opacity: 0.55, ease: "none", duration: 0.6 }, 0)
+        .fromTo(q2, { opacity: 0.8 }, { opacity: 1, ease: "none", duration: 0.6 }, 0);
+
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      };
+    });
 
     /* Desktop only — everything else keeps the stacked rendering. */
     mm.add("(min-width: 1024px)", () => {
@@ -134,7 +161,7 @@ export function QuestionPath() {
   };
 
   return (
-    <section id="the-path" className="scroll-mt-24 overflow-x-clip py-16 sm:py-20">
+    <section id="the-path" className="scroll-mt-24 overflow-x-clip py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         {/* Chapter mark */}
         <div className="flex items-baseline justify-between gap-4 border-t border-line pt-4">
@@ -146,10 +173,12 @@ export function QuestionPath() {
           </span>
         </div>
 
-        {/* ── Mobile / tablet / reduced-motion / no-JS: quiet vertical story ── */}
-        <div className="mt-14 lg:hidden">
+        {/* ── Mobile / tablet / reduced-motion / no-JS: quiet vertical story ──
+               Extra whitespace here is intentional — this is the page's
+               visual center; it breathes more than surrounding sections. */}
+        <div ref={mQuestionsRef} className="mt-16 lg:hidden">
           <Reveal>
-            <div className="text-center">
+            <div ref={mq1Ref} className="text-center">
               <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-muted/70">
                 Mechatronics → Robotics
               </p>
@@ -162,13 +191,13 @@ export function QuestionPath() {
           </Reveal>
 
           <Reveal y={10}>
-            <p aria-hidden="true" className="my-7 text-center text-champagne">
+            <p aria-hidden="true" className="my-9 text-center text-champagne">
               <ArrowDown size={18} strokeWidth={1.5} />
             </p>
           </Reveal>
 
           <Reveal>
-            <div className="text-center">
+            <div ref={mq2Ref} className="text-center">
               <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-champagne-strong">
                 Machine Learning
               </p>
@@ -180,22 +209,25 @@ export function QuestionPath() {
             </div>
           </Reveal>
 
+          {/* Wayfinding sentinel — end of "the shift" beat (mobile tree) */}
+          <span id="the-shift" aria-hidden="true" className="block" />
+
           {/* The path — simple numbered progression, subtle per-stage reveals */}
-          <ol className="relative mt-14 flex flex-col gap-9 before:absolute before:left-[5px] before:top-3 before:bottom-3 before:w-px before:bg-line before:content-['']">
+          <ol className="relative mt-16 flex flex-col gap-8 before:absolute before:left-[5px] before:top-3 before:bottom-3 before:w-px before:bg-line before:content-['']">
             {STAGES.map((stage) => (
               <li key={stage.num} className="relative pl-8">
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-[5px] flex h-[11px] w-[11px] items-center justify-center rounded-full border border-champagne/50 bg-obsidian"
+                  className="absolute left-0 top-[7px] flex h-[11px] w-[11px] items-center justify-center rounded-full border border-champagne/50 bg-obsidian"
                 >
                   <span className="h-[4px] w-[4px] rounded-full bg-champagne/80" />
                 </span>
                 <Reveal y={14}>
                   <div className="flex items-baseline gap-4">
                     <span className="font-mono text-[10px] tracking-[0.22em] text-champagne-strong">{stage.num}</span>
-                    <h3 className="font-display text-xl tracking-tight text-ink sm:text-2xl">{stage.name}</h3>
+                    <h3 className="font-display text-2xl tracking-tight text-ink sm:text-3xl">{stage.name}</h3>
                   </div>
-                  <p className="mt-1 pl-[2.05rem] font-mono text-[10px] uppercase tracking-[0.18em] text-muted/80">
+                  <p className="mt-1.5 pl-[2.05rem] font-mono text-[10px] uppercase tracking-[0.18em] text-muted/80">
                     {stage.caption}
                   </p>
                 </Reveal>
@@ -203,6 +235,9 @@ export function QuestionPath() {
             ))}
           </ol>
         </div>
+
+        {/* Wayfinding sentinel — scene entry on desktop */}
+        <span id="the-shift-lg" aria-hidden="true" className="hidden lg:block" />
 
         {/* ── Desktop: one controlled sticky scene ──
                Explicit canvas on the container, ONE pinned child inside it;
@@ -294,7 +329,7 @@ export function QuestionPath() {
 
         {/* Closing narrative — shared, normal flow after the story */}
         <Reveal delay={0.05}>
-          <p className="mt-14 max-w-2xl text-base leading-relaxed text-muted sm:text-lg lg:mt-16">
+          <p className="mt-16 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
             It starts with physical machines: a mechatronics degree, robots, control systems you can hold. Robotics
             keeps raising questions about intelligence — perception, data, decisions — and chasing those questions
             turned machine learning into the craft. Military service came after university; ML engineering and product

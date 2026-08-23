@@ -114,7 +114,7 @@ export function AboutHero() {
               <Eyebrow>About.</Eyebrow>
             </motion.div>
 
-            <h1 className="relative z-10 mt-7 font-display text-[1.75rem] leading-[1.08] tracking-tight text-ink sm:text-5xl sm:leading-[1.03] lg:text-6xl">
+            <h1 className="relative z-10 mt-6 font-display text-[1.75rem] leading-[1.08] tracking-tight text-ink sm:text-5xl sm:leading-[1.03] lg:mt-7 lg:text-6xl">
               <MaskedLineReveal lines={HEADLINE_LINES} />
             </h1>
 
@@ -132,10 +132,10 @@ export function AboutHero() {
               </figcaption>
             </motion.figure>
 
-            <motion.p variants={item} className="mt-8 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+            <motion.p variants={item} className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg lg:mt-8">
               I&apos;m from Menoufia, Egypt, with a mechatronics engineering foundation — years spent around robots,
-              sensors, and control systems. What pulled me toward machine learning was the part of those systems that
-              decides: how software perceives, learns, and acts.
+              sensors, and control systems. Machine learning pulled me toward the part that decides: how software
+              perceives, learns, and acts.
             </motion.p>
 
             <motion.p variants={item} className="mt-5 max-w-xl text-base leading-relaxed text-muted/90">

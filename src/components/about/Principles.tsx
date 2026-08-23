@@ -15,19 +15,19 @@ const PRINCIPLES = [
     num: "01",
     word: "Understand",
     topic: "Machine Learning",
-    prose: "Models and systems that turn data into useful decisions — built and benchmarked honestly, not demoed.",
+    prose: "Models and systems that turn data into useful decisions — benchmarked honestly, not demoed.",
   },
   {
     num: "02",
     word: "Build",
     topic: "Products",
-    prose: "Turning technical ideas into things people can actually use — shipped, live, and maintained.",
+    prose: "Taking technical ideas all the way to something people can use — shipped, live, maintained.",
   },
   {
     num: "03",
     word: "Connect",
     topic: "Systems",
-    prose: "The mechatronics instinct: think end to end — sensor to deployment — across software, automation, AI, and real-world hardware.",
+    prose: "Thinking from physical systems to software, models, and deployment — sensor to product.",
   },
 ] as const;
 

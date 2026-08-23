@@ -7,7 +7,7 @@ import { site } from "@/content/site";
 
 const storyWrap: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.16 } },
+  show: { transition: { staggerChildren: 0.14 } },
 };
 
 const line: Variants = {
@@ -16,15 +16,15 @@ const line: Variants = {
 };
 
 /**
- * FULL CIRCLE — the emotional close. Three statements land in sequence
- * (scroll-triggered, once), the last one carrying the page's exit line,
- * then the existing CTA cluster. Restrained; no new claims.
+ * FULL CIRCLE — the close. One confident statement, one supporting line,
+ * then the CTA cluster. More breathing room than the sections above —
+ * this is the ending, not another chapter. No new claims.
  */
 export function FinalNote() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="about-final" aria-label="Full circle" className="scroll-mt-24 pb-24 pt-16 sm:pb-28 sm:pt-20">
+    <section id="about-final" aria-label="Full circle" className="scroll-mt-24 pb-24 pt-24 sm:pb-28 sm:pt-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="flex items-baseline justify-between gap-4 border-t border-line pt-4">
           <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">Full circle</span>
@@ -39,16 +39,15 @@ export function FinalNote() {
           whileInView="show"
           viewport={{ once: true, margin: "-18% 0px" }}
         >
-          <motion.p variants={line} className="mt-12 font-display text-xl tracking-tight text-muted sm:text-2xl">
-            I can tell you where I started.
-          </motion.p>
-          <motion.p variants={line} className="mt-3 font-display text-xl tracking-tight text-muted sm:text-2xl">
-            I can show you what I&apos;ve built.
-          </motion.p>
-
-          <motion.h2 variants={line} className="mt-8 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-6xl">
-            The rest is better in person<span className="text-champagne">.</span>
+          <motion.h2 variants={line} className="mt-16 font-display text-4xl leading-[1.06] tracking-tight text-ink sm:text-6xl sm:leading-[1.04]">
+            The rest is
+            <br />
+            better in person<span className="text-champagne">.</span>
           </motion.h2>
+
+          <motion.p variants={line} className="mt-6 max-w-md text-base leading-relaxed text-muted sm:text-lg">
+            Find me on LinkedIn or GitHub, or head straight to the work.
+          </motion.p>
 
           <motion.div variants={line} className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
             <ButtonLink href="/contact" variant="primary">
