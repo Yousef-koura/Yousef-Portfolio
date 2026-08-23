@@ -102,9 +102,15 @@ Status labels:
 
 ## Available assets
 
-- **CONFIRMED** — `projects&certificate_images/` contains: `Agribot.png`, `breast cancer.jpg`, `dhub certificate.png`, `FMCG dashboard.png`, `ITI MLAl Certificate .png`, `iugrc publication certificate.png`, `personal_rag_assistant.png`, `piopetro certificate.png`, `movenue.png`, `Yousef personal photo 2.jpeg`, `Yousef personal photo.png`, `personal image desktop.jpg`, `personal image mobile.jpg`.
-- **CONFIRMED** — Portrait (raw assets in `projects&certificate_images/`): `Yousef personal photo 2.jpeg` (1024×1024) and `Yousef personal photo.png` (1024×1024), plus user-supplied background-removed exports `personal image desktop.jpg` and `personal image mobile.jpg`. The site uses the transparent PNG pair in `public/portrait/` — `personal-image-desktop.png` (365×684, ≥761px viewports) and `personal-image-mobile.png` (394×634, below) — **approved for and used in the Home opening**, presented as clean cutouts at native aspect ratio via `<picture>` art direction with a one-time load reveal (see DECISIONS #28–34; `yousef-portrait.jpeg` is removed). Portrait use on ABOUT remains a later-milestone decision.
-- **MISSING** — Favicon / logo mark / brand assets (expected to be designed in Phase 3).
+*(Reorganized 2026-08-23 — asset audit: byte-duplicates of in-use `public/` files removed from the raw folder; future-phase certificates relocated to `public/certificates/`; raw sources preserved. See ROADMAP.md Phase 13 prep entry.)*
+
+- **CONFIRMED** — Served project images live in `public/projects/` and are referenced from `src/content/projects.ts` and the Home portal archive: `agribot.png`, `rag-assistant.png`, `fmcg-dashboard.png`, `movenue.png` (718×618 crop), `iugrc-certificate.png`.
+- **CONFIRMED** — Raw-source archive retained in `projects&certificate_images/`: `Yousef personal photo.png` (1024×1024 raw portrait source; DECISIONS #34) and `movenue.png` (1898×848 full-page capture of the live Movenue site — the sole full-res source of the served `movenue.png` crop; not a duplicate). Do not delete or move these.
+- **CONFIRMED** — Certificate images for the future Certifications/Experience presentation (Phase 11) relocated to `public/certificates/`: `iti-mlal-certificate.png`, `piopetro-certificate.png`, `dhub-certificate.png`. Not yet referenced in code.
+- **AWAITING USER DECISION** — Unreferenced, undocumented candidates flagged by the 2026-08-23 audit (still in `projects&certificate_images/`): `breast cancer.jpg` (illustration tied to the excluded Breast Cancer AI project, DECISIONS #42) and `logo - white.png` / `logo - black.jpeg` (possible Phase 5 brand inputs; differ from the `logo-wordmark*.png` pair actually used).
+- **CONFIRMED** — Portrait: the site uses the transparent PNG pair in `public/portrait/` — `personal-image-desktop.png` (365×684, ≥761px viewports) and `personal-image-mobile.png` (394×634, below) — **approved for and used in the Home opening**, presented as clean cutouts at native aspect ratio via `<picture>` art direction with a one-time load reveal (see DECISIONS #28–34). The previously-listed raw exports (`Yousef personal photo 2.jpeg`, `personal image desktop.jpg`, `personal image mobile.jpg`) no longer exist anywhere in the repo. Portrait use on ABOUT remains a later-milestone decision.
+- **CONFIRMED** — Demo media in `public/videos/`: three encoded MP4s + poster stills in active use (`agribot-demo.mp4`, `rag-chatbot-demo.mp4`, `fmcg-pipeline-demo.mp4`) and their source AVI captures, intentionally retained on disk per DECISIONS #44(c). Voice intro at `public/audio/intro voice.mp3`.
+- **MISSING** — Favicon / logo mark / brand assets (expected in Phase 5 Brand System; two candidate raw logo files flagged above).
 
 ---
 

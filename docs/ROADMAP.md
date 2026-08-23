@@ -331,6 +331,12 @@ Update (2026-08-23, fix pass — user visual review, see DECISIONS #45):
 - Mobile grid: ALL PROJECTS renders 2 columns from the smallest breakpoint (`grid-cols-2 gap-4`, `lg:grid-cols-3` unchanged); half-width reflow kept within the existing type scale (card padding `p-4 sm:p-7`, titles `text-base sm:text-2xl`, meta line `text-[10px] sm:text-[11px]`; summary keeps its designed `line-clamp-3` ellipsis).
 - Verified: production build clean, `tsc --noEmit` + ESLint clean; headless suite 30/30 against the production server — fresh loads mount zero `<video>` elements across `/work` + all three video-bearing detail routes (nothing plays until clicked); trusted-pointer click starts playback with `muted=false volume=1` and advancing currentTime; pause holds its frame; resume works; close restores poster and returns focus to the play control; keyboard Enter starts playback; tile players play in place without navigating; stretched title links still navigate; 2-column grid confirmed at 375/390/430 with zero horizontal overflow and zero clipped text nodes; flagship measured 896px centered at 1440 and full content column at 375; computed border-radius 16px on all seven card surfaces; Home h1/header/footer regression clean; zero console/page errors. Full-page screenshots captured at 375/820/1440 for manual review (agent image read-back unavailable in this session). Final visual sign-off manual by user.
 
+Update (2026-08-23, second visual-review fix pass — top-of-page hairline rhythm, redundant kicker removal, mobile card density — user-directed):
+- Top-of-page hairline audit (computed-style, production build): the page-top frame itself was already convention-exact (`border-t border-line` = 1px solid `#2A2C30`, `pt-4`, mono label — byte-identical construction to the ALL PROJECTS frame); the inconsistent rule near the top was the **flagship Movenue frame** — its label-slot `pt-4` sat EMPTY (no mono label, unlike every other hairline on the site) AND stacked with the heading row's own `pt-6 sm:pt-8`, producing 40–48px of dead space between rule and content vs the ~24px rule→label rhythm elsewhere. Fixed by removing the empty outer `pt-4` so the row's single `pt-6 sm:pt-8` is the one designed padding (matches the detail-template `border-t … pt-8` rhythm); rule y-position unchanged; no label copy invented. Lower hairlines (flagship bottom strip, ALL PROJECTS, card thumbs, contact rule) untouched.
+- Redundant "WORK" kicker above the H1 removed (page identity carried by the nav's active state + H1 alone); the bare single top rule stays as the header frame; heading gap retuned `mt-14 sm:mt-20` → `mt-16 sm:mt-20` so the post-removal spacing lands exactly on SectionFrame's rule→title rhythm (desktop 80px unchanged; mobile 56→64px compensates the vanished label line).
+- Mobile-only density fix on ALL PROJECTS tiles: the one-line summary paragraph is hidden below `lg` via `hidden lg:block` (responsive utility over conditional render — pure CSS, SSR-stable, no hydration shift); title, status chip, kind/domain tags line, and timeframe/metric row all kept; desktop cards render the description unchanged (`line-clamp-3`). Measured card height drops ~80px at 375/390/430 (e.g. Agri-Bot 358→278px).
+- Verified: production build clean, `tsc --noEmit` + ESLint clean; headless suite 36/36 against the production server — kicker absent at 375/390/430/1440, top rule position/color byte-stable (y=144 mobile / y=176 desktop), flagship frame padding 0px + inner 24/32px, summaries `display:none h=0` at all three mobile widths and `display:block clamp-3` at 1440, radius 16px + status/kind/date rows intact on all six tiles, zero `<video>` mounts on load, flagship capture still 896px centered, ALL PROJECTS frame untouched, `/work/movenue` detail + Home portal regression clean, zero horizontal overflow. Screenshots captured for manual review (agent image read-back unavailable in this session). Final visual sign-off manual by user.
+
 Open / unresolved:
 - PneumoScan data anomalies ("85.1–85%" figure, dual-date timeframe) — user correction requested, rendered verbatim meanwhile.
 - Final visual sign-off of this page by the user.
@@ -521,7 +527,7 @@ Polished interaction system.
 ---
 
 ## PHASE 13 — CONTENT + ASSET INTEGRATION
-**Status: NOT STARTED**
+**Status: NOT STARTED** (asset-organization prep completed 2026-08-23 — see log below)
 
 Tasks:
 - final copy
@@ -538,6 +544,9 @@ Rules:
 - never invent metrics
 - never present AI-generated imagery as project evidence
 - optimize all media
+
+Log:
+- **Asset audit + reorganization (2026-08-23, prep for this phase):** `projects&certificate_images/` audited file-by-file against code references, CONTENT.md, and DECISIONS #34. (a) Four byte-identical duplicates of actively-served `public/` images removed from the raw folder only (`Agribot.png`, `FMCG dashboard.png`, `personal_rag_assistant.png`, `iugrc publication certificate.png` — SHA-256 verified identical to their `public/projects/` counterparts, which remain in use). (b) Raw sources preserved untouched: `Yousef personal photo.png` (DECISIONS #34 archive; hash-verified unchanged) and `movenue.png` — discovered NOT to be a duplicate: 1898×848 full-page live-site capture vs the 718×618 different crop served in production; retained as the sole full-res source (documentation gap flagged for a future decision entry). (c) Three future-phase certificate images relocated to new `public/certificates/`: `iti-mlal-certificate.png`, `piopetro-certificate.png`, `dhub-certificate.png` (git mv, content untouched; not yet referenced in code — ready for Phase 11). (d) Two orphan candidates flagged and left in place awaiting explicit user decision (NOT deleted): `breast cancer.jpg` (tied to the excluded Breast Cancer AI project, DECISIONS #42) and `logo - white.png` / `logo - black.jpeg` (possible Phase 5 brand inputs; differ from the used `logo-wordmark*.png` pair). CONTENT.md "Available assets" rewritten to match reality (it previously listed three portrait files that no longer exist anywhere). Verified: all 20+ asset paths referenced from `src/` resolve under `public/`; production build (16 static/SSG routes), `tsc --noEmit`, ESLint all clean.
 
 Deliverable:
 Complete content-integrated portfolio.
