@@ -3,7 +3,6 @@
 import { Fragment } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { QuietLink } from "@/components/ui/QuietLink";
 import { MaskedLineReveal } from "@/components/ui/MaskedLineReveal";
 import { publication } from "@/content/experience";
 
@@ -24,10 +23,11 @@ const item = {
  * PUBLICATIONS hero — the WorkHero/ExperienceHero identity pattern applied to
  * the paper: kicker → masked display title (the short name carries the
  * Work-scale display weight; the full formal title continues beneath it so
- * the exact wording survives every viewport) → mono metadata column →
- * supporting line. The confirmed metadata dl + action row ride the same
- * stagger so the whole opening reads as one choreography. Reduce-gated
- * throughout.
+ * the exact wording survives every viewport, subordinate to the name) →
+ * supporting line. No right-side metadata column: type/venue/date all live in
+ * the confirmed <dl> below, and duplicating them beside the title read as
+ * filler rather than composition. The dl + action row ride the same stagger
+ * so the whole opening reads as one choreography. Reduce-gated throughout.
  */
 export function PublicationHero() {
   const reduce = useReducedMotion();
@@ -45,7 +45,7 @@ export function PublicationHero() {
       </motion.p>
 
       <motion.div variants={settleWrap} initial={reduce ? false : "hidden"} animate="show">
-        <div className="mt-8 flex flex-col gap-10 sm:mt-10 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mt-8 sm:mt-10">
           <h1 className="font-display text-6xl leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-9xl">
             <MaskedLineReveal
               lines={[
@@ -61,16 +61,6 @@ export function PublicationHero() {
               ]}
             />
           </h1>
-          <motion.p
-            variants={item}
-            className="shrink-0 font-mono text-[11px] uppercase leading-loose tracking-[0.22em] text-muted lg:text-right"
-          >
-            {publication.type}
-            <br />
-            IUGRC 8 · Cairo
-            <br />
-            {publication.date}
-          </motion.p>
         </div>
 
         <motion.p variants={item} className="mt-8 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
@@ -78,10 +68,13 @@ export function PublicationHero() {
           medication — bringing deep learning to greenhouse farming on embedded hardware.
         </motion.p>
 
-        {/* Confirmed metadata — the Work detail page's dl grammar */}
+        {/* Confirmed metadata — the Work detail page's dl grammar. Authors +
+            Venue carry the scan (ink); Location/Date/Type stay quiet so the
+            eye lands on who and where-published first. Extra mobile row gap
+            lets the five fields breathe without cards or borders. */}
         <motion.dl
           variants={item}
-          className="mt-12 grid gap-x-10 gap-y-8 border-t border-line pt-8 sm:grid-cols-2 md:grid-cols-3"
+          className="mt-12 grid gap-x-10 gap-y-10 border-t border-line pt-8 sm:grid-cols-2 sm:gap-y-8 md:grid-cols-3"
         >
           <div>
             <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">Authors</dt>
@@ -98,22 +91,23 @@ export function PublicationHero() {
           </div>
           <div>
             <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">Location</dt>
-            <dd className="mt-2 text-sm leading-relaxed text-ink">{publication.location}</dd>
+            <dd className="mt-2 text-sm leading-relaxed text-muted">{publication.location}</dd>
           </div>
           <div>
             <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">Date</dt>
-            <dd className="mt-2 text-sm leading-relaxed text-ink">{publication.date}</dd>
+            <dd className="mt-2 text-sm leading-relaxed text-muted">{publication.date}</dd>
           </div>
           <div>
             <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted">Type</dt>
-            <dd className="mt-2 inline-flex items-center gap-2 text-sm text-ink">
+            <dd className="mt-2 inline-flex items-center gap-2 text-sm text-muted">
               <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-champagne" />
               <span className="capitalize">{publication.type}</span>
             </dd>
           </div>
         </motion.dl>
 
-        {/* Actions — hierarchy: read (primary) → download (ghost) → related project (quiet) */}
+        {/* Actions — exactly two exits; the paper is the whole journey here
+            (Agri-Bot's link lives in Context, where the connection is told) */}
         <motion.div
           variants={item}
           className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:gap-y-4"
@@ -124,9 +118,6 @@ export function PublicationHero() {
           <ButtonLink href={publication.pdfHref} variant="ghost" external download>
             Download PDF
           </ButtonLink>
-          <QuietLink href="/work/agri-bot" className="py-3 sm:py-1">
-            Built from Agri-Bot
-          </QuietLink>
         </motion.div>
       </motion.div>
     </section>

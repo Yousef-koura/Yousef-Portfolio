@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ArrowDown } from "lucide-react";
 import { PublicationHero } from "@/components/publications/PublicationHero";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { QuietLink } from "@/components/ui/QuietLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealImage } from "@/components/ui/RevealImage";
-import { site } from "@/content/site";
 import { publication } from "@/content/experience";
 
 export const metadata: Metadata = {
@@ -44,7 +44,7 @@ export default function PublicationsPage() {
     <>
       <PublicationHero />
 
-      {/* ─── 01 · Abstract — curated to three sentences from the paper's own ─── */}
+      {/* ─── 01 · Abstract — curated to two short paragraphs from the paper's ─── */}
       <Reveal>
         <section
           aria-labelledby="pub-abstract"
@@ -53,18 +53,15 @@ export default function PublicationsPage() {
           <SectionHeading id="pub-abstract" index="01" title="Abstract" />
           <div className="max-w-2xl space-y-5">
             <p className="text-sm leading-relaxed text-muted sm:text-base">
-              AgRobot is an advanced inspection robot equipped with deep learning to autonomously detect
-              plant diseases — a response to the yield threat infections pose to agriculture and food
-              security.
+              AgRobot is an inspection robot that uses deep learning to autonomously detect plant
+              diseases and recommend their medication — a response to the yield threat infections
+              pose to agriculture and food security.
             </p>
             <p className="text-sm leading-relaxed text-muted sm:text-base">
-              An NVIDIA Jetson Nano runs the perception pipeline: YOLOv8 locates leaves, MobileNetV2
-              classifies the disease, and a fuzzy-PID controller delivers the most stable navigation of
-              the control strategies explored.
-            </p>
-            <p className="text-sm leading-relaxed text-muted sm:text-base">
-              The system reached an average detection accuracy of 96% at 20 frames per second on the
-              embedded hardware.
+              An NVIDIA Jetson Nano runs the perception pipeline — YOLOv8 locates leaves,
+              MobileNetV2 classifies the disease, and a fuzzy-PID controller delivers the most
+              stable navigation of the control strategies explored — reaching 96% average detection
+              accuracy at 20 frames per second on the embedded hardware.
             </p>
           </div>
         </section>
@@ -80,7 +77,7 @@ export default function PublicationsPage() {
                   <p className="font-display text-5xl leading-none tracking-tight text-ink sm:text-6xl">
                     {metric.value}
                   </p>
-                  <p className="mt-3 font-mono text-[10px] uppercase leading-relaxed tracking-[0.22em] text-muted">
+                  <p className="mt-3 font-mono text-[11px] uppercase leading-relaxed tracking-[0.18em] text-muted">
                     {metric.label}
                   </p>
                 </div>
@@ -104,7 +101,7 @@ export default function PublicationsPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open the full AgRobot paper (PDF)"
-                className="group/plate block w-full max-w-2xl"
+                className="group/plate block w-full max-w-3xl"
               >
                 <figure className="paper-plate border border-line bg-surface p-2 sm:p-3">
                   <div className="overflow-hidden border border-line">
@@ -113,7 +110,7 @@ export default function PublicationsPage() {
                       alt={publication.preview.alt}
                       width={publication.preview.width}
                       height={publication.preview.height}
-                      sizes="(min-width: 1024px) 672px, calc(100vw - 2.5rem)"
+                      sizes="(min-width: 1152px) 736px, calc(100vw - 2.5rem)"
                       className="h-auto w-full transition-transform duration-700 group-hover/plate:scale-[1.015]"
                     />
                   </div>
@@ -146,10 +143,26 @@ export default function PublicationsPage() {
         >
           <SectionHeading id="pub-context" index="03" title="Context" />
           <div className="max-w-2xl">
-            <p className="text-sm leading-relaxed text-muted sm:text-base">
-              AgRobot grew out of Agri-Bot, the Mechatronics graduation project — the same YOLOv8 and
-              MobileNetV2 pipeline on Jetson Nano hardware, documented here as formal research. The
-              paper was presented at IUGRC 8, held at the Military Technical College in Cairo.
+            {/* Lineage — the one story this section exists to tell, told in the
+                site's own grammar (display name over mono micro-label) with a
+                single champagne descent mark between the two artifacts */}
+            <div>
+              <p className="font-display text-xl tracking-tight text-ink">Agri-Bot</p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
+                Graduation project
+              </p>
+              <ArrowDown size={12} aria-hidden="true" className="my-5 ml-0.5 text-champagne-strong" />
+              <p className="font-display text-xl tracking-tight text-ink">
+                AgRobot<span className="text-champagne">.</span>
+              </p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted">
+                Research publication — IUGRC 8
+              </p>
+            </div>
+            <p className="mt-10 text-sm leading-relaxed text-muted sm:text-base">
+              The same YOLOv8 and MobileNetV2 pipeline on Jetson Nano hardware, carried from the
+              working build into formal research. The paper was presented at IUGRC 8, held at the
+              Military Technical College in Cairo.
             </p>
             <div className="mt-8 border-t border-line pt-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted/60">Keywords</p>
@@ -166,23 +179,25 @@ export default function PublicationsPage() {
         </section>
       </Reveal>
 
-      {/* Forward path — the page must not dead-end (WORK/EXPERIENCE closing pattern) */}
+      {/* Forward path — the page must not dead-end (WORK/EXPERIENCE closing pattern).
+          Approach tightened ~25% vs the Work page's rhythm so this reads as the
+          Context section's natural continuation rather than a new chapter.
+          Two exits only: contact (the confident close), paper (for arrivals here). */}
       <section aria-label="Contact" className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="mb-32 mt-28 border-t border-line pt-20 sm:mb-40 sm:mt-36 sm:pt-24">
-          <h2 className="font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl">
+        <div className="mb-32 mt-20 border-t border-line pt-14 sm:mb-40 sm:mt-28 sm:pt-20">
+          <h2 className="text-balance font-display text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl">
             Questions about the research are welcome<span className="text-champagne">.</span>
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-muted">
             Methods, metrics, or the build behind the paper — reach out directly for a deeper walkthrough.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <ButtonLink href="/contact" variant="ghost">
+            <ButtonLink href="/contact">
               Get in touch
             </ButtonLink>
-            <QuietLink href={`mailto:${site.email}`} external>
-              Email directly
+            <QuietLink href={publication.pdfHref} external>
+              Read the paper
             </QuietLink>
-            <QuietLink href="/work">See the work</QuietLink>
           </div>
         </div>
       </section>
