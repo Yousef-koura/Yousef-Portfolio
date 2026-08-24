@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Providers } from "@/components/layout/Providers";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { site, siteUrl } from "@/content/site";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -32,18 +34,35 @@ export const viewport: Viewport = {
   themeColor: "#0B0C0E",
 };
 
+/* metadataBase resolves every relative URL below (canonical, OG) against
+   siteUrl — the env-driven origin in src/content/site.ts. og:image and
+   twitter:image are injected by the opengraph-image file convention
+   (src/app/opengraph-image.tsx) and take precedence over config here. */
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Yousef Koura — Machine Learning Engineer",
     template: "%s — Yousef Koura",
   },
   description:
     "Junior Machine Learning Engineer with a Mechatronics Engineering background — computer vision, applied AI, and end-to-end data engineering. Currently building Movenue, a live SaaS court management and booking platform.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Yousef Koura — Machine Learning Engineer",
     description:
       "Junior Machine Learning Engineer with a Mechatronics Engineering background — computer vision, applied AI, and end-to-end data engineering. Currently building Movenue.",
+    url: "/",
+    siteName: site.name,
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yousef Koura — Machine Learning Engineer",
+    description:
+      "Junior Machine Learning Engineer with a Mechatronics Engineering background — computer vision, applied AI, and end-to-end data engineering. Currently building Movenue.",
   },
   robots: {
     index: true,
@@ -83,6 +102,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main id="main">{children}</main>
           <Footer />
         </Providers>
+        {/* Vercel Web Analytics — no cookies, page views only; the script
+            loads in production deployments and reports to the project's
+            Analytics tab (must also be enabled in the Vercel dashboard). */}
+        <Analytics />
       </body>
     </html>
   );

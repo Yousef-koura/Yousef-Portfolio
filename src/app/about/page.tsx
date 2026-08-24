@@ -6,12 +6,14 @@ import { FinalNote } from "@/components/about/FinalNote";
 import { Principles } from "@/components/about/Principles";
 import { QuestionPath } from "@/components/about/QuestionPath";
 import { StoryProgress } from "@/components/about/StoryProgress";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About",
   description:
     "Yousef Koura — machine learning engineer who started with machines. The path from mechatronics and robotics to ML systems and products: what shaped him, what he cares about, and what he's building now.",
-};
+  path: "/about",
+});
 
 /* ABOUT — one directed story in five chapters:
    WHO I AM (hero) → BEFORE THE CODE → THE QUESTION CHANGED / THE PATH

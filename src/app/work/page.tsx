@@ -8,12 +8,14 @@ import { QuietLink } from "@/components/ui/QuietLink";
 import { DemoVideo } from "@/components/work/DemoVideo";
 import { WorkHero } from "@/components/work/WorkHero";
 import { projectDetails } from "@/content/projects";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Work",
   description:
     "Seven real projects — machine learning, computer vision, LLM systems, data engineering, and a live SaaS platform. Every entry links to real repositories and running products.",
-};
+  path: "/work",
+});
 
 function StatusChip({ status }: { status: string }) {
   return (

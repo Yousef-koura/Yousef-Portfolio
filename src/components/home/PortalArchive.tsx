@@ -18,7 +18,7 @@ const common = {
 };
 
 const {
-  props: { srcSet: portraitDesktopSrcSet },
+  props: { srcSet: portraitDesktopSrcSet, src: portraitDesktopSrc },
 } = getImageProps({ ...common, src: "/portrait/personal-image-desktop.png", width: 365, height: 684 });
 
 const {
@@ -86,6 +86,30 @@ export function PortalArchive() {
   const revealProgress = reducedMotion ? 1 : progress;
   return (
     <div className="portal-home">
+      {/* LCP preloads (Week-7 mobile audit) — the hero portrait is the LCP
+          element; media-scoped responsive preloads let the browser start the
+          correct crop's fetch at discovery time instead of after CSS parse +
+          layout. Media attributes keep desktop from paying for the mobile
+          crop and vice versa (same selection as the <picture> below). React
+          hoists these into <head>. */}
+      <link
+        rel="preload"
+        as="image"
+        href={portraitMobileRest.src}
+        imageSrcSet={portraitMobileSrcSet}
+        imageSizes={common.sizes}
+        media="(max-width: 760px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href={portraitDesktopSrc}
+        imageSrcSet={portraitDesktopSrcSet}
+        imageSizes={common.sizes}
+        media="(min-width: 761px)"
+        fetchPriority="high"
+      />
       <section ref={heroRef} className="portal-hero" aria-label="Yousef Koura, machine learning engineer">
         <div className="portal-stage">
           <div className="portal-hero__glow" style={{ opacity: revealProgress * .7 }} />

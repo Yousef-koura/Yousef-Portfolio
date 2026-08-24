@@ -6,6 +6,7 @@ import {
   getProjectDetail,
   projectSlugs,
 } from "@/content/projects";
+import { pageMetadata } from "@/lib/seo";
 
 /**
  * WORK detail — PHASE 4B: every project gets a page. `generateStaticParams`
@@ -24,10 +25,11 @@ export async function generateMetadata({ params }: WorkDetailParams): Promise<Me
   const { slug } = await params;
   const detail = getProjectDetail(slug);
   if (!detail) return {};
-  return {
+  return pageMetadata({
     title: `${detail.name} — Work`,
     description: detail.summary,
-  };
+    path: `/work/${detail.slug}`,
+  });
 }
 
 export default async function WorkDetailPage({ params }: WorkDetailParams) {

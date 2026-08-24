@@ -4,12 +4,14 @@ import { ExperienceTimeline } from "@/components/experience/ExperienceTimeline";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { QuietLink } from "@/components/ui/QuietLink";
 import { site } from "@/content/site";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Experience",
   description:
     "The complete professional timeline — four machine learning and AI roles across enterprise AI, energy, and research, with what each role involved and the measured outcomes.",
-};
+  path: "/experience",
+});
 
 /**
  * EXPERIENCE — PHASE 11 milestone. Hero (shared WorkHero language) →

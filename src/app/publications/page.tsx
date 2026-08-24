@@ -7,12 +7,14 @@ import { QuietLink } from "@/components/ui/QuietLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealImage } from "@/components/ui/RevealImage";
 import { publication } from "@/content/experience";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Publications",
   description:
     "AgRobot — an AI-powered crop disease detection and medication recommendation robot. The IUGRC 8 conference paper by Yousef Koura and collaborators, presented at the Military Technical College, Cairo. Read the full paper.",
-};
+  path: "/publications",
+});
 
 /**
  * Indexed editorial section label — ProjectDetailPage's mono heading grammar

@@ -529,13 +529,13 @@ Complete WORK experience.
 ---
 
 ## PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT
-**Status: IN PROGRESS** (EXPERIENCE implemented 2026-08-24 — log below; PUBLICATIONS implemented 2026-08-24 — log below; ABOUT shipped earlier as the PHASE 4C milestone; Contact remains a placeholder)
+**Status: IN PROGRESS** (EXPERIENCE implemented 2026-08-24 — log below; PUBLICATIONS implemented 2026-08-24 — log below; CONTACT implemented 2026-08-25 — log below; ABOUT shipped earlier as the PHASE 4C milestone)
 
 Build:
 - About — shipped under PHASE 4C (sibling implementation milestone)
 - Experience — **implemented 2026-08-24 (log below; DECISIONS #53)**
 - Publications — **implemented 2026-08-24 (log below; DECISIONS #54)**
-- Contact — placeholder page (later milestone)
+- Contact — **implemented 2026-08-25 (log below; DECISIONS #55)**
 
 Integrate:
 - verified content
@@ -553,10 +553,12 @@ Log:
 Open / unresolved:
 - Final visual sign-off of the EXPERIENCE page by the user.
 - Final visual sign-off of the PUBLICATIONS page by the user.
-- Contact remains a placeholder page (later milestone in this phase).
+- ~~Contact remains a placeholder page (later milestone in this phase).~~ RESOLVED 2026-08-25 — CONTACT implemented (DECISIONS #55).
 - Resume destination URL remains open globally (no resume CTA on this page).
 
 - **PUBLICATIONS page implemented (2026-08-24; see DECISIONS #54):** `/publications` rewritten from the placeholder into an editorial presentation of the actual IUGRC 8 paper — `public/Publication/AgRobot_paper_09.pdf` was read directly (9-page IEEE-style paper; authors K. Yousef, M. Mohamed, G. Tarek — Modern Science and Arts University; 8th International Undergraduate Research Conference, Military Technical College, Cairo; Jul 27–Aug 1, 2024) and ONLY PDF-verified or CONTENT.md-CONFIRMED facts are rendered (no DOI/publisher/citation invented). Structure: hero in the shared WORK/EXPERIENCE-hero language (`PublicationHero.tsx` — kicker "IUGRC 8 · 2024", masked display title with champagne colon/period where the short name "AgRobot:" carries the Work-scale weight and the full formal title continues beneath at subtitle scale so the exact wording survives every viewport; mono metadata column; factual supporting line; confirmed metadata `<dl>` — authors+affiliation, venue, location, date "Jul 28, 2024", type — and action row riding the hero's stagger variants, reduce-gated) → 01 Abstract (curated to three sourced sentences; the page stays the presentation layer, the PDF the full document) → measured-results strip (96% avg accuracy / 20 FPS on Jetson Nano / 13 disease classes as editorial display numbers with hairline dividers, staggered `Reveal`) → 02 Publication (paper's first page rasterized once at prep time to `public/Publication/agrobot-paper-preview.png` [1224×1584] via a throwaway pdfjs+canvas script — NO runtime PDF dependency; `next/image` inside a bordered Surface-matted "paper plate" anchor linking into the PDF; `RevealImage` clip reveal; subtle 1.015 hover scale; light-mode figure/ground via a `.paper-plate` shadow rule in globals.css mirroring the certificate-matting precedent) → 03 Context (Agri-Bot graduation-project connection + confirmed keywords as quiet mono text + quiet link to `/work/agri-bot`) → WORK/EXPERIENCE closing forward path. PDF access: primary champagne `ButtonLink` "Read the paper" + ghost "Download PDF" (new ADDITIVE optional `download` prop on `ButtonLink`/`QuietLink` — backward-compatible) opening `/Publication/AgRobot_paper_09.pdf` in a new tab; no embedded viewer (iframe UX broken on iOS, 1.4MB eager payload, Lenis wheel conflicts). `publication` in `src/content/experience.ts` extended (authors/affiliation/location/type/pages/pdfHref/keywords/metrics/preview) with the original four fields byte-identical — Home's portal publication section verified unaffected. Mobile: in-page QuietLinks get `py-3 sm:py-1` for ≥40px tap targets. Verified: ESLint 0, `tsc --noEmit` 0, production build 16 routes; headless Edge matrix 58/58 (390/820/1440 × dark/light — zero horizontal overflow, preview decodes everywhere, full title in H1, all confirmed facts present, external/noopener/download attributes correct, zero console errors, both theme body colors correct); Home + `/work/agri-bot` smoke-checked unaffected.
+
+- **CONTACT page implemented (2026-08-25, user-directed milestone; see DECISIONS #55):** `/contact` rewritten from the Phase-4A placeholder into the portfolio's closing page — direct contact links ONLY (no form/backend/API/env vars per TECH_STACK.md; no phone display, no resume CTA — both remain open user decisions per PHASE3_UX §14). Structure: hero in the shared subpage grammar (`ContactHero.tsx` — "Contact." eyebrow, `MaskedLineReveal` display statement "Let's build something useful." with champagne period at a mobile-reduced display scale so the longer line survives 320px without mid-mask wrapping, confirmed roles supporting line, reduce-gated) → primary channel (`DirectEmail.tsx` — the page's single accent moment, adapting Home FinalCta's email treatment: mono "Start a conversation" lead-in reusing the Home portal phrase, oversized champagne mailto with hairline dash + ArrowUpRight, primary `ButtonLink` "Email me" pill; mobile hides the dash and the arrow flex-wraps below the address at ≤~340px so the mono string never overflows) → channels (`ContactChannels.tsx` — Publications-style hairline `<dl>` rows, mono label left / confirmed value right: email, LinkedIn, GitHub, location; brand marks copied verbatim from Footer's private local icons; footer link hover language; externals carry `_blank` + sr-only new-tab note) → quiet forward path (`ForwardPath.tsx` — compact `SectionFrame`, `QuietLink`s to /work + /experience so the page never dead-ends). All values trace to `src/content/site.ts`/CONTENT.md; tokens only, both themes verified. Verified: production build clean (`/contact` static), `tsc --noEmit`, ESLint clean; SSR assertions (title, 3× mailto, external targets, no placeholder copy); headless Chromium probe at 320/375/390/430/1440 — zero horizontal overflow, email fits at every width, animated final state opacity-1 at all widths, reduced-motion renders immediately, light-mode token flip correct; desktop + mobile screenshots reviewed. Known pre-existing (not introduced here): under emulated `prefers-reduced-motion` React logs a style-attribute hydration notice from the shared `initial={reduce ? false : "hidden"}` pattern used by Work/Experience/Publications/About heroes identically.
 
 ---
 
@@ -616,7 +618,7 @@ Complete content-integrated portfolio.
 ---
 
 ## PHASE 14 — QUALITY / ACCESSIBILITY / PERFORMANCE
-**Status: NOT STARTED**
+**Status: IN PROGRESS** (Week-7 "Break Your Own Site" audit hardening implemented 2026-08-25 — log below; DECISIONS #56)
 
 Validate:
 
@@ -666,6 +668,8 @@ CONTENT
 
 Deliverable:
 QA report and resolved issues.
+
+- **Week-7 "Break Your Own Site" audit hardening implemented (2026-08-25; see DECISIONS #56):** technical SEO (metadataBase, per-route canonical + og:url + Twitter via shared `src/lib/seo.ts` helper; verified robots.txt/sitemap.xml with the 13 honest production routes; share image = existing build-time `opengraph-image.tsx` PNG, re-declared per page because page-level `openGraph` replaces file-convention-injected og:image), custom branded 404 (`not-found.tsx` + `NotFoundHero` in the shared subpage grammar — replacing the default not-found also removes its injected unlayered body stylesheet, the root cause of the light-mode "black body" bug), and mobile LCP work (AVIF formats + media-scoped `fetchpriority=high` preloads of the hero portrait crops; local same-conditions mobile LCP 2.99s→2.28s, portrait transfer 14.7KB→7.6KB; live baseline 4.59s to be re-measured post-deploy). Verified: `tsc --noEmit` 0, ESLint 0, production build clean (19 static outputs incl. /robots.txt, /sitemap.xml, /opengraph-image, /_not-found), all 13 routes + 404 status headless-checked, 404 light/dark body tokens correct (#F3F0E8 / #0B0C0E), zero horizontal overflow at 320/375/390/430/1440, zero console errors. Remaining: re-run Lighthouse against the live deployment after push; Search Console / Bing Webmaster submission is a manual user step (no verification meta added).
 
 ---
 
@@ -801,9 +805,9 @@ If there is a conflict:
 - PHASE 4A — HOME PAGE (user-directed implementation milestone) — IN PROGRESS (Home implemented, pending review)
 - PHASE 4B — WORK PAGE (user-directed implementation milestone) — IN PROGRESS (WORK index grid + ALL SEVEN project detail pages implemented; real demo videos embedded; visual-review fix passes applied through DECISIONS #47; pending user visual sign-off)
 - PHASE 4C — ABOUT PAGE (user-directed implementation milestone) — IN PROGRESS (ABOUT implemented per DECISIONS #48–50, revised per #51, and re-revised per #52 — Trajectory narrative-spine redesign superseding the date-column form, Capabilities continuous header-less rows with the row-2 motion-bug root cause fixed; pending user visual sign-off)
-- PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT — IN PROGRESS (EXPERIENCE implemented 2026-08-24 per DECISIONS #53 — animated vertical timeline, military service excluded from the page entirely by explicit user decision; PUBLICATIONS implemented 2026-08-24 per DECISIONS #54 — editorial presentation of the real AgRobot IUGRC 8 paper PDF with first-page plate preview; ABOUT shipped earlier as PHASE 4C; Contact remains a placeholder)
-- PHASES 4, 6–10, 12–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED)
+- PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT — IN PROGRESS (EXPERIENCE implemented 2026-08-24 per DECISIONS #53 — animated vertical timeline, military service excluded from the page entirely by explicit user decision; PUBLICATIONS implemented 2026-08-24 per DECISIONS #54 — editorial presentation of the real AgRobot IUGRC 8 paper PDF with first-page plate preview; CONTACT implemented 2026-08-25 per DECISIONS #55 — direct-channel closing page, no form/backend; ABOUT shipped earlier as PHASE 4C)
+- PHASES 4, 6–10, 12–13, 15–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED; PHASE 14 IN PROGRESS — Week-7 audit hardening implemented per DECISIONS #56)
 
 The project is currently in:
 
-**PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT (EXPERIENCE + PUBLICATIONS implemented; Contact open)**
+**PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT (all four pages implemented; visual sign-offs pending) — Week-7 "Break Your Own Site" audit hardening (PHASE 14 scope) implemented 2026-08-25 per DECISIONS #56**

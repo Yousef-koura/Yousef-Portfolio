@@ -1,3 +1,13 @@
+/* Canonical origin for metadata URLs (metadataBase, canonical, robots,
+   sitemap). Defaults to the current production deployment; when a custom
+   domain goes live, set NEXT_PUBLIC_SITE_URL (e.g. https://example.com)
+   in Vercel's project environment variables and redeploy — no code change.
+   NEXT_PUBLIC_ vars inline at build time, so the value is baked into every
+   prerendered page. Trailing slashes stripped so string joins stay clean. */
+export const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://yousefkoura.vercel.app"
+).replace(/\/+$/, "");
+
 export const site = {
   name: "Yousef Koura",
   role: "Machine Learning Engineer",
