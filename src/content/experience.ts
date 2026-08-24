@@ -5,6 +5,10 @@ export type ExperienceEntry = {
   timeframe: string;
   current?: boolean;
   summary: string;
+  /** Full responsibilities/evidence for the EXPERIENCE page — rendered inline, no accordion */
+  highlights: string[];
+  /** Only where the technology is confirmed in CONTENT.md — never an invented stack */
+  technologies?: string[];
 };
 
 export const experience: ExperienceEntry[] = [
@@ -16,6 +20,13 @@ export const experience: ExperienceEntry[] = [
     current: true,
     summary:
       "Production data warehouse analysis, temporal train/test split design, and an interpretable Decision Tree model; MCP/Claude applied training and AI Fluency (4D framework).",
+    highlights: [
+      "End-to-end production data warehouse analysis",
+      "Temporal train/test split design",
+      "An interpretable Decision Tree model",
+      "Applied MCP/Claude training",
+      "AI Fluency — the 4D framework",
+    ],
   },
   {
     org: "PioPetro",
@@ -24,6 +35,10 @@ export const experience: ExperienceEntry[] = [
     timeframe: "Jun 2024 — Aug 2024",
     summary:
       "4+ predictive models for petroleum production forecasting; up to 87% R² on held-out test sets.",
+    highlights: [
+      "4+ predictive models for petroleum production forecasting",
+      "Up to 87% R² on held-out test sets",
+    ],
   },
   {
     org: "ITI",
@@ -32,6 +47,11 @@ export const experience: ExperienceEntry[] = [
     timeframe: "Jul 2023 — Sep 2023",
     summary:
       "6+ supervised/unsupervised scikit-learn models across classification, regression, and clustering; up to 97% F1.",
+    highlights: [
+      "6+ supervised/unsupervised models across classification, regression, and clustering",
+      "Up to 97% F1",
+    ],
+    technologies: ["scikit-learn"],
   },
   {
     org: "Digital HUB (D-HUB)",
@@ -40,6 +60,10 @@ export const experience: ExperienceEntry[] = [
     timeframe: "Aug 2023",
     summary:
       "Breast cancer detection classifier at 96% accuracy; 3rd place in an AI challenge co-hosted with the Electronics Research Institute.",
+    highlights: [
+      "Breast cancer detection classifier at 96% accuracy",
+      "3rd place in the ERI challenge co-hosted with the Electronics Research Institute",
+    ],
   },
 ];
 

@@ -529,13 +529,13 @@ Complete WORK experience.
 ---
 
 ## PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT
-**Status: NOT STARTED**
+**Status: IN PROGRESS** (EXPERIENCE implemented 2026-08-24 — log below; ABOUT shipped earlier as the PHASE 4C milestone; Publications + Contact remain placeholders)
 
 Build:
-- About
-- Experience
-- Publications
-- Contact
+- About — shipped under PHASE 4C (sibling implementation milestone)
+- Experience — **implemented 2026-08-24 (log below; DECISIONS #53)**
+- Publications — placeholder page (later milestone)
+- Contact — placeholder page (later milestone)
 
 Integrate:
 - verified content
@@ -546,6 +546,14 @@ Integrate:
 
 Deliverable:
 Complete portfolio content experience.
+
+Log:
+- **EXPERIENCE page implemented (2026-08-24, user-directed milestone start; see DECISIONS #53):** `/experience` rewritten from the Phase-4A placeholder into an animated vertical timeline carrying exactly the four CONFIRMED roles (FlyRank AI · PioPetro · ITI · Digital HUB (D-HUB)) — military service is excluded from this page entirely per explicit user decision (distinct from ABOUT's #49/#51/#52 treatment; recorded in DECISIONS #53, PHASE3_UX §9/§14, and CONTENT.md "Experience"). Structure: hero in the shared WORK-hero language (`MaskedLineReveal` H1 "Experience." + mono metadata "04 roles · newest first / 2023 — 2026" + factual intro, reduce-gated); then a `SectionFrame`-wayfound timeline section — reverse-chronological semantic `<ol>` of the four entries, each showing timeframe, org (display type), role (mono uppercase), location, the Home-preview "Current" chip on FlyRank only, and ALL responsibilities/evidence inline (11 bullets; no accordion/read-more; technologies rendered only where CONTENT.md confirms them — scikit-learn on ITI). Content source extended in `src/content/experience.ts` (`highlights` + `technologies?` fields; existing fields untouched so Home's `ExperiencePreview` is unaffected). Timeline graphic: 1px champagne (`--tk-champagne` at 40%) spine, `aria-hidden` + `pointer-events-none`, drawing in progressively via a scroll-scrubbed GSAP ScrollTrigger (site-wide ScrollTrigger+Lenis wiring; no new motion pattern), with a ring node (the `Currently.tsx` node idiom) at each entry's date; entries fade/rise on the shared reduce-gated `Reveal`. Desktop ≥lg alternates entries either side of the centred spine; below lg everything stacks single-column along a left-edge spine in the same DOM reading order. Current-entry emphasis follows the Home experience-preview precedent: all four entries typographically identical, champagne accents (timeframe/role/node/chip) mark FlyRank only. Closing forward path reuses WORK's established close (hairline rule + display h2 with champagne period + ghost "Get in touch" pill + "Email directly"/"See the work" quiet links) so the page never dead-ends. Under `prefers-reduced-motion: reduce` the spine renders fully drawn and every entry is immediately visible (no draw, no entrance, no Lenis). Verified: production build clean (`/experience` static prerendered), `tsc --noEmit`, ESLint clean; headless suite vs the production server 75/75 — all orgs/roles/locations/timeframes/metrics present in SSR HTML, forbidden military strings absent ("military/Armed Forces/Engineering Authority/Technical Office/License Department/Jan 2025/mandatory"), exactly one Current chip, ol = 4 rows with 11 inline bullets, reading order FlyRank→PioPetro→ITI→D-HUB, spine aria-hidden/non-interactive/1px and left-edge at 390/820 vs centred at 1440, alternating layout confirmed ≥lg only (entry boxes measured either side of centre), zero horizontal overflow at all three widths, spine scaleY 0 at top → 1.000 after scrolling through with final entry opacity 1 (no hover), reduced-motion emulation renders spine scaleY 1 + entries opacity 1 immediately with no scroll hijacking, zero console/page errors on /experience, and Home/WORK/WORK-detail/ABOUT regression loads clean. Full-page screenshots captured at 1440/390 for manual review; final visual sign-off manual by the user.
+
+Open / unresolved:
+- Final visual sign-off of the EXPERIENCE page by the user.
+- Publications + Contact remain placeholder pages (later milestones in this phase).
+- Resume destination URL remains open globally (no resume CTA on this page).
 
 ---
 
@@ -790,8 +798,9 @@ If there is a conflict:
 - PHASE 4A — HOME PAGE (user-directed implementation milestone) — IN PROGRESS (Home implemented, pending review)
 - PHASE 4B — WORK PAGE (user-directed implementation milestone) — IN PROGRESS (WORK index grid + ALL SEVEN project detail pages implemented; real demo videos embedded; visual-review fix passes applied through DECISIONS #47; pending user visual sign-off)
 - PHASE 4C — ABOUT PAGE (user-directed implementation milestone) — IN PROGRESS (ABOUT implemented per DECISIONS #48–50, revised per #51, and re-revised per #52 — Trajectory narrative-spine redesign superseding the date-column form, Capabilities continuous header-less rows with the row-2 motion-bug root cause fixed; pending user visual sign-off)
-- PHASES 4, 6–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED)
+- PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT — IN PROGRESS (EXPERIENCE implemented 2026-08-24 per DECISIONS #53 — animated vertical timeline, military service excluded from the page entirely by explicit user decision; ABOUT shipped earlier as PHASE 4C; Publications + Contact remain placeholders)
+- PHASES 4, 6–10, 12–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED)
 
 The project is currently in:
 
-**PHASE 4C — ABOUT PAGE (IMPLEMENTATION MILESTONE)**
+**PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT (EXPERIENCE implemented; Publications + Contact open)**

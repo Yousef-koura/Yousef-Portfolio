@@ -21,9 +21,9 @@ A single, premium, highly visual web experience that frames the person and the w
 
 ## Current project phase
 
-**PHASE 4C — ABOUT PAGE (IMPLEMENTATION) — IN PROGRESS**
+**PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT — IN PROGRESS**
 
-The application is initialized (Next.js 16 + TypeScript + Tailwind); the Home page is implemented (Phase 4A, pending review), the WORK page is implemented in its expanded form — a recomposed WORK index (flagship composition + uniform card grid for seven projects) plus ALL SEVEN project detail pages under `/work/[slug]`, with three real demo-capture videos embedded and a sourced tech-stack icon row (Phase 4B) — and the ABOUT page is now implemented as the third implementation milestone: hero + opening personal statement with the approved portrait as a small inline figure, an engineering-trajectory narrative spine (story-beat labels + condensed prose on a vertical node line — deliberately distinct from EXPERIENCE's role-first format; military service as a role-description phase; certifications woven contextually; DECISIONS #48–50, #52 superseding #51's date-column form), an education spec block, an About-owned Capabilities wall of continuous header-less scroll-linked chip rows over all 25 confirmed capabilities (static wrapped grid under reduced motion; DECISIONS #51(c) as restructured by #52), and links out. EXPERIENCE, PUBLICATIONS, and CONTACT remain later milestones (currently honest placeholder pages so navigation never breaks).
+The application is initialized (Next.js 16 + TypeScript + Tailwind); the Home page is implemented (Phase 4A, pending review), the WORK page is implemented in its expanded form — a recomposed WORK index (flagship composition + uniform card grid for seven projects) plus ALL SEVEN project detail pages under `/work/[slug]`, with three real demo-capture videos embedded and a sourced tech-stack icon row (Phase 4B) — and the ABOUT page is implemented as the third implementation milestone (Phase 4C). The EXPERIENCE page is now implemented as the start of Phase 11: an animated vertical timeline of the four confirmed roles (FlyRank AI · PioPetro · ITI · Digital HUB (D-HUB)) with a champagne spine that draws in on scroll, alternating desktop layout, fully inline responsibilities/evidence, and military service excluded from the page entirely by explicit user decision (DECISIONS #53). PUBLICATIONS and CONTACT remain later milestones (currently honest placeholder pages so navigation never breaks).
 
 The WORK index leads with Movenue as the full-width flagship linking into its detail page; the remaining six builds sit in a uniform responsive grid of tiles, each opening its own page. Detail pages render Problem → Methodology → Solution → Results → Stack → Links → prev/next from one data-driven template, with short pages (PotatoScan, Steganography Detector) rendering only the sections their sourced content supports (DECISIONS #42–#44).
 
@@ -39,6 +39,7 @@ Phase history:
 - **PHASE 4A — HOME PAGE: IN PROGRESS** — Home page implemented (user-directed implementation milestone ahead of the roadmap's wireframe-first sequence; see ROADMAP.md).
 - **PHASE 4B — WORK PAGE: IN PROGRESS** — WORK index recomposed as flagship + card grid, and ALL SEVEN `/work/[slug]` detail pages implemented via a shared data-driven template; three real demo-capture videos encoded and embedded (MP4 + posters); tech-stack icon row added (`@icons-pack/react-simple-icons` + Lucide fallbacks) (DECISIONS #44, amending #42–#43). Pending user visual sign-off.
 - **PHASE 4C — ABOUT PAGE: IN PROGRESS** — `/about` implemented: hero, personal statement + small inline portrait (DECISIONS #48), trajectory narrative spine with the military-service phase describing the role (DECISIONS #49; presentation re-formed by #51 then superseded by the spine in #52) and contextual certification mentions (DECISIONS #50), education block, About-owned continuous Capabilities chip rows over all 25 confirmed capabilities (DECISIONS #51 as amended by #52), links out. Pending user visual sign-off.
+- **PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT: IN PROGRESS** — EXPERIENCE implemented (2026-08-24, DECISIONS #53): animated vertical timeline of the four confirmed roles, military service excluded from the page entirely by explicit user decision; Publications + Contact remain placeholders.
 
 ## Core principles
 
@@ -111,7 +112,7 @@ Full log: [DECISIONS.md](./DECISIONS.md).
 - Motion choreography
 - Exact 3D concept
 - Which old-site-only projects to include
-- Whether to present military service as an experience entry
+- ~~Whether to present military service as an experience entry~~ RESOLVED — ABOUT: narrative prose (DECISIONS #49/#51/#52); EXPERIENCE: excluded entirely (DECISIONS #53)
 
 ## Document references
 
