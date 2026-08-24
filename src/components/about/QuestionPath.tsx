@@ -1,7 +1,6 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { ArrowDown } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { QuietLink } from "@/components/ui/QuietLink";
@@ -41,7 +40,6 @@ export function QuestionPath() {
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const q1Ref = useRef<HTMLParagraphElement | null>(null);
   const q2Ref = useRef<HTMLParagraphElement | null>(null);
-  const arrowRef = useRef<HTMLSpanElement | null>(null);
   const pathRef = useRef<HTMLDivElement | null>(null);
   const fillRef = useRef<HTMLSpanElement | null>(null);
   /* Mobile scrub targets (opacity only — zero layout impact) */
@@ -82,10 +80,9 @@ export function QuestionPath() {
       const scene = sceneRef.current;
       const q1 = q1Ref.current;
       const q2 = q2Ref.current;
-      const arrow = arrowRef.current;
       const path = pathRef.current;
       const fill = fillRef.current;
-      if (!scene || !q1 || !q2 || !arrow || !path || !fill) return;
+      if (!scene || !q1 || !q2 || !path || !fill) return;
 
       /* Scene canvas + absolutely-positioned beats INSIDE the sticky stage
          (the stage itself is the positioned ancestor). Applied only here,
@@ -100,7 +97,6 @@ export function QuestionPath() {
         maxWidth: "42rem",
         yPercent: -50,
       });
-      gsap.set(arrow, { position: "absolute", left: "50%", top: "62%", xPercent: -50 });
       gsap.set(path, { position: "absolute", left: 0, right: 0, bottom: "8%" });
 
       const tl = gsap
@@ -117,7 +113,6 @@ export function QuestionPath() {
             },
           },
         })
-        .fromTo(arrow, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.1 }, 0.14)
         .to(q1, { autoAlpha: 0.12, y: -56, scale: 0.96, duration: 0.26 }, 0.16)
         .fromTo(q2, { autoAlpha: 0, y: 72 }, { autoAlpha: 1, y: 0, duration: 0.26, ease: "power2.out" }, 0.34)
         .fromTo(path, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.18 }, 0.56)
@@ -169,7 +164,7 @@ export function QuestionPath() {
             The question changed
           </h2>
           <span aria-hidden="true" className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted/60">
-            Machines → Products
+            Machines · Products
           </span>
         </div>
 
@@ -180,7 +175,7 @@ export function QuestionPath() {
           <Reveal>
             <div ref={mq1Ref} className="text-center">
               <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-muted/70">
-                Mechatronics → Robotics
+                Mechatronics · Robotics
               </p>
               <p className="mt-4 font-display text-[1.7rem] leading-[1.12] tracking-tight text-muted-strong sm:text-4xl">
                 How do I make
@@ -190,11 +185,10 @@ export function QuestionPath() {
             </div>
           </Reveal>
 
-          <Reveal y={10}>
-            <p aria-hidden="true" className="my-9 text-center text-champagne">
-              <ArrowDown size={18} strokeWidth={1.5} />
-            </p>
-          </Reveal>
+          {/* Quiet separator — the shift between the two questions, no arrow */}
+          <div aria-hidden="true" className="my-9 flex justify-center">
+            <span className="h-10 w-px bg-gradient-to-b from-champagne/60 to-line" />
+          </div>
 
           <Reveal>
             <div ref={mq2Ref} className="text-center">
@@ -246,7 +240,7 @@ export function QuestionPath() {
           <div className="sticky top-0 flex min-h-screen flex-col items-center justify-center gap-10 overflow-hidden py-20 text-center">
             <p ref={q1Ref}>
               <span className="mb-5 block font-mono text-[10px] uppercase tracking-[0.26em] text-muted/70">
-                Mechatronics → Robotics
+                Mechatronics · Robotics
               </span>
               <span className="block font-display text-4xl leading-[1.08] tracking-tight text-muted-strong xl:text-5xl">
                 How do I make
@@ -254,10 +248,6 @@ export function QuestionPath() {
                 the machine <span className="text-muted">move?</span>
               </span>
             </p>
-
-            <span ref={arrowRef} aria-hidden="true" className="text-champagne">
-              <ArrowDown size={18} strokeWidth={1.5} />
-            </span>
 
             <p ref={q2Ref}>
               <span className="mb-5 block font-mono text-[10px] uppercase tracking-[0.26em] text-champagne-strong">
@@ -273,7 +263,7 @@ export function QuestionPath() {
             <div ref={pathRef} className="w-full">
               <div className="mx-auto w-full max-w-4xl px-8">
                 <div className="flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.24em]">
-                  <span className="text-muted/70">Four stages, one direction</span>
+                  <span className="text-muted/70">Four stages, one thread</span>
                   <span className="text-champagne-strong">
                     {String(active + 1).padStart(2, "0")} / 04 — {STAGES[active].name}
                   </span>

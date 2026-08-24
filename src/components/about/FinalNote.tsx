@@ -16,23 +16,18 @@ const line: Variants = {
 };
 
 /**
- * FULL CIRCLE — the close. One confident statement, one supporting line,
- * then the CTA cluster. More breathing room than the sections above —
- * this is the ending, not another chapter. No new claims.
+ * THE CLOSE — "The rest is better in person." One confident statement, one
+ * supporting line, then the CTA cluster. More breathing room than the
+ * sections above — this is the ending, not another chapter. No new claims,
+ * no recap label: the page has already shown where he started and what he
+ * built.
  */
 export function FinalNote() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="about-final" aria-label="Full circle" className="scroll-mt-24 pb-24 pt-24 sm:pb-28 sm:pt-32">
+    <section id="about-final" aria-label="Get in touch" className="scroll-mt-24 pb-24 pt-24 sm:pb-28 sm:pt-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="flex items-baseline justify-between gap-4 border-t border-line pt-4">
-          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">Full circle</span>
-          <span aria-hidden="true" className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted/60">
-            Fin.
-          </span>
-        </div>
-
         <motion.div
           variants={storyWrap}
           initial={reduce ? false : "hidden"}
