@@ -5,6 +5,8 @@ type QuietLinkProps = {
   href: string;
   children: React.ReactNode;
   external?: boolean;
+  /** Forces a file download instead of navigating (anchor `download` attribute) */
+  download?: boolean;
   className?: string;
 };
 
@@ -13,7 +15,7 @@ type QuietLinkProps = {
  * reserved for the page's primary journey (hero → work, final CTA) so nothing
  * competes with them.
  */
-export function QuietLink({ href, children, external, className = "" }: QuietLinkProps) {
+export function QuietLink({ href, children, external, download, className = "" }: QuietLinkProps) {
   const classes = `group/ql inline-flex items-center gap-2 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-muted transition-colors duration-300 hover:text-champagne ${className}`;
 
   const inner = (
@@ -42,14 +44,20 @@ export function QuietLink({ href, children, external, className = "" }: QuietLin
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={classes}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        download={download || undefined}
+        className={classes}
+      >
         {inner}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={classes}>
+    <Link href={href} download={download || undefined} className={classes}>
       {inner}
     </Link>
   );

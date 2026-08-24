@@ -116,4 +116,25 @@ export const publication = {
   date: "Jul 28, 2024",
   context:
     "Undergraduate research connected to the Agri-Bot graduation project — an AI-powered crop disease detection robot.",
-};
+  /* Fields below extend the original home-page object (title/venue/date/context stay
+     byte-identical — PortalArchive renders them). Everything traces to the actual
+     paper PDF (public/Publication/AgRobot_paper_09.pdf) or CONTENT.md CONFIRMED entries. */
+  authors: ["K. Yousef", "M. Mohamed", "G. Tarek"],
+  affiliation: "Modern Science and Arts University (MSA), Egypt",
+  location: "Military Technical College, Cairo, Egypt",
+  type: "Conference paper",
+  pages: 9,
+  pdfHref: "/Publication/AgRobot_paper_09.pdf",
+  keywords: ["Disease detection", "AI-powered robot", "Greenhouse farming", "YOLOv8", "MobileNetV2"],
+  metrics: [
+    { value: "96%", label: "Average detection accuracy" },
+    { value: "20 FPS", label: "Real time on the NVIDIA Jetson Nano" },
+    { value: "13", label: "Disease classes — tomato & potato" },
+  ],
+  preview: {
+    src: "/Publication/agrobot-paper-preview.png",
+    width: 1224,
+    height: 1584,
+    alt: "First page of the AgRobot conference paper — title, authors, abstract, and keywords as published at IUGRC 8",
+  },
+} as const;

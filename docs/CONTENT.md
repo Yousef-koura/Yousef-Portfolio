@@ -52,7 +52,8 @@ Status labels:
 
 ## Publications
 
-- **CONFIRMED** — "AgRobot: Towards AI-Powered Crop Disease Detection and Medication Recommendation Robot," 8th International Undergraduate Research Conference (IUGRC 8), Military Technical College, Jul 28, 2024. Certificate image available in `projects&certificate_images/`.
+- **CONFIRMED** — "AgRobot: Towards AI-Powered Crop Disease Detection and Medication Recommendation Robot," 8th International Undergraduate Research Conference (IUGRC 8), Military Technical College, Jul 28, 2024 (conference span Jul 27–Aug 1, 2024 per the paper itself). Certificate image available in `projects&certificate_images/` (served copy: `public/projects/iugrc-certificate.png`).
+- **IMPLEMENTED (2026-08-24, DECISIONS #54)** — `/publications` presents the actual paper from `public/Publication/AgRobot_paper_09.pdf` (9 pages, read and verified directly). Rendered facts, all PDF- or source-confirmed: authors K. Yousef · M. Mohamed · G. Tarek (Modern Science and Arts University, Egypt); venue IUGRC 8; location Military Technical College, Cairo, Egypt; type conference paper; keywords disease detection / AI-powered robot / greenhouse farming / YOLOv8 / MobileNetV2; results 96% average detection accuracy, 20 FPS on NVIDIA Jetson Nano, 13 disease classes (tomato & potato), PlantVillage dataset. The paper's first page is served as a static preview raster (`public/Publication/agrobot-paper-preview.png`, generated at prep time from the PDF). No DOI, publisher, citation count, or external publication URL exists — none is presented.
 
 ## Research
 

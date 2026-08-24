@@ -529,12 +529,12 @@ Complete WORK experience.
 ---
 
 ## PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT
-**Status: IN PROGRESS** (EXPERIENCE implemented 2026-08-24 — log below; ABOUT shipped earlier as the PHASE 4C milestone; Publications + Contact remain placeholders)
+**Status: IN PROGRESS** (EXPERIENCE implemented 2026-08-24 — log below; PUBLICATIONS implemented 2026-08-24 — log below; ABOUT shipped earlier as the PHASE 4C milestone; Contact remains a placeholder)
 
 Build:
 - About — shipped under PHASE 4C (sibling implementation milestone)
 - Experience — **implemented 2026-08-24 (log below; DECISIONS #53)**
-- Publications — placeholder page (later milestone)
+- Publications — **implemented 2026-08-24 (log below; DECISIONS #54)**
 - Contact — placeholder page (later milestone)
 
 Integrate:
@@ -552,8 +552,11 @@ Log:
 
 Open / unresolved:
 - Final visual sign-off of the EXPERIENCE page by the user.
-- Publications + Contact remain placeholder pages (later milestones in this phase).
+- Final visual sign-off of the PUBLICATIONS page by the user.
+- Contact remains a placeholder page (later milestone in this phase).
 - Resume destination URL remains open globally (no resume CTA on this page).
+
+- **PUBLICATIONS page implemented (2026-08-24; see DECISIONS #54):** `/publications` rewritten from the placeholder into an editorial presentation of the actual IUGRC 8 paper — `public/Publication/AgRobot_paper_09.pdf` was read directly (9-page IEEE-style paper; authors K. Yousef, M. Mohamed, G. Tarek — Modern Science and Arts University; 8th International Undergraduate Research Conference, Military Technical College, Cairo; Jul 27–Aug 1, 2024) and ONLY PDF-verified or CONTENT.md-CONFIRMED facts are rendered (no DOI/publisher/citation invented). Structure: hero in the shared WORK/EXPERIENCE-hero language (`PublicationHero.tsx` — kicker "IUGRC 8 · 2024", masked display title with champagne colon/period where the short name "AgRobot:" carries the Work-scale weight and the full formal title continues beneath at subtitle scale so the exact wording survives every viewport; mono metadata column; factual supporting line; confirmed metadata `<dl>` — authors+affiliation, venue, location, date "Jul 28, 2024", type — and action row riding the hero's stagger variants, reduce-gated) → 01 Abstract (curated to three sourced sentences; the page stays the presentation layer, the PDF the full document) → measured-results strip (96% avg accuracy / 20 FPS on Jetson Nano / 13 disease classes as editorial display numbers with hairline dividers, staggered `Reveal`) → 02 Publication (paper's first page rasterized once at prep time to `public/Publication/agrobot-paper-preview.png` [1224×1584] via a throwaway pdfjs+canvas script — NO runtime PDF dependency; `next/image` inside a bordered Surface-matted "paper plate" anchor linking into the PDF; `RevealImage` clip reveal; subtle 1.015 hover scale; light-mode figure/ground via a `.paper-plate` shadow rule in globals.css mirroring the certificate-matting precedent) → 03 Context (Agri-Bot graduation-project connection + confirmed keywords as quiet mono text + quiet link to `/work/agri-bot`) → WORK/EXPERIENCE closing forward path. PDF access: primary champagne `ButtonLink` "Read the paper" + ghost "Download PDF" (new ADDITIVE optional `download` prop on `ButtonLink`/`QuietLink` — backward-compatible) opening `/Publication/AgRobot_paper_09.pdf` in a new tab; no embedded viewer (iframe UX broken on iOS, 1.4MB eager payload, Lenis wheel conflicts). `publication` in `src/content/experience.ts` extended (authors/affiliation/location/type/pages/pdfHref/keywords/metrics/preview) with the original four fields byte-identical — Home's portal publication section verified unaffected. Mobile: in-page QuietLinks get `py-3 sm:py-1` for ≥40px tap targets. Verified: ESLint 0, `tsc --noEmit` 0, production build 16 routes; headless Edge matrix 58/58 (390/820/1440 × dark/light — zero horizontal overflow, preview decodes everywhere, full title in H1, all confirmed facts present, external/noopener/download attributes correct, zero console errors, both theme body colors correct); Home + `/work/agri-bot` smoke-checked unaffected.
 
 ---
 
@@ -798,9 +801,9 @@ If there is a conflict:
 - PHASE 4A — HOME PAGE (user-directed implementation milestone) — IN PROGRESS (Home implemented, pending review)
 - PHASE 4B — WORK PAGE (user-directed implementation milestone) — IN PROGRESS (WORK index grid + ALL SEVEN project detail pages implemented; real demo videos embedded; visual-review fix passes applied through DECISIONS #47; pending user visual sign-off)
 - PHASE 4C — ABOUT PAGE (user-directed implementation milestone) — IN PROGRESS (ABOUT implemented per DECISIONS #48–50, revised per #51, and re-revised per #52 — Trajectory narrative-spine redesign superseding the date-column form, Capabilities continuous header-less rows with the row-2 motion-bug root cause fixed; pending user visual sign-off)
-- PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT — IN PROGRESS (EXPERIENCE implemented 2026-08-24 per DECISIONS #53 — animated vertical timeline, military service excluded from the page entirely by explicit user decision; ABOUT shipped earlier as PHASE 4C; Publications + Contact remain placeholders)
+- PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT — IN PROGRESS (EXPERIENCE implemented 2026-08-24 per DECISIONS #53 — animated vertical timeline, military service excluded from the page entirely by explicit user decision; PUBLICATIONS implemented 2026-08-24 per DECISIONS #54 — editorial presentation of the real AgRobot IUGRC 8 paper PDF with first-page plate preview; ABOUT shipped earlier as PHASE 4C; Contact remains a placeholder)
 - PHASES 4, 6–10, 12–16 — NOT STARTED (PHASE 5 PARTIALLY COMPLETED)
 
 The project is currently in:
 
-**PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT (EXPERIENCE implemented; Publications + Contact open)**
+**PHASE 11 — ABOUT / EXPERIENCE / PUBLICATIONS / CONTACT (EXPERIENCE + PUBLICATIONS implemented; Contact open)**

@@ -6,6 +6,8 @@ type ButtonLinkProps = {
   children: React.ReactNode;
   variant?: "primary" | "ghost";
   external?: boolean;
+  /** Forces a file download instead of navigating (anchor `download` attribute) */
+  download?: boolean;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
   className?: string;
 };
@@ -15,6 +17,7 @@ export function ButtonLink({
   children,
   variant = "primary",
   external,
+  download,
   onClick,
   className = "",
 }: ButtonLinkProps) {
@@ -41,14 +44,25 @@ export function ButtonLink({
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={`${base} ${styles} ${className}`}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        download={download || undefined}
+        className={`${base} ${styles} ${className}`}
+      >
         {inner}
       </a>
     );
   }
 
   return (
-    <Link href={href} onClick={onClick} className={`${base} ${styles} ${className}`}>
+    <Link
+      href={href}
+      onClick={onClick}
+      download={download || undefined}
+      className={`${base} ${styles} ${className}`}
+    >
       {inner}
     </Link>
   );
