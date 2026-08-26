@@ -266,21 +266,21 @@ export function ProjectDetailPage({
       <Reveal>
         <nav
           aria-label="Continue"
-          className="mt-24 flex flex-col gap-8 border-t border-line pt-12 sm:flex-row sm:items-end sm:justify-between"
+          className="mt-24 grid grid-cols-2 items-end gap-x-4 border-t border-line pt-12 sm:flex sm:items-end sm:justify-between"
         >
           {previous ? (
             <Link
               href={`/work/${previous.slug}`}
-              className="group/pv inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted transition-colors duration-300 hover:text-champagne"
+              className="group/pv -my-3 inline-flex min-w-0 items-center gap-3 py-3 pr-1 font-mono text-[11px] uppercase tracking-[0.22em] text-muted transition-colors duration-300 hover:text-champagne"
             >
               <ArrowLeft
                 size={12}
                 aria-hidden="true"
                 className="shrink-0 transition-transform duration-300 group-hover/pv:-translate-x-1"
               />
-              <span>
+              <span className="min-w-0">
                 Previous
-                <span className="mt-1 block font-display text-base normal-case tracking-tight text-ink transition-colors duration-300 group-hover/pv:text-champagne">
+                <span className="mt-1 block break-words font-display text-base normal-case leading-snug tracking-tight text-ink transition-colors duration-300 group-hover/pv:text-champagne">
                   {previous.name}
                 </span>
               </span>
@@ -288,7 +288,7 @@ export function ProjectDetailPage({
           ) : (
             <Link
               href="/work"
-              className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-muted transition-colors duration-300 hover:text-champagne"
+              className="-my-3 inline-flex items-center gap-2 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted transition-colors duration-300 hover:text-champagne"
             >
               <ArrowLeft size={12} aria-hidden="true" />
               Back to all work
@@ -297,19 +297,19 @@ export function ProjectDetailPage({
           {next ? (
             <Link
               href={`/work/${next.slug}`}
-              className="group/nx inline-flex items-center gap-3 text-right font-mono text-[11px] uppercase tracking-[0.22em] text-muted transition-colors duration-300 hover:text-champagne sm:flex-row-reverse"
+              className="group/nx -my-3 inline-flex min-w-0 items-center justify-self-end gap-3 py-3 pl-1 text-right font-mono text-[11px] uppercase tracking-[0.22em] text-muted transition-colors duration-300 hover:text-champagne"
             >
+              <span className="min-w-0">
+                Next
+                <span className="mt-1 block break-words font-display text-base normal-case leading-snug tracking-tight text-ink transition-colors duration-300 group-hover/nx:text-champagne">
+                  {next.name}
+                </span>
+              </span>
               <ArrowRight
                 size={12}
                 aria-hidden="true"
                 className="shrink-0 transition-transform duration-300 group-hover/nx:translate-x-1"
               />
-              <span>
-                Next
-                <span className="mt-1 block font-display text-base normal-case tracking-tight text-ink transition-colors duration-300 group-hover/nx:text-champagne">
-                  {next.name}
-                </span>
-              </span>
             </Link>
           ) : null}
         </nav>
