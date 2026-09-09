@@ -30,6 +30,7 @@ const cards = [
   { code: "02 / RAG", title: "RAG Assistant", tag: "APPLIED AI", image: "/projects/rag-assistant.png", href: "/work", role: "Developer", evidence: "Grounded Q&A system" },
   { code: "03 / CV", title: "AgriBot", tag: "COMPUTER VISION", image: "/projects/agribot.png", href: "/work", role: "Graduation Project", evidence: "20 FPS · 96% accuracy" },
   { code: "04 / DATA", title: "FMCG Intelligence", tag: "ANALYTICS", image: "/projects/fmcg-dashboard.png", href: "/work", role: "Developer", evidence: "Lakehouse pipeline" },
+  { code: "05 / SEO", title: "Content Opportunity Scoring", tag: "DECISION SUPPORT", image: "/projects/flyrank-capstone-cover.jpg", href: "/work/flyrank-content-opportunity-scoring", role: "FlyRank AI Internship Capstone", evidence: "P@1000 0.971 ± 0.030 vs 0.828 ± 0.119 · 1.17× lift" },
 ];
 
 export function PortalArchive() {
@@ -37,6 +38,7 @@ export function PortalArchive() {
   const [progress, setProgress] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [active, setActive] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const drag = useRef({ start: 0, x: 0, active: false });
   const [dragX, setDragX] = useState(0);
 
@@ -55,6 +57,13 @@ export function PortalArchive() {
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReducedMotion(media.matches);
+    update(); media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const update = () => setIsMobile(media.matches);
     update(); media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
@@ -216,7 +225,7 @@ export function PortalArchive() {
       <section className="portal-releases" id="work" data-reveal>
         <div className="portal-releases__intro"><p className="portal-kicker">02 — SELECTED WORK</p><h2>PROJECT<br /><em>ARCHIVE.</em></h2><p>Applied AI, computer vision, and production-minded data products — each made to handle a real-world constraint.</p><div><Link href="/work" className="portal-action">VIEW ALL WORK <ArrowUpRight size={15} /></Link><a href="mailto:yousefahmed.ae20@gmail.com" className="portal-action portal-action--quiet">START A CONVERSATION</a></div></div>
         <div className="deck-wrap"><div className="deck-hint">DRAG / ARROW KEYS TO BROWSE</div><div className="portal-deck" tabIndex={0} role="region" aria-label="Featured projects" onKeyDown={(e) => { if (e.key === "ArrowRight") advance(1); if (e.key === "ArrowLeft") advance(-1); }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
-          {cards.map((card, index) => { const position = (index - active + cards.length) % cards.length; const top = position === 0; return <article key={card.title} className="deck-card" style={{ zIndex: cards.length - position, transform: top ? `translate(${dragX}px, ${Math.abs(dragX) * -.05}px) rotate(${dragX * .045}deg)` : `translate(${position * 12}px, ${position * -9}px) rotate(${position * 2.2}deg) scale(${1 - position * .035})` }}><Image src={card.image} alt="" fill sizes="(max-width: 767px) 85vw, 40vw" /><div className="deck-card__wash" /><div className="deck-card__content"><span>{card.code}</span><h3>{card.title}</h3><small>{card.tag}</small><div className="deck-card__detail"><p>{card.role} · {card.evidence}</p><a href={card.href} target={card.href.startsWith("http") ? "_blank" : undefined} rel={card.href.startsWith("http") ? "noreferrer" : undefined}>OPEN PROJECT <ArrowUpRight size={13} /></a></div></div></article>; })}
+          {cards.map((card, index) => { const position = (index - active + cards.length) % cards.length; const top = position === 0; const depth = Math.min(position, 4); const px = isMobile ? 6 : 12; const py = isMobile ? -4 : -9; const rot = isMobile ? 1.4 : 2.2; const shrink = isMobile ? .03 : .035; return <article key={card.title} className="deck-card" style={{ zIndex: cards.length - position, transform: top ? `translate(${dragX}px, ${Math.abs(dragX) * -.05}px) rotate(${dragX * .045}deg)` : `translate(${depth * px}px, ${depth * py}px) rotate(${depth * rot}deg) scale(${1 - depth * shrink})` }}><Image src={card.image} alt="" fill sizes="(max-width: 767px) 85vw, 40vw" /><div className="deck-card__wash" /><div className="deck-card__content"><span>{card.code}</span><h3>{card.title}</h3><small>{card.tag}</small><div className="deck-card__detail"><p>{card.role} · {card.evidence}</p><a href={card.href} target={card.href.startsWith("http") ? "_blank" : undefined} rel={card.href.startsWith("http") ? "noreferrer" : undefined}>OPEN PROJECT <ArrowUpRight size={13} /></a></div></div></article>; })}
         </div><div className="deck-dots">{cards.map((card, index) => <button key={card.title} onClick={() => setActive(index)} aria-label={`Show ${card.title}`} className={index === active ? "is-active" : ""} />)}</div></div>
       </section>
 
