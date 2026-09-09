@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 
 /**
  * WORK detail — PHASE 4B: every project gets a page. `generateStaticParams`
- * pre-renders all seven slugs and `dynamicParams = false` rejects anything
+ * pre-renders all eight slugs and `dynamicParams = false` rejects anything
  * else at request time; unknown slugs 404 by construction.
  */
 export function generateStaticParams() {

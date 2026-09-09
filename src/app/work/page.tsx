@@ -13,7 +13,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Work",
   description:
-    "Seven real projects — machine learning, computer vision, LLM systems, data engineering, and a live SaaS platform. Every entry links to real repositories and running products.",
+    "Eight real projects — machine learning, computer vision, LLM systems, data engineering, and a live SaaS platform. Every entry links to real repositories and running products.",
   path: "/work",
 });
 
@@ -28,7 +28,7 @@ function StatusChip({ status }: { status: string }) {
 
 /**
  * WORK index — PHASE 4B grid. One full-width flagship composition leads;
- * the remaining six builds sit in a uniform responsive grid of cards, each
+ * the remaining seven builds sit in a uniform responsive grid of cards, each
  * linking to its own `/work/[slug]` detail page. Builds without a capture
  * get a quiet labeled panel — no imagery is invented.
  */
@@ -107,7 +107,7 @@ export default function WorkPage() {
         </Reveal>
       ) : null}
 
-      {/* ─── Grid · six uniform tiles, one per build ─── */}
+      {/* ─── Grid · seven uniform tiles, one per build ─── */}
       <section aria-label="All projects" className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="mt-24 border-t border-line pt-4 sm:mt-32">
           <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">All projects</span>

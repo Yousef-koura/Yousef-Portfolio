@@ -1,15 +1,21 @@
 import {
+  SiApacheparquet,
   SiApachespark,
   SiDatabricks,
   SiFastapi,
+  SiGithubactions,
   SiHuggingface,
   SiHtml5,
+  SiJupyter,
   SiLangchain,
   SiNextdotjs,
   SiNvidia,
   SiOnnx,
+  SiPandas,
   SiPostgresql,
+  SiPython,
   SiReact,
+  SiScikitlearn,
   SiSupabase,
   SiTailwindcss,
   SiTypescript,
@@ -18,6 +24,7 @@ import {
 } from "@icons-pack/react-simple-icons";
 import {
   ArrowLeftRight,
+  ChartLine,
   Database,
   Layers,
   Network,
@@ -51,6 +58,12 @@ const brandIcons = {
   databricks: SiDatabricks,
   apachespark: SiApachespark,
   html5: SiHtml5,
+  python: SiPython,
+  pandas: SiPandas,
+  scikitlearn: SiScikitlearn,
+  apacheparquet: SiApacheparquet,
+  jupyter: SiJupyter,
+  githubactions: SiGithubactions,
 } as const;
 
 const glyphIcons = {
@@ -61,6 +74,7 @@ const glyphIcons = {
   sparkles: Sparkles,
   workflow: Workflow,
   star: Star,
+  chart: ChartLine,
 } as const;
 
 export function TechStackRow({

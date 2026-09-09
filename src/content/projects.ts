@@ -152,6 +152,13 @@ export type TechKey =
   | "databricks"
   | "apachespark"
   | "html5"
+  | "python"
+  | "pandas"
+  | "scikitlearn"
+  | "apacheparquet"
+  | "jupyter"
+  | "githubactions"
+  | "chart"
   | "network"
   | "layers"
   | "transfer"
@@ -247,144 +254,90 @@ export const projectDetails: ProjectDetail[] = [
     image: featuredProject.image,
   },
   {
-    slug: "agri-bot",
-    name: "Agri-Bot",
-    kind: "Graduation Project · Research",
-    domain: "Agriculture · Computer Vision · Robotics",
+    slug: "flyrank-content-opportunity-scoring",
+    name: "Content Opportunity Scoring",
+    kind: "AI ML Capstone",
+    domain: "SEO · Decision Support",
     status: "Completed",
-    timeframe: "Nov 2023 — Jun 2024",
-    role: "Graduation Project",
+    timeframe: "Jul 2026 – Sep 2026",
+    role: "FlyRank AI Internship Capstone",
     positioningLine:
-      "An AI-powered robot that detects crop disease and responds autonomously — published research.",
+      "A decision-support model that ranks web pages by content-refresh opportunity for human SEO review, validated against a transparent rule-based baseline on a production-scale search-performance dataset.",
     summary:
-      "An AI-powered crop disease detection robot running a 3-stage pipeline — YOLOv8 plant detection → MobileNetV2 disease classification → fuzzy PID autonomous motor response — deployed on a Jetson Nano with a web interface.",
+      "A decision-support model that ranks web pages by content-refresh opportunity for human SEO review, validated against a transparent rule-based baseline on a production-scale search-performance dataset.",
     problem: [
-      "Crop disease spreads quietly: by the time a farmer spots damaged leaves in the field, the window for targeted treatment has often closed. Agri-Bot was built as a graduation project to put detection and response on an autonomous platform — a robot that finds plants, classifies disease, and acts on what it sees.",
-      "The work was published at IUGRC 2024 under the paper title \"AgRobot: Towards AI-Powered Crop Disease Detection and Medication Recommendation Robot\".",
+      "Given far more pages than can be manually reviewed, the task is to identify which pages a human SEO reviewer should look at first — specifically pages that are receiving search impressions but generating no clicks (the \"opportunity\" signal). The model outputs a ranked queue for human review; it does not make or automate any decision itself.",
     ],
     methodology: [
       {
-        label: "Perception pipeline",
+        label: "Data",
         body: [
-          "A 3-stage inference pipeline: YOLOv8 detects plants in the camera frame, MobileNetV2 classifies the detected plant's disease, and a fuzzy PID controller translates each classification into autonomous motor response.",
+          "A gated Hugging Face warehouse release (FlyRank/internship-warehouse), March 2026 monthly extract — 9,841,378 daily page-performance rows, aggregated to 331,437 pages across 55 pseudonymized clients.",
         ],
       },
       {
-        label: "Edge deployment",
+        label: "Label",
         body: [
-          "The full pipeline runs onboard an NVIDIA Jetson Nano at 20 FPS with 96% accuracy, with TensorRT in the stack for accelerated inference.",
+          "An opportunity proxy (impressions > 0 AND clicks == 0, base rate 32.6%) used strictly for evaluation/ranking — never as a model feature, to avoid leakage.",
         ],
       },
       {
-        label: "Interface",
-        body: ["A web interface exposes the robot's perception and state."],
-      },
-    ],
-    solution: [
-      "The shipped system is a working robot: it drives to plants, detects and classifies disease onboard, and responds autonomously through its motor control — demonstrated end-to-end in the capture below.",
-    ],
-    results: [
-      { value: "20 FPS", label: "on Jetson Nano" },
-      { value: "96%", label: "accuracy" },
-      { value: "IUGRC 2024", label: "published · Jul 28, 2024" },
-    ],
-    stack: [
-      { label: "YOLOv8", key: "ultralytics" },
-      { label: "MobileNetV2", key: "network" },
-      { label: "Jetson Nano", key: "nvidia" },
-      { label: "TensorRT", key: "nvidia" },
-      { label: "Fuzzy PID", key: "workflow" },
-    ],
-    links: [{ label: "View on GitHub", href: "https://github.com/Yousef-koura/AGRI-BOT", external: true }],
-    image: {
-      src: "/projects/agribot.png",
-      alt: "Agri-Bot — AI-powered crop disease detection robot",
-      width: 450,
-      height: 600,
-    },
-    video: {
-      mp4: "/videos/agribot-demo.mp4",
-      poster: {
-        src: "/videos/agribot-demo-poster.jpg",
-        alt: "Agri-Bot demo capture — robot detecting and classifying crop disease",
-        width: 1280,
-        height: 720,
-      },
-    },
-  },
-  {
-    slug: "pneumoscan",
-    name: "PneumoScan",
-    kind: "Deep Learning · Deployment",
-    domain: "Healthcare · Computer Vision",
-    status: "Completed",
-    timeframe: "May 2023 / Apr 2026",
-    role: "Developer",
-    positioningLine:
-      "Chest X-ray pneumonia classification benchmarked across model families and served full-stack.",
-    summary:
-      "A chest X-ray pneumonia classifier benchmarking a custom CNN against ResNet-18 transfer learning across 5,863 images — class imbalance handled via pos_weight reweighting and WeightedRandomSampler, exported to ONNX and served through FastAPI behind a React drag-and-drop frontend.",
-    problem: [
-      "Pneumonia diagnosis depends on chest X-ray reading, and distinguishing pneumonia from healthy lungs is exactly the kind of pattern-recognition task convolutional networks do well. This project builds and benchmarks a classifier on 5,863 chest X-rays, then puts the winning model behind a real interface clinicians-style users can actually operate.",
-      "The dataset is imbalanced — fewer pneumonia-negative cases than positive — so naive training flatters itself. Handling that imbalance honestly is part of the engineering problem.",
-    ],
-    methodology: [
-      {
-        label: "Benchmark design",
+        label: "Leakage discipline",
         body: [
-          "Three configurations compared on the same data: a custom CNN baseline reaching 75% accuracy, ResNet-18 transfer learning with loss reweighting, and ResNet-18 with weighted sampling at 80% accuracy. Class imbalance is addressed via pos_weight reweighting and WeightedRandomSampler.",
+          "Candidate features were audited for future-data and label-derived leakage; future months and label-derived columns were excluded. The risk is proved mechanically: the proxy as a feature produces a trivial Precision@1000 of 1.0 — exactly why it is excluded.",
         ],
       },
       {
-        label: "Winning configuration",
+        label: "Validation",
         body: [
-          "ResNet-18 + pos_weight reweighting wins: 85.1–85% accuracy, 89.3% F1, and 100% pneumonia recall.",
+          "GroupKFold (5-fold) grouped by client with zero client overlap per fold — client-grouped out-of-sample cross-validation.",
         ],
       },
       {
-        label: "Deployment path",
+        label: "Final model",
         body: [
-          "The winning model is exported to ONNX and served through a FastAPI backend, with a custom React frontend for drag-and-drop X-ray upload returning real-time diagnosis plus a confidence score.",
+          "Logistic Regression on 2 features (impression volume and average search position, log-transformed), compared against a transparent rule-based baseline scoring 0–130.",
         ],
       },
     ],
     solution: [
-      "The shipped application takes an uploaded chest X-ray and returns a real-time diagnosis with a confidence score — ONNX inference through FastAPI, drag-and-drop upload in React.",
+      "A decision-support model that ranks web pages by content-refresh opportunity for human SEO review, validated against a transparent rule-based baseline on a production-scale search-performance dataset.",
     ],
     results: [
-      { value: "85.1–85%", label: "accuracy — ResNet-18 + pos_weight" },
-      { value: "89.3%", label: "F1 score" },
-      { value: "100%", label: "pneumonia recall" },
-      { value: "5,863", label: "chest X-rays" },
+      { value: "0.971 ± 0.030", label: "Precision@1000 — logistic regression" },
+      { value: "0.828 ± 0.119", label: "Precision@1000 — rule-based baseline" },
+      {
+        value: "1.17×",
+        label: "Precision@1000 lift, client-grouped out-of-sample CV",
+      },
     ],
     stack: [
-      { label: "Custom CNN", key: "layers" },
-      { label: "ResNet-18", key: "network" },
-      { label: "Transfer Learning", key: "transfer" },
-      { label: "ONNX", key: "onnx" },
-      { label: "FastAPI", key: "fastapi" },
-      { label: "React", key: "react" },
+      { label: "Python", key: "python" },
+      { label: "pandas", key: "pandas" },
+      { label: "scikit-learn", key: "scikitlearn" },
+      { label: "Hugging Face Hub", key: "huggingface" },
+      { label: "Parquet", key: "apacheparquet" },
+      { label: "matplotlib", key: "chart" },
+      { label: "Jupyter", key: "jupyter" },
+      { label: "GitHub Actions CI", key: "githubactions" },
     ],
     links: [
-      {
-        label: "View on GitHub",
-        href: "https://github.com/Yousef-koura/Deep_Learning_Projects/tree/main/PRJ-004_xray_CNN",
-        external: true,
-      },
+      { label: "View repository", href: "https://github.com/Yousef-koura/Flyrank_ML_Assign", external: true },
+      { label: "Research paper", href: "https://yousef-koura.github.io/Flyrank_ML_Assign/", external: true },
     ],
     image: {
-      src: "/projects/Pneumonia.png",
-      alt: "PneumoScan — chest X-ray diagnosis with confidence score in the React frontend",
-      width: 1772,
-      height: 792,
+      src: "/projects/flyrank-capstone-cover.jpg",
+      alt: "Content Opportunity Scoring — decision-support ranking for content-refresh review",
+      width: 1897,
+      height: 842,
     },
     video: {
-      mp4: "/videos/pneumoscan-demo.mp4",
+      mp4: "/videos/flyrank-capstone-demo.mp4",
       poster: {
-        src: "/videos/pneumoscan-demo-poster.jpg",
-        alt: "PneumoScan demo capture — chest X-ray diagnosis flow",
-        width: 1280,
-        height: 720,
+        src: "/videos/flyrank-capstone-cover.jpg",
+        alt: "Content Opportunity Scoring — decision-support ranking over search-performance data",
+        width: 1897,
+        height: 842,
       },
     },
   },
@@ -511,6 +464,148 @@ export const projectDetails: ProjectDetail[] = [
       height: 705,
     },
     video: { mp4: "/videos/fmcg-pipeline-demo.mp4" },
+  },
+  {
+    slug: "pneumoscan",
+    name: "PneumoScan",
+    kind: "Deep Learning · Deployment",
+    domain: "Healthcare · Computer Vision",
+    status: "Completed",
+    timeframe: "May 2023 / Apr 2026",
+    role: "Developer",
+    positioningLine:
+      "Chest X-ray pneumonia classification benchmarked across model families and served full-stack.",
+    summary:
+      "A chest X-ray pneumonia classifier benchmarking a custom CNN against ResNet-18 transfer learning across 5,863 images — class imbalance handled via pos_weight reweighting and WeightedRandomSampler, exported to ONNX and served through FastAPI behind a React drag-and-drop frontend.",
+    problem: [
+      "Pneumonia diagnosis depends on chest X-ray reading, and distinguishing pneumonia from healthy lungs is exactly the kind of pattern-recognition task convolutional networks do well. This project builds and benchmarks a classifier on 5,863 chest X-rays, then puts the winning model behind a real interface clinicians-style users can actually operate.",
+      "The dataset is imbalanced — fewer pneumonia-negative cases than positive — so naive training flatters itself. Handling that imbalance honestly is part of the engineering problem.",
+    ],
+    methodology: [
+      {
+        label: "Benchmark design",
+        body: [
+          "Three configurations compared on the same data: a custom CNN baseline reaching 75% accuracy, ResNet-18 transfer learning with loss reweighting, and ResNet-18 with weighted sampling at 80% accuracy. Class imbalance is addressed via pos_weight reweighting and WeightedRandomSampler.",
+        ],
+      },
+      {
+        label: "Winning configuration",
+        body: [
+          "ResNet-18 + pos_weight reweighting wins: 85.1–85% accuracy, 89.3% F1, and 100% pneumonia recall.",
+        ],
+      },
+      {
+        label: "Deployment path",
+        body: [
+          "The winning model is exported to ONNX and served through a FastAPI backend, with a custom React frontend for drag-and-drop X-ray upload returning real-time diagnosis plus a confidence score.",
+        ],
+      },
+    ],
+    solution: [
+      "The shipped application takes an uploaded chest X-ray and returns a real-time diagnosis with a confidence score — ONNX inference through FastAPI, drag-and-drop upload in React.",
+    ],
+    results: [
+      { value: "85.1–85%", label: "accuracy — ResNet-18 + pos_weight" },
+      { value: "89.3%", label: "F1 score" },
+      { value: "100%", label: "pneumonia recall" },
+      { value: "5,863", label: "chest X-rays" },
+    ],
+    stack: [
+      { label: "Custom CNN", key: "layers" },
+      { label: "ResNet-18", key: "network" },
+      { label: "Transfer Learning", key: "transfer" },
+      { label: "ONNX", key: "onnx" },
+      { label: "FastAPI", key: "fastapi" },
+      { label: "React", key: "react" },
+    ],
+    links: [
+      {
+        label: "View on GitHub",
+        href: "https://github.com/Yousef-koura/Deep_Learning_Projects/tree/main/PRJ-004_xray_CNN",
+        external: true,
+      },
+    ],
+    image: {
+      src: "/projects/Pneumonia.png",
+      alt: "PneumoScan — chest X-ray diagnosis with confidence score in the React frontend",
+      width: 1772,
+      height: 792,
+    },
+    video: {
+      mp4: "/videos/pneumoscan-demo.mp4",
+      poster: {
+        src: "/videos/pneumoscan-demo-poster.jpg",
+        alt: "PneumoScan demo capture — chest X-ray diagnosis flow",
+        width: 1280,
+        height: 720,
+      },
+    },
+  },
+  {
+    slug: "agri-bot",
+    name: "Agri-Bot",
+    kind: "Graduation Project · Research",
+    domain: "Agriculture · Computer Vision · Robotics",
+    status: "Completed",
+    timeframe: "Nov 2023 — Jun 2024",
+    role: "Graduation Project",
+    positioningLine:
+      "An AI-powered robot that detects crop disease and responds autonomously — published research.",
+    summary:
+      "An AI-powered crop disease detection robot running a 3-stage pipeline — YOLOv8 plant detection → MobileNetV2 disease classification → fuzzy PID autonomous motor response — deployed on a Jetson Nano with a web interface.",
+    problem: [
+      "Crop disease spreads quietly: by the time a farmer spots damaged leaves in the field, the window for targeted treatment has often closed. Agri-Bot was built as a graduation project to put detection and response on an autonomous platform — a robot that finds plants, classifies disease, and acts on what it sees.",
+      "The work was published at IUGRC 2024 under the paper title \"AgRobot: Towards AI-Powered Crop Disease Detection and Medication Recommendation Robot\".",
+    ],
+    methodology: [
+      {
+        label: "Perception pipeline",
+        body: [
+          "A 3-stage inference pipeline: YOLOv8 detects plants in the camera frame, MobileNetV2 classifies the detected plant's disease, and a fuzzy PID controller translates each classification into autonomous motor response.",
+        ],
+      },
+      {
+        label: "Edge deployment",
+        body: [
+          "The full pipeline runs onboard an NVIDIA Jetson Nano at 20 FPS with 96% accuracy, with TensorRT in the stack for accelerated inference.",
+        ],
+      },
+      {
+        label: "Interface",
+        body: ["A web interface exposes the robot's perception and state."],
+      },
+    ],
+    solution: [
+      "The shipped system is a working robot: it drives to plants, detects and classifies disease onboard, and responds autonomously through its motor control — demonstrated end-to-end in the capture below.",
+    ],
+    results: [
+      { value: "20 FPS", label: "on Jetson Nano" },
+      { value: "96%", label: "accuracy" },
+      { value: "IUGRC 2024", label: "published · Jul 28, 2024" },
+    ],
+    stack: [
+      { label: "YOLOv8", key: "ultralytics" },
+      { label: "MobileNetV2", key: "network" },
+      { label: "Jetson Nano", key: "nvidia" },
+      { label: "TensorRT", key: "nvidia" },
+      { label: "Fuzzy PID", key: "workflow" },
+    ],
+    links: [{ label: "View on GitHub", href: "https://github.com/Yousef-koura/AGRI-BOT", external: true }],
+    image: {
+      src: "/projects/agribot.png",
+      alt: "Agri-Bot — AI-powered crop disease detection robot",
+      width: 450,
+      height: 600,
+    },
+    video: {
+      mp4: "/videos/agribot-demo.mp4",
+      poster: {
+        src: "/videos/agribot-demo-poster.jpg",
+        alt: "Agri-Bot demo capture — robot detecting and classifying crop disease",
+        width: 1280,
+        height: 720,
+      },
+    },
   },
   {
     slug: "potatoscan",

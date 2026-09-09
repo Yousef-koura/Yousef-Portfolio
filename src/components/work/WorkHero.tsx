@@ -38,7 +38,7 @@ export function WorkHero() {
             variants={item}
             className="font-mono text-[11px] uppercase leading-loose tracking-[0.22em] text-muted lg:text-right"
           >
-            07 projects · 07 pages
+            08 projects · 08 pages
             <br />
             2023 — 2026
           </motion.p>
