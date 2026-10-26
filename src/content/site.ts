@@ -10,7 +10,7 @@ export const siteUrl = (
 
 export const site = {
   name: "Yousef Koura",
-  role: "Machine Learning Engineer",
+  role: "AI Engineer",
   location: "Menoufia, Egypt",
   email: "yousefahmed.ae20@gmail.com",
   phone: "+20 107 047 5596",

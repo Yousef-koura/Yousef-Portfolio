@@ -41,18 +41,18 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Yousef Koura — Machine Learning Engineer",
+    default: "Yousef Koura — AI Engineer",
     template: "%s — Yousef Koura",
   },
   description:
-    "Junior Machine Learning Engineer with a Mechatronics Engineering background — computer vision, applied AI, and end-to-end data engineering. Currently building Movenue, a live SaaS court management and booking platform.",
+    "AI Engineer with a Mechatronics Engineering background — applied AI, LLMs/RAG, computer vision, machine learning, and end-to-end data engineering. Currently building Movenue, a live SaaS court management and booking platform.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Yousef Koura — Machine Learning Engineer",
+    title: "Yousef Koura — AI Engineer",
     description:
-      "Junior Machine Learning Engineer with a Mechatronics Engineering background — computer vision, applied AI, and end-to-end data engineering. Currently building Movenue.",
+      "AI Engineer with a Mechatronics Engineering background — applied AI, LLMs/RAG, computer vision, machine learning, and end-to-end data engineering. Currently building Movenue.",
     url: "/",
     siteName: site.name,
     locale: "en_US",
@@ -60,9 +60,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Yousef Koura — Machine Learning Engineer",
+    title: "Yousef Koura — AI Engineer",
     description:
-      "Junior Machine Learning Engineer with a Mechatronics Engineering background — computer vision, applied AI, and end-to-end data engineering. Currently building Movenue.",
+      "AI Engineer with a Mechatronics Engineering background — applied AI, LLMs/RAG, computer vision, machine learning, and end-to-end data engineering. Currently building Movenue.",
   },
   robots: {
     index: true,

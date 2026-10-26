@@ -10,7 +10,7 @@
 | Animation | GSAP, GSAP ScrollTrigger |
 | Animation | Motion / Framer Motion |
 | Smooth scrolling | Lenis |
-| 3D | Three.js, React Three Fiber, Drei |
+| 3D | Three.js, React Three Fiber, Drei (approved, reserved for Phase 12) |
 | Icons | Lucide React |
 | Brand icons | @icons-pack/react-simple-icons (tree-shakeable named imports; used only for confirmed technologies on WORK detail pages — concepts without a brand mark fall back to Lucide glyphs) |
 | Fonts | next/font |

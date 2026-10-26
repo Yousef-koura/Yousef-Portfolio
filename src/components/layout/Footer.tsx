@@ -32,8 +32,8 @@ export function Footer() {
               {site.name}
             </p>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
-              Machine Learning Engineer with a Mechatronics Engineering background — computer vision, applied AI, and
-              end-to-end data engineering. Currently building Movenue.
+              AI Engineer with a Mechatronics Engineering background — applied AI, LLMs/RAG, computer vision, machine
+              learning, and end-to-end data engineering. Currently building Movenue.
             </p>
             <p className="mt-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted">
               <MapPin size={14} aria-hidden="true" />

@@ -11,7 +11,7 @@ import { siteUrl } from "@/content/site";
    The host line derives from NEXT_PUBLIC_SITE_URL at build time, so a
    custom domain re-renders the card on the next deploy automatically. */
 
-export const alt = "Yousef Koura — Machine Learning Engineer";
+export const alt = "Yousef Koura — AI Engineer";
 export const size = {
   width: 1200,
   height: 630,
@@ -54,7 +54,7 @@ export default function OpenGraphImage() {
             }}
           >
             <span style={{ width: 10, height: 10, background: "#C9A86A" }} />
-            MACHINE LEARNING ENGINEER
+            AI ENGINEER
           </div>
           <div style={{ marginTop: 24, fontSize: 44, lineHeight: 1.2 }}>
             Computer vision · Applied AI · End-to-end data engineering

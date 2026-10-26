@@ -97,7 +97,7 @@ Notes:
 - High-level sitemap: HOME, WORK, ABOUT, EXPERIENCE, PUBLICATIONS, CONTACT; RESUME as persistent action; skills contextual.
 - Visual direction: PREMIUM + TECHNICAL + PERSONAL + MODERN.
 - Color palette: Obsidian + Champagne (tokens in [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)).
-- Technical stack: Next.js, TypeScript, Tailwind CSS, GSAP + ScrollTrigger, Motion/Framer Motion, Lenis, Three.js + R3F + Drei, Lucide React, next/font; Vercel; no DB/CMS/backend.
+- Technical stack: Next.js, TypeScript, Tailwind CSS, GSAP + ScrollTrigger, Motion/Framer Motion, Lenis, Three.js + R3F + Drei (approved, reserved for Phase 12), Lucide React, next/font; Vercel; no DB/CMS/backend.
 - Selective 3D; motion serves content.
 
 Full log: [DECISIONS.md](./DECISIONS.md).

@@ -13,7 +13,8 @@ Status labels:
 
 ## Identity
 
-- **CONFIRMED** — Name: Yousef Koura (also goes by Yousef Ahmed); Title: Junior / early-career Machine Learning Engineer; Location: Menoufia, Egypt; Military service: completed.
+- **CONFIRMED** — Name: Yousef Koura (also goes by Yousef Ahmed); Title: AI Engineer; Location: Menoufia, Egypt; Military service: completed.
+- **CONFIRMED (owner-directed, 2026-10-25)** — Professional identity repositioned from "Junior / early-career Machine Learning Engineer" to "AI Engineer", reflecting the current Gen AI / Applied AI focus of the market. The owner explicitly directed this change. "Machine Learning" is retained in the supporting descriptor because many job postings say "AI/ML Engineer".
 - **CONFIRMED (user-provided, 2026-08-23 — not present in `yousef-portfolio-content.md`; DECISIONS #51)** — Born 2002; lived in the UAE (Sharjah and Dubai) until 2019, then moved to Egypt for university. Live on `/about` as plain biographical statements in the "Who I am" copy — no traits or claims attached to them.
 - **CONFIRMED (user-provided, 2026-08-23 — not present in `yousef-portfolio-content.md`; DECISIONS #51)** — Played football at Emirates Club (UAE) youth academy, ages 15–18, position: left wing. Same rendering rule as above.
 - **CONFIRMED** — B.Sc. Mechatronics Systems Engineering background.
@@ -24,7 +25,7 @@ Status labels:
 - **PROVISIONAL** — Prior AI Fluency work defined audience ("ML hiring managers/recruiters") and a core claim ("I can ship production ML systems, not just notebooks."). The portfolio represents a **complete professional**, not only an ML engineer.
 - **CONFIRMED** — Approved high-level sitemap: HOME, WORK, ABOUT, EXPERIENCE, PUBLICATIONS, CONTACT. RESUME is a persistent action, not a mandatory page. No standalone Skills page (skills appear contextually). See [DECISIONS.md](./DECISIONS.md) #14–15.
 - **CONFIRMED** — Final positioning statement (decided 2026-08-22): "I build the systems beneath a useful interface: models, data, and decisions brought into the same room." Live in the Home "01 — SIGNAL / INTENT" statement section (`PortalArchive.tsx`) with the section's single champagne `<em>` accent on "models, data, and decisions". See [DECISIONS.md](./DECISIONS.md) #39.
-- **IMPLEMENTED (user-directed, Aug 2026)** — The role line **"Machine Learning Engineer"** is now live in the Home arrival flow (portal statement section, above the confirmed positioning copy; see `PortalArchive.tsx`). This implements the role identity only; it is separate from the now-confirmed positioning statement above ([DECISIONS.md](./DECISIONS.md) #39) and does not replace it.
+- **IMPLEMENTED (owner-directed, 2026-10-25)** — The role line is now **"AI Engineer"** in the Home statement section (`PortalArchive.tsx`), with a quiet supporting descriptor built only from confirmed capability areas: Applied AI · LLMs/RAG · Computer vision · Machine learning · Data. "Machine Learning" is retained in the descriptor because many job postings say "AI/ML Engineer". The confirmed positioning statement and its single champagne emphasis are unchanged. This implements the role identity only; it is separate from the confirmed positioning statement ([DECISIONS.md](./DECISIONS.md) #39) and does not replace it.
 
 ## Projects
 
