@@ -2,6 +2,7 @@
 
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
@@ -9,11 +10,20 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { QuietLink } from "@/components/ui/QuietLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealImage } from "@/components/ui/RevealImage";
-import { featuredProject } from "@/content/projects";
 import { experience, publication } from "@/content/experience";
 import HalftoneBackdrop from "@/components/home/HalftoneBackdrop";
 
 gsap.registerPlugin(ScrollTrigger);
+
+/* Lazy-load the WebGL gallery so it is never part of the initial server
+   rendered bundle (canvas / ogl only exist on the client). */
+const SelectedWorkGallery = dynamic(
+  () =>
+    import("@/components/home/SelectedWorkGallery").then(
+      (mod) => mod.SelectedWorkGallery,
+    ),
+  { ssr: false, loading: () => null },
+);
 
 /**
  * Art-directed opening portrait (transparent cutouts): the desktop crop
@@ -122,187 +132,36 @@ export function PortalArchive() {
         </div>
       </section>
 
-      {/* STATEMENT + ABOUT — asymmetric two-column on desktop, single column
-          on mobile. Role line reads first at display scale; descriptor is
-          quiet support; positioning statement is secondary. */}
-      <section className="portal-statement-about" data-reveal>
-        <div className="portal-statement-about__grid">
-          <div className="portal-statement-about__statement">
-            <p className="portal-statement__role">AI Engineer</p>
-            <p className="portal-statement__descriptor">Applied AI · LLMs/RAG · Computer vision · Machine learning · Data</p>
-            <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
-          </div>
-          <div id="about" className="portal-statement-about__about">
-            <h2 className="portal-about__head">About me</h2>
-            <p className="portal-about__copy">
-              Based in Menoufia, Egypt, I hold a B.Sc. in Mechatronics Systems
-              Engineering and have worked on ML and AI internships spanning data,
-              computer vision, and applied AI. I now build AI-native products —
-              most recently Movenue, a live court management and booking platform.
-            </p>
-            <div className="portal-about__link">
-              <QuietLink href="/about" className="portal-ql">More about me</QuietLink>
-            </div>
-          </div>
+      {/* STATEMENT — single column, left aligned (Version A) */}
+      <section className="portal-statement" data-reveal>
+        <p className="portal-statement__role">AI Engineer</p>
+        <p className="portal-statement__descriptor">Applied AI · LLMs/RAG · Computer vision · Machine learning · Data</p>
+        <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
+      </section>
+
+      {/* ABOUT — stacked below the statement (Version A) */}
+      <section id="about" className="portal-about" data-reveal>
+        <h2 className="portal-about__head">About me</h2>
+        <p className="portal-about__copy">
+          Based in Menoufia, Egypt, I hold a B.Sc. in Mechatronics Systems
+          Engineering and have worked on ML and AI internships spanning data,
+          computer vision, and applied AI. I now build AI-native products —
+          most recently Movenue, a live court management and booking platform.
+        </p>
+        <div className="portal-about__link">
+          <QuietLink href="/about" className="portal-ql">More about me</QuietLink>
         </div>
       </section>
 
-      {/* PROOF ROW — compact static skimmable evidence, no animation beyond
-          the existing reduce-gated reveal. "up to" qualifiers preserved
-          verbatim. Champagne on at most one element. */}
-      <section className="portal-proof" data-reveal>
-        <div className="portal-proof__grid">
-          <div className="portal-proof__item">
-            <div className="portal-proof__value portal-proof__value--accent">96%</div>
-            <p className="portal-proof__kind">accuracy</p>
-            <p className="portal-proof__project">Agri-Bot</p>
-          </div>
-          <div className="portal-proof__item">
-            <div className="portal-proof__value">up to 97%</div>
-            <p className="portal-proof__kind">F1</p>
-            <p className="portal-proof__project">ITI</p>
-          </div>
-          <div className="portal-proof__item">
-            <div className="portal-proof__value">up to 87%</div>
-            <p className="portal-proof__kind">R²</p>
-            <p className="portal-proof__project">PioPetro</p>
-          </div>
-          <div className="portal-proof__item">
-            <div className="portal-proof__value">0.971 ± 0.030</div>
-            <p className="portal-proof__kind">Precision@1000</p>
-            <p className="portal-proof__project">Content Opportunity Scoring</p>
-          </div>
-        </div>
-      </section>
+      {/* SELECTED WORK — label, heading, All work link, then the OGL WebGL
+          curved carousel gallery; active-item caption below; prev/next buttons. */}
+      <SelectedWorkGallery />
 
-      {/* SELECTED WORK — two calm leads of equal prominence, then a compact
-          tappable index. One heading only (no duplicate kicker). */}
-      <section id="work" className="portal-work-section" data-reveal role="region" aria-label="Selected work">
-        <div className="portal-work__head">
-          <h2 className="portal-work__title">Selected work</h2>
-          <QuietLink href="/work" className="portal-ql">All work</QuietLink>
-        </div>
-        <div className="portal-work__leads">
-          <article className="portal-work__lead">
-            <figure className="portal-work__lead__media">
-              <Image
-                src="/projects/movenue.png"
-                alt="Movenue — court management and booking platform"
-                width={988}
-                height={681}
-                sizes="(max-width: 760px) 92vw, 46vw"
-                className="portal-work__lead__image"
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-            <div className="portal-work__lead__body">
-              <div className="portal-work__lead__status">
-                <span
-                  aria-hidden="true"
-                  className="portal-work__lead__dot"
-                />
-                {featuredProject.status}
-              </div>
-              <h3 className="portal-work__lead__name">{featuredProject.name}</h3>
-              <p className="portal-work__lead__summary">{featuredProject.summary}</p>
-              <p className="portal-work__lead__proof">
-                Live product — founder &amp; developer, hardened against concurrent double-booking with an integration test suite.
-              </p>
-              <a
-                href={featuredProject.links[0].href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="portal-work__lead__link"
-              >
-                Visit {featuredProject.name}
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>
-            </div>
-          </article>
-          <article className="portal-work__lead">
-            <figure className="portal-work__lead__media">
-              <Image
-                src="/projects/rag-assistant.png"
-                alt="Personal RAG Chatbot — grounded question answering over a knowledge base"
-                width={1880}
-                height={827}
-                sizes="(max-width: 760px) 92vw, 46vw"
-                className="portal-work__lead__image"
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-            <div className="portal-work__lead__body">
-              <div className="portal-work__lead__status">
-                <span
-                  aria-hidden="true"
-                  className="portal-work__lead__dot"
-                />
-                Completed
-              </div>
-              <h3 className="portal-work__lead__name">Personal RAG Chatbot</h3>
-              <p className="portal-work__lead__summary">
-                Grounded Q&amp;A chatbot over a personal knowledge base — LangChain chunking, ChromaDB retrieval, and Groq (Llama 4 Scout) generation behind a FastAPI service.
-              </p>
-              <p className="portal-work__lead__proof portal-work__lead__proof--stack">
-                LangChain · ChromaDB · Groq Llama 4 Scout · FastAPI · May 2026
-              </p>
-              <a
-                href="https://github.com/Yousef-koura/personal-rag-assistant"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="portal-work__lead__link"
-              >
-                View on GitHub
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>
-            </div>
-          </article>
-        </div>
-        <div className="portal-work__index">
-          <p className="portal-work__index-head">Also</p>
-          <Link
-            href="/work/agri-bot"
-            className="portal-work__index-row"
-          >
-            <div className="portal-work__index-row__main">
-              <p className="portal-work__index-row__name">Agri-Bot</p>
-              <p className="portal-work__index-row__proof">20 FPS · 96% accuracy</p>
-            </div>
-            <p className="portal-work__index-row__stack">Graduation project · CV · Robotics</p>
-            <span className="portal-work__index-row__arrow" aria-hidden="true">→</span>
-          </Link>
-          <Link
-            href="/work/fmcg-pipeline"
-            className="portal-work__index-row"
-          >
-            <div className="portal-work__index-row__main">
-              <p className="portal-work__index-row__name">FMCG Data Engineering Pipeline</p>
-              <p className="portal-work__index-row__stack portal-work__index-row__stack--inline">Data Engineering · Databricks · PySpark · Delta Lake · Apr 2026</p>
-            </div>
-            <span className="portal-work__index-row__arrow" aria-hidden="true">→</span>
-          </Link>
-          <Link
-            href="/work/flyrank-content-opportunity-scoring"
-            className="portal-work__index-row"
-          >
-            <div className="portal-work__index-row__main">
-              <p className="portal-work__index-row__name">Content Opportunity Scoring</p>
-              <p className="portal-work__index-row__proof">Precision@1000 0.971 ± 0.030 vs 0.828 ± 0.119 baseline</p>
-            </div>
-            <p className="portal-work__index-row__stack">AI ML Capstone · Jul–Sep 2026</p>
-            <span className="portal-work__index-row__arrow" aria-hidden="true">→</span>
-          </Link>
-        </div>
-      </section>
-
-      {/* EXPERIENCE — compact uniform rows; one short summary line per role
-          built from existing highlights data (visible without hover). "Digital
-          HUB (D-HUB)" wraps at word boundaries. */}
+      {/* JOURNEY — compact rows, timeframe / org / role + Current chip.
+          No per-role summary line; "Digital HUB (D-HUB)" wraps at word boundaries. */}
       <section id="experience" className="portal-journey" data-reveal>
         <div className="portal-journey__head">
-          <p className="portal-label">Experience</p>
+          <p className="portal-label">Journey</p>
           <h2 className="portal-journey__title">Journey</h2>
           <QuietLink href="/experience" className="portal-ql">Full experience</QuietLink>
         </div>
@@ -324,7 +183,6 @@ export function PortalArchive() {
                       <span className="portal-current"> · Current</span>
                     ) : null}
                   </div>
-                  <p className="portal-journey__summary">{entry.summary}</p>
                 </div>
               </li>
             );
@@ -332,8 +190,7 @@ export function PortalArchive() {
         </ol>
       </section>
 
-      {/* PUBLICATION — enlarged certificate thumbnail proportionate to text,
-          explicit dimensions, lazy-loaded. */}
+      {/* PUBLICATION — small certificate thumbnail + title/venue/date + link. */}
       <section id="publications" className="portal-publication" data-reveal>
         <div className="portal-publication__row">
           <Reveal>
@@ -370,7 +227,6 @@ export function PortalArchive() {
         <div className="portal-close__body portal-close__body--layered">
           <h2 className="portal-close__head">LET&apos;S MAKE<br />THE SIGNAL <em>USEFUL.</em></h2>
           <p className="portal-close__copy">Available for thoughtful AI, data, and product collaborations.</p>
-          <p className="portal-close__roles">Open to AI Engineer · ML Engineer · Computer Vision Engineer roles</p>
           <div className="portal-close__actions">
             <a className="portal-action" href="mailto:yousefahmed.ae20@gmail.com">EMAIL ME <ArrowUpRight size={15} /></a>
             <Link href="/contact" className="portal-action portal-action--quiet">CONTACT PAGE</Link>

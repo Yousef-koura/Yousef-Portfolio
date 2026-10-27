@@ -269,14 +269,13 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 .portal-publication__venue{font-size:clamp(12px,1.5vw,13px)}
 .portal-publication__date{font-size:clamp(12px,1.5vw,13px)}
 .portal-publication__link{font-size:clamp(12px,1.5vw,13px)}
-.portal-close__roles{font-family:var(--font-mono);font-size:clamp(12px,1.6vw,14px);letter-spacing:.16em;text-transform:uppercase;color:var(--tk-champagne-strong);margin:10px 0 0;max-width:46ch;margin-left:auto;margin-right:auto}
 .portal-about__copy,.portal-close__copy{font-size:clamp(14px,1.8vw,16px)}
 .portal-text-link,.portal-action{font-size:12px}
 
 
 
-/* Journey — four confirmed roles as calm steps; summary line per role
-   visible without hover. */
+/* Journey — four confirmed roles as calm steps (no per-role summary line in
+   Version A); "Digital HUB (D-HUB)" wraps at word boundaries. */
 .portal-journey{position:relative;padding:clamp(10px,6vw,8vw) clamp(16px,4vw,13vw)}
 .portal-journey__head{display:flex;flex-direction:column;gap:10px;margin-bottom:clamp(10px,4vw,16px)}
 .portal-journey__title{font-family:var(--font-display);font-size:clamp(1.75rem,4vw,2.5rem);letter-spacing:-.06em;line-height:1.1;margin:0 0 4px;color:var(--tk-ink)}
@@ -288,7 +287,6 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 .portal-journey__org{font-family:var(--font-display);font-size:clamp(1.1rem,2.2vw,1.3rem);letter-spacing:-.03em;line-height:1.2;margin:0 0 2px;color:var(--tk-ink);overflow-wrap:break-word;min-width:0}
 .portal-journey__role{font-family:var(--font-mono);font-size:clamp(12px,1.5vw,13px);letter-spacing:.14em;text-transform:uppercase;color:var(--tk-muted-strong);margin:0 0 6px}
 .portal-journey__role--current{color:var(--tk-champagne-strong)}
-.portal-journey__phrase{font-size:clamp(13px,1.6vw,14px);line-height:1.55;color:var(--tk-ink);margin:0}
 .portal-current{font-family:var(--font-mono);font-size:clamp(11px,1.4vw,12px);letter-spacing:.14em;text-transform:uppercase;color:var(--tk-champagne-strong)}
 
 /* Publication — slim evidence row (large certificate block removed). */
@@ -319,91 +317,81 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
    on cream it softens to a bronze-tinted whisper. */
 [data-theme="light"] .portal-action:hover{box-shadow:0 12px 28px rgba(140,106,46,.14)}
 
-/* ─── Statement + About — asymmetric two-column on desktop, single column on
-   mobile. Consistent section rhythm. ─── */
-.portal-statement-about{
+/* ─── Statement — single column, left aligned (Version A) ─── */
+.portal-statement{
+  display:flex;
+  flex-direction:column;
+  gap:clamp(10px,3vw,16px);
   padding:clamp(24px,6vw,48px) clamp(16px,4vw,20px);
   border-top:1px solid var(--tk-line);
   overflow:clip;
 }
-.portal-statement-about__grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:clamp(24px,6vw,48px);
-}
-@media (min-width:761px){
-  .portal-statement-about__grid{
-    grid-template-columns:0.42fr 0.58fr;
-    gap:clamp(32px,6vw,64px);
-    align-items:start;
-  }
-}
-.portal-statement-about__statement{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.portal-statement-about__about{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-/* ─── Proof row — compact static skimmable evidence ─── */
-.portal-proof{
-  padding:clamp(24px,6vw,48px) clamp(16px,4vw,20px);
-  border-top:1px solid var(--tk-line);
-  overflow:clip;
-}
-.portal-proof__grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:clamp(16px,4vw,24px);
-}
-@media (min-width:761px){
-  .portal-proof__grid{
-    grid-template-columns:repeat(4,1fr);
-  }
-}
-.portal-proof__item{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  padding:clamp(12px,3vw,20px);
-  border:1px solid var(--tk-line);
-}
-.portal-proof__value{
+.portal-statement__role{
+  color:var(--tk-champagne-strong);
   font-family:var(--font-display);
-  font-size:clamp(1.5rem,4vw,2.5rem);
-  line-height:1.1;
-  color:var(--tk-ink);
-}
-.portal-proof__value--accent{
-  color:var(--tk-champagne);
-}
-.portal-proof__kind{
-  font-family:var(--font-mono);
-  font-size:clamp(12px,1.5vw,13px);
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--tk-muted-strong);
-  margin:0;
-}
-.portal-proof__project{
-  font-family:var(--font-display);
-  font-size:clamp(11px,1.5vw,13px);
+  font-size:clamp(1.5rem,5vw,2.75rem);
+  font-weight:600;
   letter-spacing:-.02em;
-  color:var(--tk-ink);
+  line-height:1.05;
   margin:0;
 }
+.portal-statement__descriptor{
+  color:var(--tk-muted-strong);
+  font-family:var(--font-mono);
+  font-size:clamp(12px,1.6vw,14px);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  margin:0;
+}
+.portal-statement__copy{
+  font-family:var(--font-display);
+  font-size:clamp(1.25rem,2.6vw,2rem);
+  letter-spacing:-.04em;
+  line-height:1.1;
+  margin:0;
+  max-width:34ch;
+}
+.portal-statement em{color:var(--tk-champagne);font-style:normal}
 
-/* ─── Selected Work — two calm leads + compact tappable index ─── */
-.portal-work-section{
+/* ─── About — stacked below the statement (Version A) ─── */
+.portal-about{
+  display:flex;
+  flex-direction:column;
+  gap:clamp(12px,3vw,18px);
   padding:clamp(24px,6vw,48px) clamp(16px,4vw,20px);
   border-top:1px solid var(--tk-line);
   overflow:clip;
 }
-.portal-work__head{
+.portal-about__head{
+  font-family:var(--font-display);
+  font-size:clamp(1.75rem,4vw,2.25rem);
+  letter-spacing:-.05em;
+  line-height:1.1;
+  margin:0;
+  color:var(--tk-ink);
+}
+.portal-about__copy{
+  color:var(--tk-muted-strong);
+  font-size:clamp(13px,1.7vw,15px);
+  line-height:1.6;
+  margin:0;
+  max-width:46ch;
+}
+.portal-about__link{
+  display:flex;
+  justify-content:flex-start;
+}
+
+/* ─── Selected Work — OGL WebGL curved carousel (Version A) ─── */
+.portal-gallery-section{
+  display:flex;
+  flex-direction:column;
+  gap:clamp(16px,4vw,24px);
+  padding:clamp(24px,6vw,48px) clamp(16px,4vw,20px);
+  border-top:1px solid var(--tk-line);
+  overflow:clip;
+}
+.portal-gallery__head{
   display:flex;
   align-items:baseline;
   justify-content:space-between;
@@ -411,7 +399,7 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   flex-wrap:wrap;
   margin-bottom:clamp(24px,6vw,40px);
 }
-.portal-work__title{
+.portal-gallery__title{
   font-family:var(--font-display);
   font-size:clamp(1.75rem,4vw,2.5rem);
   letter-spacing:-.06em;
@@ -419,44 +407,69 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   margin:0;
   color:var(--tk-ink);
 }
-.portal-work__leads{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:clamp(24px,6vw,48px);
+.portal-gallery__wrap{
+  position:relative;
+  width:100%;
+  height:clamp(400px,60svh,700px);
+  overflow:hidden;
+  background:var(--tk-background);
 }
 @media (min-width:761px){
-  .portal-work__leads{
-    grid-template-columns:1fr 1fr;
-    gap:clamp(32px,6vw,64px);
-  }
+  .portal-gallery__wrap{height:clamp(500px,70svh,900px);}
 }
-.portal-work__lead{
+.portal-gallery__canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+.portal-gallery__canvas--hidden{display:none;}
+.portal-gallery__fallback{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;
   display:flex;
-  flex-direction:column;
-  gap:16px;
-  padding:clamp(20px,5vw,32px);
-  border:1px solid var(--tk-line);
-  background:var(--tk-surface);
 }
-.portal-work__lead__media{
+.portal-gallery__fallback--hidden{display:none;}
+.portal-gallery__fallback::-webkit-scrollbar{display:none;}
+.portal-gallery__track{
+  display:flex;
+  gap:clamp(12px,3vw,18px);
+  padding:clamp(8px,2vw,14px);
+}
+.portal-gallery__card{
+  flex:none;
+  width:clamp(220px,30vw,340px);
+  height:100%;
+  scroll-snap-align:center;
   position:relative;
   overflow:hidden;
   border:1px solid var(--tk-line);
-  aspect-ratio:4/3;
-  background:var(--tk-background);
-}
-.portal-work__lead__image{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  display:block;
-}
-.portal-work__lead__body{
+  background:var(--tk-surface);
   display:flex;
   flex-direction:column;
-  gap:10px;
 }
-.portal-work__lead__status{
+.portal-gallery__card__image{
+  width:100%;
+  height:clamp(140px,22vh,200px);
+  object-fit:cover;
+  display:block;
+  background:var(--tk-background);
+}
+.portal-gallery__card__body{
+  padding:clamp(12px,3vw,16px);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  flex:1;
+}
+.portal-gallery__card__status{
   display:inline-flex;
   align-items:center;
   gap:8px;
@@ -466,38 +479,31 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   text-transform:uppercase;
   color:var(--tk-muted-strong);
 }
-.portal-work__lead__dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--tk-champagne);
+.portal-gallery__card__dot{
+  width:8px;height:8px;border-radius:50%;background:var(--tk-champagne);
 }
-.portal-work__lead__name{
+.portal-gallery__card__name{
   font-family:var(--font-display);
-  font-size:clamp(1.25rem,3vw,1.75rem);
-  letter-spacing:-.04em;
-  line-height:1.15;
-  margin:0;
+  font-size:clamp(1.1rem,2.4vw,1.4rem);
+  letter-spacing:-.02em;
+  line-height:1.2;
+  margin:6px 0 2px;
   color:var(--tk-ink);
 }
-.portal-work__lead__summary{
-  font-size:clamp(13px,1.7vw,15px);
-  line-height:1.6;
-  margin:0;
-  color:var(--tk-muted-strong);
-  max-width:46ch;
-}
-.portal-work__lead__proof{
-  font-family:var(--font-mono);
+.portal-gallery__card__summary{
   font-size:clamp(12px,1.5vw,13px);
+  line-height:1.55;
+  color:var(--tk-muted-strong);
+  margin:0;
+}
+.portal-gallery__card__evidence{
+  font-family:var(--font-mono);
+  font-size:clamp(11px,1.4vw,12px);
   letter-spacing:.12em;
   color:var(--tk-muted-strong);
   margin:4px 0 0;
 }
-.portal-work__lead__proof--stack{
-  color:var(--tk-muted-strong);
-}
-.portal-work__lead__link{
+.portal-gallery__card__link{
   color:var(--tk-champagne);
   font-family:var(--font-mono);
   font-size:clamp(12px,1.5vw,13px);
@@ -509,98 +515,119 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   min-height:44px;
   margin-top:auto;
 }
-.portal-work__lead__link:focus-visible{
+.portal-gallery__card__link:focus-visible{
   outline:2px solid var(--tk-champagne);
   outline-offset:2px;
 }
+.portal-gallery__card--active{
+  border-color:var(--tk-champagne);
+  outline:2px solid var(--tk-champagne);
+  outline-offset:-2px;
+}
 
-/* Index rows */
-.portal-work__index{
-  margin-top:clamp(24px,6vw,48px);
-  border-top:1px solid var(--tk-line);
-  padding-top:clamp(20px,5vw,32px);
-}
-.portal-work__index-head{
-  font-family:var(--font-display);
-  font-size:clamp(1.25rem,2.6vw,1.5rem);
-  letter-spacing:-.04em;
-  margin:0 0 16px;
-  color:var(--tk-ink);
-}
-.portal-work__index-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  padding:clamp(12px,3vw,16px) 0;
-  border-bottom:1px solid color-mix(in srgb,var(--tk-line) 35%,transparent);
-  text-decoration:none;
-  color:var(--tk-ink);
-  min-height:44px;
-}
-.portal-work__index-row:last-child{
-  border-bottom:none;
-}
-.portal-work__index-row__main{
+/* Caption — synced to the active item, aria-live="polite" */
+.portal-gallery__caption{
+  margin-top:clamp(20px,5vw,32px);
   display:flex;
   flex-direction:column;
-  gap:4px;
-  min-width:0;
+  gap:clamp(10px,3vw,14px);
 }
-.portal-work__index-row__name{
+.portal-gallery__caption__inner{
+  max-width:46ch;
+}
+.portal-gallery__caption__status{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-mono);
+  font-size:clamp(12px,1.5vw,13px);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--tk-muted-strong);
+}
+.portal-gallery__caption__dot{
+  width:8px;height:8px;border-radius:50%;background:var(--tk-champagne);
+}
+.portal-gallery__caption__name{
   font-family:var(--font-display);
-  font-size:clamp(1rem,2vw,1.25rem);
-  letter-spacing:-.02em;
+  font-size:clamp(1.25rem,3vw,1.75rem);
+  letter-spacing:-.04em;
+  line-height:1.15;
+  margin:0;
   color:var(--tk-ink);
+}
+.portal-gallery__caption__summary{
+  color:var(--tk-muted-strong);
+  font-size:clamp(13px,1.7vw,15px);
+  line-height:1.6;
   margin:0;
 }
-.portal-work__index-row__proof{
+.portal-gallery__caption__evidence{
   font-family:var(--font-mono);
   font-size:clamp(12px,1.5vw,13px);
   letter-spacing:.12em;
   color:var(--tk-muted-strong);
-  margin:0;
+  margin:4px 0 0;
 }
-.portal-work__index-row__stack{
-  font-family:var(--font-mono);
-  font-size:clamp(12px,1.5vw,13px);
-  letter-spacing:.12em;
-  color:var(--tk-muted-strong);
-  margin:0;
-  text-align:right;
-  min-width:140px;
-}
-.portal-work__index-row__arrow{
+.portal-gallery__caption__link{
   color:var(--tk-champagne);
-  font-size:1.25rem;
-  flex-shrink:0;
+  font-family:var(--font-mono);
+  font-size:clamp(12px,1.5vw,13px);
+  letter-spacing:.14em;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:44px;
 }
-.portal-work__index-row:focus-visible{
+.portal-gallery__caption__link:focus-visible{
   outline:2px solid var(--tk-champagne);
   outline-offset:2px;
 }
 
-/* ─── Journey — summary line per role ─── */
-.portal-journey__summary{
-  font-size:clamp(13px,1.7vw,15px);
-  line-height:1.55;
+/* Prev / Next navigation */
+.portal-gallery__nav{
+  display:flex;
+  gap:clamp(12px,3vw,16px);
+  margin-top:clamp(24px,6vw,40px);
+  justify-content:center;
+}
+.portal-gallery__nav__button{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:44px;
+  padding:12px 20px;
+  background:transparent;
+  border:1px solid var(--tk-line);
   color:var(--tk-ink);
-  margin:6px 0 0;
-  max-width:46ch;
+  font-family:var(--font-mono);
+  font-size:clamp(12px,1.5vw,13px);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.portal-gallery__nav__button:hover{
+  border-color:var(--tk-champagne);
+  color:var(--tk-champagne);
+}
+.portal-gallery__nav__button:focus-visible{
+  outline:2px solid var(--tk-champagne);
+  outline-offset:2px;
 }
 
 /* ─── Consistent section rhythm — every below-hero section shares the same
    padding and hairline separation; no min-height spacers. ─── */
-.portal-statement-about,.portal-proof,.portal-work-section,.portal-journey,.portal-publication,.portal-close{
+.portal-statement,.portal-about,.portal-gallery-section,.portal-journey,.portal-publication,.portal-close{
   padding:clamp(24px,6vw,48px) clamp(16px,4vw,20px);
 }
-.portal-proof,.portal-work-section,.portal-journey,.portal-publication,.portal-close{
+.portal-about,.portal-gallery-section,.portal-journey,.portal-publication,.portal-close{
   border-top:1px solid var(--tk-line);
 }
 
 /* Mobile container padding — consistent 8vw across all below-hero sections */
 @media (max-width:760px){
-  .portal-statement-about,.portal-proof,.portal-work-section,.portal-journey,.portal-publication,.portal-close{
+  .portal-statement,.portal-about,.portal-gallery-section,.portal-journey,.portal-publication,.portal-close{
     padding:clamp(16px,8vw,24px) 8vw;
   }
 }
