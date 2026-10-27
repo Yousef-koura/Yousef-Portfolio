@@ -10,6 +10,7 @@
 | Animation | GSAP, GSAP ScrollTrigger |
 | Animation | Motion / Framer Motion |
 | Smooth scrolling | Lenis |
+| WebGL gallery | ogl ^0.0.116 (Home Selected Work curved carousel; client-only via `next/dynamic` `ssr: false`, not in the initial JS bundle; the only dependency added for Version A) |
 | 3D | Three.js, React Three Fiber, Drei (approved, reserved for Phase 12) |
 | Icons | Lucide React |
 | Brand icons | @icons-pack/react-simple-icons (tree-shakeable named imports; used only for confirmed technologies on WORK detail pages — concepts without a brand mark fall back to Lucide glyphs) |
