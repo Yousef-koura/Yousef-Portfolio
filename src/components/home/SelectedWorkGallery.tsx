@@ -245,23 +245,32 @@ class SelectedWorkApp {
     });
 
     this.images = GALLERY.map(() => new Image());
-    this.loadImages().then(
-      () => {
-        if (this.destroyed) return;
-        this.buildPlanes();
-        this.resize();
-        this.setActiveFromCurrent();
-        this.render();
-        if (!this.paused) this.loop();
-      },
-      () => {
-        // texture load failure -> caller renders the CSS fallback
-        throw new Error("gallery texture load failed");
-      },
-    );
+    // Anything below this point that throws leaves a half-built app whose
+    // pending loadImages promise would still fire buildPlanes/render, so mark
+    // the instance destroyed before letting the error propagate.
+    try {
+      this.loadImages().then(
+        () => {
+          if (this.destroyed || !this.renderer) return;
+          this.buildPlanes();
+          this.resize();
+          this.setActiveFromCurrent();
+          this.render();
+          if (!this.paused) this.loop();
+        },
+        () => {
+          // texture load failure -> caller renders the CSS fallback
+          if (this.destroyed) return;
+          throw new Error("gallery texture load failed");
+        },
+      );
 
-    this.attachInput();
-    this.attachLifecycle();
+      this.attachInput();
+      this.attachLifecycle();
+    } catch (err) {
+      this.destroyed = true;
+      throw err;
+    }
   }
 
   private loadImages(): Promise<void> {
@@ -288,6 +297,7 @@ class SelectedWorkApp {
   }
 
   private buildPlanes() {
+    if (this.destroyed) return;
     const { gl } = this;
     const angleStep = (2 * Math.PI) / TOTAL;
     const radius = 1.62;
@@ -370,7 +380,8 @@ class SelectedWorkApp {
 
   private attachInput() {
     const canvas = this.canvas;
-    const wrapper = canvas.parentElement!;
+    const wrapper = canvas.parentElement;
+    if (!wrapper) return; // canvas not attached yet; input skipped
 
     const onWheel = (e: WheelEvent) => {
       if (this.destroyed || this.paused) return;
@@ -411,7 +422,8 @@ class SelectedWorkApp {
   }
 
   private attachLifecycle() {
-    const el = this.canvas.parentElement!;
+    const el = this.canvas.parentElement;
+    if (!el) return; // canvas not attached yet; lifecycle skipped
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -497,7 +509,8 @@ class SelectedWorkApp {
 
   resize() {
     if (this.destroyed) return;
-    const wrapper = this.canvas.parentElement!;
+    const wrapper = this.canvas.parentElement;
+    if (!wrapper) return; // canvas not yet attached to the DOM
     const { clientWidth, clientHeight } = wrapper;
     this.width = clientWidth;
     this.height = clientHeight;
