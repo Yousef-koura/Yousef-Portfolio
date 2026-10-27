@@ -306,9 +306,18 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 
 
 /* ─── Halftone backdrop — inside the final CTA section ─── */
-.portal-halftone__scrim{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 50% 30%,color-mix(in srgb,var(--tk-background) 35%,transparent),transparent 70%)}
-[data-theme="light"] .portal-halftone__scrim{background:radial-gradient(ellipse 60% 50% at 50% 30%,color-mix(in srgb,var(--tk-background) 20%,transparent),transparent 70%)}
-.portal-halftone__canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0;mask-image:radial-gradient(ellipse 80% 65% at 50% 35%,transparent 48%,black 82%);-webkit-mask-image:radial-gradient(ellipse 80% 65% at 50% 35%,transparent 48%,black 82%)}
+.portal-halftone__scrim{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 62% 55% at 50% 42%,color-mix(in srgb,var(--tk-background) 62%,transparent),transparent 76%)}
+[data-theme="light"] .portal-halftone__scrim{background:radial-gradient(ellipse 62% 55% at 50% 42%,color-mix(in srgb,var(--tk-background) 50%,transparent),transparent 76%)}
+.portal-halftone__fallback{
+  position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;
+  background-color:var(--tk-background);
+  background-image:radial-gradient(circle at center,color-mix(in srgb,var(--tk-ink) 28%,transparent) 1px,transparent 1.7px);
+  background-size:clamp(12px,1.6vw,18px) clamp(12px,1.6vw,18px);
+  mask-image:radial-gradient(ellipse 82% 68% at 50% 38%,transparent 42%,black 84%);
+  -webkit-mask-image:radial-gradient(ellipse 82% 68% at 50% 38%,transparent 42%,black 84%);
+}
+.portal-halftone__fallback[data-visible="true"]{opacity:1}
+.portal-halftone__canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:1;mask-image:radial-gradient(ellipse 82% 68% at 50% 38%,transparent 42%,black 84%);-webkit-mask-image:radial-gradient(ellipse 82% 68% at 50% 38%,transparent 42%,black 84%)}
 
 /* ─── Publication — slim row (figure wrapper) ─── */
 .portal-publication__figure{border:1px solid var(--p-line);display:block}

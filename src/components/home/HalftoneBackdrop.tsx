@@ -1,28 +1,33 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { GLSL_PREAMBLE } from "@/lib/glsl/preamble";
 
 /**
- * HalftoneBackdrop — raw WebGL halftone shader rendered inside the final CTA
- * section (absolutely positioned, NOT fixed full-viewport).
+ * HalftoneBackdrop — raw-WebGL halftone rendered as the final CTA section's
+ * full-bleed background (absolutely positioned, never fixed full-viewport).
  *
- * Implements the owner's spec:
- *  - coordinate floored to a responsive cell lattice (~34 cols desktop, fewer mobile)
- *  - six-octave fbm (hashed value noise, light domain warp) sampled ONCE at each
- *    cell centre; that value sets the dot radius for the whole cell
- *  - smoothed pointer-intensity uniform strengthens the effect under the cursor,
- *    relaxes when the pointer leaves
- *  - ground + at most two/three colors, one material; champagne only as a faint tint
- *  - colours resolved from the live --tk-* tokens via getComputedStyle
- *  - no-WebGL fallback: render nothing (plain token background)
- *  - reduced motion: single static frame, then the loop stops
- *  - scrim behind text so every CTA text node stays AA against the composite
- *  - pauses off-screen / tab hidden; caps DPR; full teardown; context loss/restored
+ * The effect follows the owner's spec:
+ *  - the fragment coordinate is floored to a fixed 34-cell lattice
+ *  - the cell centre is run through the shared two-level domain warp and a
+ *    six-octave fbm; that single field value sets the dot radius for the cell
+ *  - a clock drifts the warp so the field breathes instead of sitting still
+ *  - pointer movement raises a smoothed intensity uniform that enlarges and
+ *    brightens the dots beneath the cursor, then eases back out
+ *  - ground + dots are resolved from the live --tk-* tokens (two values, one
+ *    material; no champagne accent in the shader)
+ *  - no WebGL: a static dot panel behind the canvas is revealed
+ *  - reduced motion: one frozen frame, no animation loop
+ *  - pauses off-screen / tab hidden; DPR + draw width capped; full teardown
+ *    with WebGL context loss and restoration handling
  */
 
 type HalftoneProps = {
   className?: string;
 };
+
+const MAX_DRAW_WIDTH = 2200;
+const HALFTONE_COLUMNS = 34;
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.trim().replace("#", "");
@@ -30,12 +35,12 @@ function hexToRgb(hex: string): [number, number, number] {
     const expanded = h.split("").map((c) => c + c).join("");
     return hexToRgb(expanded);
   }
-  const bigint = parseInt(h, 16);
-  if (Number.isNaN(bigint)) return [0, 0, 0];
+  const value = parseInt(h, 16);
+  if (Number.isNaN(value)) return [0, 0, 0];
   return [
-    ((bigint >> 16) & 255) / 255,
-    ((bigint >> 8) & 255) / 255,
-    (bigint & 255) / 255,
+    ((value >> 16) & 255) / 255,
+    ((value >> 8) & 255) / 255,
+    (value & 255) / 255,
   ];
 }
 
@@ -44,23 +49,22 @@ function resolveTokenColors(): {
   dot: [number, number, number];
 } | null {
   if (typeof document === "undefined") return null;
-  const root = document.documentElement;
-  const cs = getComputedStyle(root);
+  const cs = getComputedStyle(document.documentElement);
   const get = (name: string) => cs.getPropertyValue(name).trim() || undefined;
-  const bg = get("--tk-background");
-  const muted = get("--tk-muted");
-  const champagne = get("--tk-champagne");
-  if (!bg || !muted || !champagne) return null;
-  const ground = hexToRgb(bg);
-  // Dots: low-contrast mix of Muted and Champagne — champagne only as a faint tint.
-  const m = hexToRgb(muted);
-  const c = hexToRgb(champagne);
+  const background = get("--tk-background");
+  const ink = get("--tk-ink");
+  if (!background || !ink) return null;
+  const muted = get("--tk-muted") ?? ink;
+  const groundRgb = hexToRgb(background);
+  const inkRgb = hexToRgb(ink);
+  const mutedRgb = hexToRgb(muted);
+  // Two-value palette: the ground plus a quiet ink/muted dot. No accent hue.
   const dot: [number, number, number] = [
-    m[0] * 0.75 + c[0] * 0.25,
-    m[1] * 0.75 + c[1] * 0.25,
-    m[2] * 0.75 + c[2] * 0.25,
+    inkRgb[0] * 0.72 + mutedRgb[0] * 0.28,
+    inkRgb[1] * 0.72 + mutedRgb[1] * 0.28,
+    inkRgb[2] * 0.72 + mutedRgb[2] * 0.28,
   ];
-  return { ground, dot };
+  return { ground: groundRgb, dot };
 }
 
 const VERTEX_SHADER = `
@@ -72,380 +76,435 @@ const VERTEX_SHADER = `
 
 const FRAGMENT_SHADER = `
   precision highp float;
+
   uniform vec2 uResolution;
   uniform vec2 uPointer;
   uniform float uPointerIntensity;
+  uniform float uTime;
   uniform vec3 uGround;
   uniform vec3 uDot;
-  uniform float uCols;
-  uniform float uReduced;
 
-  float hash(vec2 p) {
-    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-    p3 += dot(p3, p3.yzx + 33.33);
-    return fract((p3.x + p3.y) * p3.z);
-  }
+  ${GLSL_PREAMBLE}
 
-  float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    float a = hash(i);
-    float b = hash(i + vec2(1.0, 0.0));
-    float c = hash(i + vec2(0.0, 1.0));
-    float d = hash(i + vec2(1.0, 1.0));
-    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
-  }
-
-  float fbm(vec2 p) {
-    float v = 0.0;
-    float a = 0.5;
-    for (int i = 0; i < 6; i++) {
-      v += a * noise(p);
-      p = p * 2.0 + vec2(1.7, 0.9);
-      a *= 0.5;
-    }
-    return v;
-  }
+  const float COLS = ${HALFTONE_COLUMNS.toFixed(1)};
 
   void main() {
-    vec2 st = gl_FragCoord.xy / uResolution;
+    vec2 frag = gl_FragCoord.xy;
 
-    // Square-pixel cell lattice, floored to the responsive column count.
-    vec2 grid = vec2(uCols, uCols * uResolution.y / uResolution.x);
-    vec2 cell = floor(st * grid);
-    vec2 cellCenter = (cell + 0.5) / grid;
+    // Square-pixel lattice: 34 cells across, floored to the cell centre.
+    float cellPx = uResolution.x / COLS;
+    vec2 cell = floor(frag / cellPx);
+    vec2 centre = (cell + 0.5) * cellPx;
 
-    // Light domain warp, sampled once at each cell centre.
-    vec2 warp = vec2(
-      fbm(cellCenter * 0.5 + vec2(0.0, 0.0)),
-      fbm(cellCenter * 0.5 + vec2(52.0, 0.0))
-    );
-    vec2 warped = cellCenter + warp * 0.12;
+    // Aspect-correct, centred coordinate of this cell's centre.
+    vec2 p = (centre - 0.5 * uResolution) / uResolution.x;
 
-    // One fbm sample per cell centre -> dot radius for the whole cell.
-    float n = fbm(warped * 1.6);
-    float cellPx = uResolution.x / uCols;
-    float radiusPx = cellPx * (0.16 + n * 0.24);
+    // One field evaluation per cell centre, through the shared warp.
+    vec2 warped = domainWarp(p * 2.2, uTime);
+    float field = fbm(warped * 1.35);
+    float shape = smoothstep(0.22, 0.78, clamp(field, 0.0, 1.0));
 
-    // Pointer strengthens the effect under the cursor, relaxes when it leaves.
-    float strength = 1.0 - uPointerIntensity * 0.5;
-    float dotRadius = radiusPx * strength;
+    // The clock also gives each cell a slow, field-locked breath.
+    float pulse = 0.5 + 0.5 * sin(uTime * 0.55 + field * 6.2831853);
+    float radius = cellPx * (0.08 + shape * 0.30) * (0.94 + pulse * 0.12);
 
-    // Distance in pixels -> circular dot inside a square cell.
-    vec2 toCenter = (st - cellCenter) * uResolution;
-    float d = length(toCenter);
-    float edge = uReduced > 0.5 ? 2.0 : 1.2;
-    float dotAlpha = 1.0 - smoothstep(dotRadius - edge, dotRadius, d);
+    // Pointer halo: dots under the cursor grow and brighten.
+    vec2 pointerPx = uPointer * uResolution;
+    float cellDistance = length(centre - pointerPx) / cellPx;
+    float halo = (1.0 - smoothstep(0.0, 6.0, cellDistance)) * uPointerIntensity;
+    radius *= 1.0 + halo * 0.55;
+    radius = min(radius, cellPx * 0.497);
 
-    vec3 color = mix(uGround, uDot, dotAlpha * 0.14);
+    float distanceToCentre = length(frag - centre);
+    float edge = max(0.75, cellPx * 0.035);
+    float dotMask = 1.0 - smoothstep(radius - edge, radius + edge, distanceToCentre);
+
+    float light = (0.16 + shape * 0.30 + pulse * 0.05) * (1.0 + halo * 0.8);
+    vec3 color = mix(uGround, uDot, clamp(dotMask * light, 0.0, 1.0));
+
+    // Static 1/255 dither keeps the near-black ground free of banding.
+    color += (hash21(frag) - 0.5) / 255.0;
     gl_FragColor = vec4(color, 1.0);
   }
 `;
+
+type Uniforms = {
+  resolution: WebGLUniformLocation | null;
+  pointer: WebGLUniformLocation | null;
+  pointerIntensity: WebGLUniformLocation | null;
+  time: WebGLUniformLocation | null;
+  ground: WebGLUniformLocation | null;
+  dot: WebGLUniformLocation | null;
+};
 
 class HalftoneApp {
   canvas: HTMLCanvasElement;
   gl: WebGLRenderingContext | WebGL2RenderingContext;
   program: WebGLProgram;
-  locs: {
-    resolution: WebGLUniformLocation | null;
-    pointer: WebGLUniformLocation | null;
-    pointerIntensity: WebGLUniformLocation | null;
-    ground: WebGLUniformLocation | null;
-    dot: WebGLUniformLocation | null;
-    cols: WebGLUniformLocation | null;
-    reduced: WebGLUniformLocation | null;
-    position: number;
+  buffer: WebGLBuffer | null = null;
+  uniforms: Uniforms;
+  reducedMotion: boolean;
+  private running = false;
+  private destroyed = false;
+  private raf = 0;
+  private lastFrame = 0;
+  private time = 0;
+  private pointer = { x: 0.5, y: 0.5 };
+  private pointerIntensity = 0;
+  private targetIntensity = 0;
+  private colors: {
+    ground: [number, number, number];
+    dot: [number, number, number];
   };
-  raf = 0;
-  width = 0;
-  height = 0;
-  cols = 34;
-  dpr = 1;
-  pointer = { x: 0, y: 0 };
-  pointerIntensity = 0;
-  targetIntensity = 0;
-  reducedMotion = false;
-  destroyed = false;
-  colors: { ground: [number, number, number]; dot: [number, number, number] };
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, reducedMotion: boolean) {
     this.canvas = canvas;
-    const gl = (canvas.getContext("webgl2") || canvas.getContext("webgl")) as
+    this.reducedMotion = reducedMotion;
+    const options: WebGLContextAttributes = {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      powerPreference: "low-power",
+    };
+    const gl = (canvas.getContext("webgl2", options) ||
+      canvas.getContext("webgl", options)) as
       | WebGLRenderingContext
-      | WebGL2RenderingContext;
+      | WebGL2RenderingContext
+      | null;
     if (!gl) throw new Error("WebGL not available");
     this.gl = gl;
     this.colors = resolveTokenColors() ?? {
-      ground: [0.043, 0.047, 0.055],
-      dot: [0.5, 0.45, 0.3],
+      ground: [0.031, 0.035, 0.051],
+      dot: [0.859, 0.878, 0.922],
     };
     this.program = this.createProgram();
-    this.locs = this.getLocations();
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
-    // Bind before resize(): resize writes uResolution/uCols uniforms.
-    this.gl.useProgram(this.program);
+    this.uniforms = this.getUniforms();
     this.resize();
-    this.gl.uniform3fv(this.locs.ground, this.colors.ground);
-    this.gl.uniform3fv(this.locs.dot, this.colors.dot);
-    this.gl.uniform1f(this.locs.reduced, this.reducedMotion ? 1 : 0);
-    this.gl.uniform1f(this.locs.cols, this.cols);
-    this.draw();
-    if (!this.reducedMotion) this.loop();
+    this.gl.useProgram(this.program);
+    this.gl.uniform3fv(this.uniforms.ground, this.colors.ground);
+    this.gl.uniform3fv(this.uniforms.dot, this.colors.dot);
+    this.redraw();
   }
 
-  createProgram(): WebGLProgram {
+  private createProgram(): WebGLProgram {
     const gl = this.gl;
-    const vs = this.createShader(gl.VERTEX_SHADER, VERTEX_SHADER);
-    const fs = this.createShader(gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    const prog = gl.createProgram()!;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      throw new Error(gl.getProgramInfoLog(prog) ?? "program link failed");
+    const vs = this.compileShader(gl.VERTEX_SHADER, VERTEX_SHADER);
+    const fs = this.compileShader(gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    const program = gl.createProgram();
+    if (!program) throw new Error("WebGL program could not be created");
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.bindAttribLocation(program, 0, "position");
+    gl.linkProgram(program);
+    gl.deleteShader(vs);
+    gl.deleteShader(fs);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      const log = gl.getProgramInfoLog(program);
+      gl.deleteProgram(program);
+      throw new Error(log ?? "WebGL program link failed");
     }
-    // Full-screen quad (triangle strip).
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+
+    const position = gl.getAttribLocation(program, "position");
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
       gl.STATIC_DRAW,
     );
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    return prog;
+    gl.enableVertexAttribArray(position);
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+    this.buffer = buffer;
+    return program;
   }
 
-  createShader(type: number, source: string): WebGLShader {
+  private compileShader(type: number, source: string): WebGLShader {
     const gl = this.gl;
-    const shader = gl.createShader(type)!;
+    const shader = gl.createShader(type);
+    if (!shader) throw new Error("WebGL shader could not be created");
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      throw new Error(gl.getShaderInfoLog(shader) ?? "shader compile failed");
+      const log = gl.getShaderInfoLog(shader);
+      gl.deleteShader(shader);
+      throw new Error(log ?? "WebGL shader compile failed");
     }
     return shader;
   }
 
-  getLocations() {
+  private getUniforms(): Uniforms {
     const gl = this.gl;
     return {
       resolution: gl.getUniformLocation(this.program, "uResolution"),
       pointer: gl.getUniformLocation(this.program, "uPointer"),
-      pointerIntensity: gl.getUniformLocation(this.program, "uPointerIntensity"),
+      pointerIntensity: gl.getUniformLocation(
+        this.program,
+        "uPointerIntensity",
+      ),
+      time: gl.getUniformLocation(this.program, "uTime"),
       ground: gl.getUniformLocation(this.program, "uGround"),
       dot: gl.getUniformLocation(this.program, "uDot"),
-      cols: gl.getUniformLocation(this.program, "uCols"),
-      reduced: gl.getUniformLocation(this.program, "uReduced"),
-      position: gl.getAttribLocation(this.program, "position"),
     };
   }
 
   resize() {
-    const { clientWidth, clientHeight } = this.canvas.parentElement ?? this.canvas;
-    this.gl.useProgram(this.program);
-    // Reduced resolution on mobile; cap DPR.
-    const mobile = clientWidth < 760;
-    const dpr = mobile ? Math.min(window.devicePixelRatio || 1, 1.5) : this.dpr;
-    this.dpr = dpr;
-    this.cols = mobile ? 18 : clientWidth < 1024 ? 26 : 34;
-    this.width = clientWidth;
-    this.height = clientHeight;
-    const drawW = Math.max(1, Math.floor(clientWidth * dpr * (mobile ? 0.7 : 1)));
-    const drawH = Math.max(1, Math.floor(clientHeight * dpr * (mobile ? 0.7 : 1)));
-    this.canvas.width = drawW;
-    this.canvas.height = drawH;
-    this.canvas.style.width = `${clientWidth}px`;
-    this.canvas.style.height = `${clientHeight}px`;
-    this.gl.viewport(0, 0, drawW, drawH);
-    this.gl.uniform2f(this.locs.resolution, clientWidth, clientHeight);
-    this.gl.uniform1f(this.locs.cols, this.cols);
+    const parent = this.canvas.parentElement;
+    const cssWidth = parent?.clientWidth ?? this.canvas.clientWidth;
+    const cssHeight = parent?.clientHeight ?? this.canvas.clientHeight;
+    if (cssWidth <= 0 || cssHeight <= 0) return;
+
+    const gl = this.gl;
+    const mobile = cssWidth < 760;
+    const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
+    const renderScale = mobile ? 0.7 : 0.85;
+    const baseWidth = cssWidth * dpr * renderScale;
+    const cap = Math.min(1, MAX_DRAW_WIDTH / baseWidth);
+    const drawWidth = Math.max(1, Math.round(baseWidth * cap));
+    const drawHeight = Math.max(1, Math.round(cssHeight * dpr * renderScale * cap));
+
+    if (this.canvas.width !== drawWidth) this.canvas.width = drawWidth;
+    if (this.canvas.height !== drawHeight) this.canvas.height = drawHeight;
+
+    gl.useProgram(this.program);
+    gl.viewport(0, 0, drawWidth, drawHeight);
+    gl.uniform2f(this.uniforms.resolution, drawWidth, drawHeight);
   }
 
   setPointer(x: number, y: number, inside: boolean) {
-    this.pointer = { x, y };
+    // gl_FragCoord's origin is bottom-left; DOM pointer coordinates are top-left.
+    this.pointer = { x, y: 1 - y };
     this.targetIntensity = inside ? 1 : 0;
-    this.gl.useProgram(this.program);
-    this.gl.uniform2f(this.locs.pointer, x, y);
   }
 
-  draw() {
+  setHover(inside: boolean) {
+    this.targetIntensity = inside ? 1 : 0;
+  }
+
+  redraw() {
+    this.draw(0);
+  }
+
+  private draw(dt: number) {
+    if (this.destroyed) return;
     const gl = this.gl;
     gl.useProgram(this.program);
-    // Smoothed pointer intensity eases back to rest.
-    this.pointerIntensity += (this.targetIntensity - this.pointerIntensity) * 0.08;
-    gl.uniform1f(this.locs.pointerIntensity, this.pointerIntensity);
+
+    if (this.reducedMotion) {
+      this.pointerIntensity = this.targetIntensity;
+    } else {
+      const ease = 1 - Math.exp(-Math.max(0, dt) * 6.0);
+      this.pointerIntensity += (this.targetIntensity - this.pointerIntensity) * ease;
+    }
+
+    gl.uniform1f(this.uniforms.time, this.reducedMotion ? 0 : this.time);
+    gl.uniform1f(this.uniforms.pointerIntensity, this.pointerIntensity);
+    gl.uniform2f(this.uniforms.pointer, this.pointer.x, this.pointer.y);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
-  loop() {
-    if (this.destroyed || this.reducedMotion) return;
-    this.draw();
-    this.raf = requestAnimationFrame(() => this.loop());
+  start() {
+    if (this.destroyed || this.reducedMotion || this.running) return;
+    this.running = true;
+    this.lastFrame = performance.now();
+    this.raf = requestAnimationFrame(this.tick);
   }
 
   pause() {
-    cancelAnimationFrame(this.raf);
+    this.running = false;
+    if (this.raf !== 0) cancelAnimationFrame(this.raf);
     this.raf = 0;
   }
 
-  resume() {
-    if (this.destroyed || this.reducedMotion) return;
-    if (this.raf === 0) this.loop();
-  }
-
-  setReducedMotion(reduced: boolean) {
-    this.reducedMotion = reduced;
-    this.gl.uniform1f(this.locs.reduced, reduced ? 1 : 0);
-    if (reduced) {
-      this.pause();
-      this.draw(); // single static frame
-    } else {
-      this.resume();
-    }
-  }
+  private tick = (now: number) => {
+    if (this.destroyed || !this.running) return;
+    const dt = Math.min(0.05, Math.max(0, (now - this.lastFrame) / 1000));
+    this.lastFrame = now;
+    this.time += dt;
+    this.draw(dt);
+    this.raf = requestAnimationFrame(this.tick);
+  };
 
   updateColors() {
     const next = resolveTokenColors();
     if (!next) return;
     this.colors = next;
     this.gl.useProgram(this.program);
-    this.gl.uniform3fv(this.locs.ground, next.ground);
-    this.gl.uniform3fv(this.locs.dot, next.dot);
-    this.draw();
+    this.gl.uniform3fv(this.uniforms.ground, next.ground);
+    this.gl.uniform3fv(this.uniforms.dot, next.dot);
+    this.redraw();
   }
 
-  destroy() {
+  destroy(release = true) {
     this.destroyed = true;
     this.pause();
-    const gl = this.gl;
-    if (this.program) gl.deleteProgram(this.program);
-    if (this.canvas.parentNode) this.canvas.parentNode.removeChild(this.canvas);
+    if (release) {
+      const gl = this.gl;
+      if (this.buffer) gl.deleteBuffer(this.buffer);
+      gl.deleteProgram(this.program);
+    }
+    this.buffer = null;
   }
 }
 
 const HalftoneBackdrop = (props: HalftoneProps) => {
   const { className = "" } = props;
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const appRef = useRef<HalftoneApp | null>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [fallbackVisible, setFallbackVisible] = useState(true);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(mq.matches);
-    update();
-    const h = () => setReducedMotion(mq.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
-
-  // Mount WebGL after mount; no-WebGL renders nothing (plain token background).
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
+
+    let active = true;
+    let inView = false;
+    let contextLost = false;
+    let app: HalftoneApp | null = null;
+
+    // Created imperatively so StrictMode remounts always bind a fresh canvas.
     const canvas = document.createElement("canvas");
     canvas.className = "portal-halftone__canvas";
     canvas.setAttribute("aria-hidden", "true");
-    canvas.style.position = "absolute";
-    canvas.style.inset = "0";
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-    canvas.style.display = "block";
-    canvas.style.pointerEvents = "none";
     wrapper.appendChild(canvas);
 
-    let app: HalftoneApp | null = null;
-    try {
-      app = new HalftoneApp(canvas);
-      if (reducedMotion) app.setReducedMotion(true);
-      appRef.current = app;
-    } catch (err) {
-      // No WebGL: render nothing — plain token background shows through.
-      console.warn("HalftoneBackdrop: WebGL unavailable", err);
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-    }
+    const mount = () => {
+      // After a context loss the old program/buffer no longer belong to the
+      // restored context; release them only when the context is healthy.
+      app?.destroy(!contextLost);
+      app = null;
+      try {
+        app = new HalftoneApp(canvas, reducedMotion);
+        contextLost = false;
+        canvas.style.visibility = "";
+        if (active) setFallbackVisible(false);
+        if (inView && !document.hidden) app.start();
+      } catch (error) {
+        console.warn("HalftoneBackdrop: WebGL unavailable", error);
+        app?.destroy(!contextLost);
+        app = null;
+        canvas.style.visibility = "hidden";
+        if (active) setFallbackVisible(true);
+      }
+    };
 
-    // React to data-theme changes without a page reload.
-    const observer = new MutationObserver(() => app?.updateColors());
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let reducedMotion = motionQuery.matches;
+    mount();
 
-    // Pause when off-screen / tab hidden.
-    let io: IntersectionObserver | null = null;
-    const el = wrapper.parentElement;
-    if (el) {
-      io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) app?.resume();
-            else app?.pause();
-          });
-        },
-        { threshold: 0.05 },
-      );
-      io.observe(el);
-    }
+    const onMotionPreference = () => {
+      reducedMotion = motionQuery.matches;
+      mount();
+    };
+    motionQuery.addEventListener("change", onMotionPreference);
+
+    const themeObserver = new MutationObserver(() => app?.updateColors());
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        inView = Boolean(entry?.isIntersecting);
+        if (inView && !document.hidden) app?.start();
+        else app?.pause();
+      },
+      { threshold: 0.01 },
+    );
+    intersectionObserver.observe(wrapper);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (!app) return;
+      app.resize();
+      if (app.reducedMotion) app.redraw();
+    });
+    resizeObserver.observe(wrapper);
+
+    const onResize = () => {
+      if (!app) return;
+      app.resize();
+      if (app.reducedMotion) app.redraw();
+    };
 
     const onVisibility = () => {
       if (document.hidden) app?.pause();
-      else app?.resume();
+      else if (inView) app?.start();
     };
-    const onResize = () => app?.resize();
-    window.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("resize", onResize);
 
-    // Pointer over the section: strengthen under cursor. The wrapper itself is
-    // pointer-events:none, so observe the parent section.
-    const pointerTarget = wrapper.parentElement ?? wrapper;
-    const onPointerMove = (e: PointerEvent) => {
-      if (!app) return;
+    const onPointerMove = (event: PointerEvent) => {
+      if (!app || event.pointerType === "touch") return;
       const rect = wrapper.getBoundingClientRect();
-      const inside =
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom;
-      const x = inside ? (e.clientX - rect.left) / rect.width : 0;
-      const y = inside ? (e.clientY - rect.top) / rect.height : 0;
-      app.setPointer(x * app.width, y * app.height, inside);
+      if (rect.width === 0 || rect.height === 0) return;
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+      const inside = x >= 0 && x <= 1 && y >= 0 && y <= 1;
+      app.setPointer(x, y, inside);
     };
-    const onPointerEnter = () => {
-      if (app) app.targetIntensity = 1;
+    const onPointerLeave = () => app?.setHover(false);
+    const onPointerCancel = () => app?.setHover(false);
+
+    // No WebGL context: show the static panel, hide the canvas. If the context
+    // comes back, rebuild the program on the same canvas.
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      contextLost = true;
+      app?.pause();
+      canvas.style.visibility = "hidden";
+      if (active) setFallbackVisible(true);
     };
-    const onPointerLeave = () => {
-      if (app) app.targetIntensity = 0;
-    };
-    pointerTarget.addEventListener("pointermove", onPointerMove);
-    pointerTarget.addEventListener("pointerenter", onPointerEnter);
+    const onContextRestored = () => mount();
+
+    canvas.addEventListener("webglcontextlost", onContextLost);
+    canvas.addEventListener("webglcontextrestored", onContextRestored);
+
+    const pointerTarget = wrapper.parentElement ?? wrapper;
+    pointerTarget.addEventListener("pointermove", onPointerMove, {
+      passive: true,
+    });
     pointerTarget.addEventListener("pointerleave", onPointerLeave);
+    pointerTarget.addEventListener("pointercancel", onPointerCancel);
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
-      app?.destroy();
-      appRef.current = null;
-      observer.disconnect();
-      if (io) io.disconnect();
-      window.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("resize", onResize);
+      active = false;
+      app?.destroy(!contextLost);
+      app = null;
+      canvas.remove();
+      themeObserver.disconnect();
+      intersectionObserver.disconnect();
+      resizeObserver.disconnect();
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      canvas.removeEventListener("webglcontextrestored", onContextRestored);
+      motionQuery.removeEventListener("change", onMotionPreference);
       pointerTarget.removeEventListener("pointermove", onPointerMove);
-      pointerTarget.removeEventListener("pointerenter", onPointerEnter);
       pointerTarget.removeEventListener("pointerleave", onPointerLeave);
+      pointerTarget.removeEventListener("pointercancel", onPointerCancel);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [reducedMotion]);
+  }, []);
 
   return (
     <div
       ref={wrapperRef}
-      className={`portal-halftone ${className}`}
+      className={`portal-halftone ${className}`.trim()}
       style={{
         position: "absolute",
         inset: 0,
         width: "100%",
         height: "100%",
         pointerEvents: "none",
-        zIndex: 0, // above the section background, below the scrim (5) and CTA body (10)
+        zIndex: 0,
       }}
-    />
+    >
+      <div
+        className="portal-halftone__fallback"
+        data-visible={fallbackVisible ? "true" : "false"}
+        aria-hidden="true"
+      />
+    </div>
   );
 };
 
