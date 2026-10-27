@@ -1,16 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   Camera,
-  Geometry,
   Mesh,
   Plane,
   Program,
   Renderer,
-  Transform,
   Texture,
+  Transform,
 } from "ogl";
 import { QuietLink } from "@/components/ui/QuietLink";
 import {
@@ -21,7 +20,8 @@ import {
 
 /* ---------------------------------------------------------------------------
    Gallery data — the five curated projects, in curated order. Every field
-   traces to src/content/projects.ts; nothing is invented.
+   traces to src/content/projects.ts; nothing is invented. A module-level
+   constant is stable, and the component memoizes it for the effect.
 --------------------------------------------------------------------------- */
 
 type GalleryItem = {
@@ -95,40 +95,208 @@ const GALLERY: GalleryItem[] = [
   },
 ];
 
-const ITEM_COUNT = GALLERY.length; // 5
-const COPIES = 3;
-const TOTAL = ITEM_COUNT * COPIES; // 15 planes, three copies for the infinite loop
-const MIDDLE_START = ITEM_COUNT; // index 5 = first item of the middle copy (goTo(0))
-const HALF = TOTAL / 2; // 7.5 — shortest-path boundary on the circle
+/* Reference values (supplied OGL CircularGallery). */
+const COPIES = 2;
+const BEND = 3.5;
+const BORDER_RADIUS = 0.08;
+const SCROLL_SPEED = 2.5;
+const SCROLL_EASE = 0.03;
+const DRAG_FACTOR = SCROLL_SPEED * 0.025; // world units per dragged pixel
+const WHEEL_FACTOR = 0.02;
+const SNAP_DELAY = 180;
+const MAX_DEVICE_PIXEL_RATIO = 2;
+
+type FallbackReason =
+  | "webgl-unavailable"
+  | "init-failed"
+  | "image-load-failed"
+  | "context-lost";
+
+type GL = Renderer["gl"];
 
 /* ---------------------------------------------------------------------------
-   WebGL application (ogl ^0.0.116). One instance per mounted gallery.
-   Disposed on unmount, paused off-screen / tab hidden.
+   Small helpers
 --------------------------------------------------------------------------- */
 
-function hexToRgb(hex: string): [number, number, number] {
-  const h = hex.trim().replace("#", "");
-  if (h.length === 3) {
-    const expanded = h.split("").map((c) => c + c).join("");
-    return hexToRgb(expanded);
+function euclid(value: number, modulus: number): number {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+class GalleryInitError extends Error {
+  readonly reason: FallbackReason;
+  readonly originalError: unknown;
+
+  constructor(reason: FallbackReason, originalError?: unknown) {
+    super(`SelectedWorkGallery could not start (${reason})`);
+    this.name = "GalleryInitError";
+    this.reason = reason;
+    this.originalError = originalError;
   }
-  const bigint = parseInt(h, 16);
-  if (Number.isNaN(bigint)) return [0, 0, 0];
-  return [
-    ((bigint >> 16) & 255) / 255,
-    ((bigint >> 8) & 255) / 255,
-    (bigint & 255) / 255,
-  ];
 }
 
-function resolveBackground(): [number, number, number] {
-  if (typeof document === "undefined") return [0.043, 0.047, 0.055];
-  const cs = getComputedStyle(document.documentElement);
-  const bg = cs.getPropertyValue("--tk-background").trim() || "#0b0c0e";
-  return hexToRgb(bg);
+class ImageLoadError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ImageLoadError";
+  }
 }
 
-const VERTEX_SHADER = `
+function reportFallback(reason: FallbackReason, error: unknown): void {
+  if (process.env.NODE_ENV === "production") return;
+  console.warn(
+    `[SelectedWorkGallery] CSS card fallback active — reason: ${reason}`,
+    error,
+  );
+}
+
+function resolveTitleColor(): string {
+  if (typeof document === "undefined") return "inherit";
+  const token = getComputedStyle(document.documentElement)
+    .getPropertyValue("--tk-ink")
+    .trim();
+  if (token) return token;
+  return getComputedStyle(document.body).color || "inherit";
+}
+
+function readDisplayFontFamily(): string {
+  if (typeof document === "undefined") return "sans-serif";
+  const title = document.querySelector<HTMLElement>(".portal-gallery__title");
+  if (title) {
+    const family = getComputedStyle(title).fontFamily;
+    if (family) return family;
+  }
+  const probe = document.createElement("span");
+  probe.style.position = "absolute";
+  probe.style.visibility = "hidden";
+  probe.style.fontFamily = "var(--font-display)";
+  document.body.appendChild(probe);
+  const family = getComputedStyle(probe).fontFamily;
+  probe.remove();
+  return family || "sans-serif";
+}
+
+async function waitForFonts(): Promise<string> {
+  if (typeof document === "undefined") return "sans-serif";
+  try {
+    await document.fonts.ready;
+  } catch {
+    // Build with the fallback font rather than failing the gallery.
+  }
+  const family = readDisplayFontFamily();
+  const firstFamily = family.split(",")[0]?.replace(/["']/g, "").trim();
+  if (firstFamily) {
+    try {
+      await document.fonts.load(`600 64px "${firstFamily}"`);
+    } catch {
+      // The display family may be a local/system fallback; keep going.
+    }
+  }
+  return family;
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    let settled = false;
+    const timer = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new ImageLoadError(`Timed out loading ${src}`));
+    }, 15000);
+
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve(image);
+    };
+    const fail = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      reject(new ImageLoadError(`Failed to load ${src}`));
+    };
+
+    image.decoding = "async";
+    image.onload = () => {
+      if (image.decode) image.decode().then(finish, finish);
+      else finish();
+    };
+    image.onerror = fail;
+
+    if (image.complete && image.naturalWidth > 0) {
+      finish();
+      return;
+    }
+    image.src = src;
+  });
+}
+
+async function loadImages(srcs: string[]): Promise<HTMLImageElement[]> {
+  return Promise.all(srcs.map(loadImage));
+}
+
+/* ---------------------------------------------------------------------------
+   Shaders — the supplied OGL CircularGallery vertex/fragment pair (wave +
+   cover-fit + rounded-box SDF), plus its title texture shader.
+--------------------------------------------------------------------------- */
+
+const MEDIA_VERTEX = `
+  precision highp float;
+  attribute vec3 position;
+  attribute vec2 uv;
+  uniform mat4 modelViewMatrix;
+  uniform mat4 projectionMatrix;
+  uniform float uTime;
+  uniform float uSpeed;
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    vec3 p = position;
+    p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (0.1 + uSpeed * 0.5);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+  }
+`;
+
+const MEDIA_FRAGMENT = `
+  precision highp float;
+  uniform vec2 uImageSizes;
+  uniform vec2 uPlaneSizes;
+  uniform sampler2D tMap;
+  uniform float uBorderRadius;
+  varying vec2 vUv;
+
+  float roundedBoxSDF(vec2 p, vec2 b, float r) {
+    vec2 d = abs(p) - b;
+    return length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0) - r;
+  }
+
+  void main() {
+    vec2 ratio = vec2(
+      min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
+      min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
+    );
+    vec2 uv = vec2(
+      vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
+      vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+    );
+    vec4 color = texture2D(tMap, uv);
+
+    float d = roundedBoxSDF(vUv - 0.5, vec2(0.5 - uBorderRadius), uBorderRadius);
+
+    // Smooth antialiasing for edges
+    float edgeSmooth = 0.002;
+    float alpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, d);
+
+    gl_FragColor = vec4(color.rgb, alpha);
+  }
+`;
+
+const TITLE_VERTEX = `
   attribute vec3 position;
   attribute vec2 uv;
   uniform mat4 modelViewMatrix;
@@ -140,464 +308,995 @@ const VERTEX_SHADER = `
   }
 `;
 
-const FRAGMENT_SHADER = `
+const TITLE_FRAGMENT = `
   precision highp float;
-  uniform sampler2D uMap;
+  uniform sampler2D tMap;
   varying vec2 vUv;
   void main() {
-    gl_FragColor = texture2D(uMap, vUv);
+    vec4 color = texture2D(tMap, vUv);
+    if (color.a < 0.1) discard;
+    gl_FragColor = color;
   }
 `;
 
-type WheelListener = {
-  target: Element;
-  handler: EventListener;
+/* ---------------------------------------------------------------------------
+   Title texture — the project name painted below each capture in the live
+   display face. Colour comes from --tk-ink; long names wrap to two lines so
+   they stay inside the card width.
+--------------------------------------------------------------------------- */
+
+class Title {
+  private readonly gl: GL;
+  private readonly plane: Mesh;
+  private readonly canvas = document.createElement("canvas");
+  private readonly ctx: CanvasRenderingContext2D;
+  private readonly text: string;
+  private readonly family: string;
+  private color: string;
+  private lines: string[] = [];
+  private texture!: Texture;
+  private program!: Program;
+  private mesh!: Mesh;
+
+  constructor(
+    gl: GL,
+    geometry: Plane,
+    plane: Mesh,
+    text: string,
+    color: string,
+    family: string,
+  ) {
+    const context = this.canvas.getContext("2d");
+    if (!context) throw new Error("2D canvas context unavailable");
+    this.ctx = context;
+    this.gl = gl;
+    this.plane = plane;
+    this.text = text;
+    this.color = color;
+    this.family = family;
+
+    this.paint();
+    this.texture = new Texture(gl, {
+      image: this.canvas,
+      generateMipmaps: false,
+    });
+    this.program = new Program(gl, {
+      vertex: TITLE_VERTEX,
+      fragment: TITLE_FRAGMENT,
+      uniforms: { tMap: { value: this.texture } },
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+    });
+    this.mesh = new Mesh(gl, { geometry, program: this.program });
+    this.mesh.setParent(plane);
+    this.layout();
+  }
+
+  private paint(): void {
+    const { ctx, canvas } = this;
+    const fontSize = 64;
+    const lineHeight = Math.round(fontSize * 1.12);
+    const padX = 24;
+    const padY = 18;
+
+    ctx.font = `600 ${fontSize}px ${this.family}`;
+    const words = this.text.trim().split(/\s+/);
+    const lines: string[] = [];
+    let line = "";
+    for (const word of words) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(candidate).width > 760) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    }
+    if (line) lines.push(line);
+    if (!lines.length) lines.push(this.text);
+
+    ctx.font = `600 ${fontSize}px ${this.family}`;
+    const widths = lines.map((entry) => ctx.measureText(entry).width);
+    canvas.width = Math.max(1, Math.ceil(Math.max(...widths) + padX * 2));
+    canvas.height = Math.max(1, Math.ceil(lineHeight * lines.length + padY * 2));
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = `600 ${fontSize}px ${this.family}`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = this.color;
+    lines.forEach((entry, index) => {
+      ctx.fillText(
+        entry,
+        canvas.width / 2,
+        padY + lineHeight * (index + 0.5),
+      );
+    });
+
+    this.lines = lines;
+  }
+
+  layout(): void {
+    if (!this.mesh) return;
+    /* The title is parented to the media plane (as in the reference), so
+       OGL multiplies its local transform by the plane's scale. Divide the
+       intended world-space size/offset back out; otherwise a 1.5-unit title
+       becomes ~15 units tall and sits ~58 units below the card. */
+    const parentWidth = this.plane.scale.x || 1;
+    const parentHeight = this.plane.scale.y || 1;
+    const aspect = this.canvas.width / Math.max(1, this.canvas.height);
+    const maxWidth = parentWidth * 0.98;
+    let height = parentHeight * 0.15;
+    let width = height * aspect;
+    if (width > maxWidth) {
+      const fit = maxWidth / width;
+      width = maxWidth;
+      height *= fit;
+    }
+    this.mesh.scale.set(width / parentWidth, height / parentHeight, 1);
+    const worldY = -parentHeight * 0.5 - height * 0.5 - 0.1;
+    this.mesh.position.set(0, worldY / parentHeight, 0);
+  }
+
+  setColor(color: string): void {
+    if (!color || color === this.color) return;
+    this.color = color;
+    this.paint();
+    this.texture.needsUpdate = true;
+  }
+
+  destroy(): void {
+    this.plane.removeChild(this.mesh);
+    this.program.remove();
+    if (this.texture.texture) this.gl.deleteTexture(this.texture.texture);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   One capture plane: shader, image texture, title texture, arc placement.
+--------------------------------------------------------------------------- */
+
+type MediaOptions = {
+  gl: GL;
+  geometry: Plane;
+  titleGeometry: Plane;
+  image: HTMLImageElement;
+  index: number;
+  length: number;
+  scene: Transform;
+  screen: { width: number; height: number };
+  viewport: { width: number; height: number };
+  text: string;
+  titleColor: string;
+  titleFamily: string;
 };
-type PointerListener = {
-  target: HTMLCanvasElement;
-  handler: EventListener;
-};
-type Lifecycle = {
-  io: IntersectionObserver;
-  onVisibility: () => void;
-  onResize: () => void;
-  observer: MutationObserver;
+
+class Media {
+  readonly plane: Mesh;
+  width = 1;
+  widthTotal = 1;
+
+  private readonly gl: GL;
+  private readonly index: number;
+  private readonly length: number;
+  private readonly scene: Transform;
+  private readonly planeGeometry: Plane;
+  private readonly titleGeometry: Plane;
+  private readonly texture: Texture;
+  private readonly program: Program;
+  private readonly timeOffset = 100 * Math.random();
+  private screen: { width: number; height: number };
+  private viewport: { width: number; height: number };
+  private title: Title | null = null;
+
+  constructor(options: MediaOptions) {
+    this.gl = options.gl;
+    this.index = options.index;
+    this.length = options.length;
+    this.scene = options.scene;
+    this.planeGeometry = options.geometry;
+    this.titleGeometry = options.titleGeometry;
+    this.screen = options.screen;
+    this.viewport = options.viewport;
+
+    this.texture = new Texture(options.gl, {
+      image: options.image,
+      generateMipmaps: true,
+    });
+
+    this.program = new Program(options.gl, {
+      depthTest: false,
+      depthWrite: false,
+      vertex: MEDIA_VERTEX,
+      fragment: MEDIA_FRAGMENT,
+      uniforms: {
+        tMap: { value: this.texture },
+        uPlaneSizes: { value: [0, 0] },
+        uImageSizes: {
+          value: [options.image.naturalWidth, options.image.naturalHeight],
+        },
+        uSpeed: { value: 0 },
+        uTime: { value: this.timeOffset },
+        uBorderRadius: { value: BORDER_RADIUS },
+      },
+      transparent: true,
+    });
+
+    this.plane = new Mesh(options.gl, {
+      geometry: this.planeGeometry,
+      program: this.program,
+    });
+    this.plane.setParent(this.scene);
+
+    this.onResize({ screen: this.screen, viewport: this.viewport });
+
+    this.title = new Title(
+      options.gl,
+      this.titleGeometry,
+      this.plane,
+      options.text,
+      options.titleColor,
+      options.titleFamily,
+    );
+  }
+
+  update(
+    current: number,
+    speed: number,
+    reducedMotion: boolean,
+    clock: number,
+  ): void {
+    const halfTotal = this.widthTotal / 2;
+    const x =
+      euclid(
+        this.index * this.width - current + halfTotal,
+        this.widthTotal,
+      ) - halfTotal;
+    this.plane.position.x = x;
+
+    const halfViewport = this.viewport.width / 2;
+    const bend: number = BEND;
+    if (bend === 0) {
+      this.plane.position.y = 0;
+      this.plane.rotation.z = 0;
+    } else {
+      const bendAbs = Math.abs(bend);
+      const radius =
+        (halfViewport * halfViewport + bendAbs * bendAbs) / (2 * bendAbs);
+      const effectiveX = Math.min(Math.abs(x), halfViewport);
+      const arc =
+        radius - Math.sqrt(Math.max(0, radius * radius - effectiveX * effectiveX));
+      if (bend > 0) {
+        this.plane.position.y = -arc;
+        this.plane.rotation.z =
+          -Math.sign(x) * Math.asin(effectiveX / radius);
+      } else {
+        this.plane.position.y = arc;
+        this.plane.rotation.z =
+          Math.sign(x) * Math.asin(effectiveX / radius);
+      }
+    }
+
+    this.program.uniforms.uSpeed.value = reducedMotion
+      ? -0.2
+      : clamp(speed, -1.5, 1.5);
+    this.program.uniforms.uTime.value = reducedMotion
+      ? this.timeOffset
+      : this.timeOffset + clock;
+  }
+
+  onResize({
+    screen,
+    viewport,
+  }: {
+    screen: { width: number; height: number };
+    viewport: { width: number; height: number };
+  }): void {
+    this.screen = screen;
+    this.viewport = viewport;
+    const scale = this.screen.height / 1500;
+    this.plane.scale.y =
+      (this.viewport.height * (900 * scale)) / this.screen.height;
+    this.plane.scale.x =
+      (this.viewport.width * (700 * scale)) / this.screen.width;
+    this.program.uniforms.uPlaneSizes.value = [
+      this.plane.scale.x,
+      this.plane.scale.y,
+    ];
+    const padding = 2;
+    this.width = this.plane.scale.x + padding;
+    this.widthTotal = this.width * this.length;
+    this.title?.layout();
+  }
+
+  setTitleColor(color: string): void {
+    this.title?.setColor(color);
+  }
+
+  destroy(): void {
+    this.title?.destroy();
+    this.scene.removeChild(this.plane);
+    this.program.remove();
+    if (this.texture.texture) this.gl.deleteTexture(this.texture.texture);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   WebGL application — one instance per mount. Canvas is created imperatively
+   inside the React-owned host so StrictMode cleanup can never remove a
+   React-managed node.
+--------------------------------------------------------------------------- */
+
+type AppOptions = {
+  host: HTMLElement;
+  items: GalleryItem[];
+  onActiveIndex: (index: number) => void;
+  onReady: () => void;
+  onFallback: (reason: FallbackReason, error: unknown) => void;
 };
 
 class SelectedWorkApp {
-  readonly canvas: HTMLCanvasElement;
-  readonly gl: WebGLRenderingContext | WebGL2RenderingContext;
-  readonly renderer: Renderer;
-  readonly camera: Camera;
-  readonly scene: Transform;
-  readonly program: Program;
-  readonly geometry: Geometry;
-  readonly planes: Mesh[] = [];
-  readonly textures: Texture[] = [];
-  readonly images: HTMLImageElement[] = [];
+  private readonly host: HTMLElement;
+  private readonly items: GalleryItem[];
+  private readonly onActiveIndex: (index: number) => void;
+  private readonly onReady: () => void;
+  private readonly onFallback: (reason: FallbackReason, error: unknown) => void;
 
-  raf = 0;
-  destroyed = false;
-  paused = false;
-  width = 0;
-  height = 0;
-  dpr = 1;
+  private readonly canvas: HTMLCanvasElement;
+  private readonly gl: GL;
+  private readonly renderer: Renderer;
+  private readonly camera: Camera;
+  private readonly scene = new Transform();
+  private readonly planeGeometry: Plane;
+  private readonly titleGeometry: Plane;
+  private readonly motionQuery: MediaQueryList;
 
-  // scroll model
-  current = MIDDLE_START;
-  target = MIDDLE_START;
-  dragging = false;
-  dragStartX = 0;
-  dragStartTarget = MIDDLE_START;
-  wheelAccum = 0;
+  private readonly medias: Media[] = [];
+  private readonly scroll = {
+    ease: SCROLL_EASE,
+    current: 0,
+    target: 0,
+  };
 
-  private input: { wheel: WheelListener; pointers: PointerListener[] } | null =
-    null;
-  private life: Lifecycle | null = null;
+  private screen = { width: 0, height: 0 };
+  private viewport = { width: 0, height: 0 };
+  private itemCount = 0;
+  private total = 0;
+  private width = 0;
+  private clock = 0;
+  private activeIndex = -1;
 
-  onActiveChange: (index: number) => void;
+  private raf = 0;
+  private resizeRaf = 0;
+  private snapTimer = 0;
+  private resizeObserver: ResizeObserver | null = null;
+  private intersectionObserver: IntersectionObserver | null = null;
+  private mutationObserver: MutationObserver | null = null;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    onActiveChange: (index: number) => void,
-  ) {
-    this.canvas = canvas;
-    this.onActiveChange = onActiveChange;
+  private visible = false;
+  private paused = true;
+  private ready = false;
+  private destroyed = false;
+  private failed = false;
+  private reducedMotion = false;
 
-    const gl =
-      (canvas.getContext("webgl2") as WebGL2RenderingContext | null) ||
-      (canvas.getContext("webgl") as WebGLRenderingContext | null);
-    if (!gl) throw new Error("WebGL not available");
-    this.gl = gl;
+  private dragging = false;
+  private pointerDown = false;
+  private pointerAxis: "x" | "y" | null = null;
+  private pointerId: number | null = null;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private dragStartTarget = 0;
 
-    const bg = resolveBackground();
-    gl.clearColor(bg[0], bg[1], bg[2], 1);
+  constructor(options: AppOptions) {
+    this.host = options.host;
+    this.items = options.items;
+    this.onActiveIndex = options.onActiveIndex;
+    this.onReady = options.onReady;
+    this.onFallback = options.onFallback;
 
-    this.renderer = new Renderer({
-      canvas,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+    this.canvas = document.createElement("canvas");
+    this.canvas.className = "portal-gallery__canvas";
+    this.canvas.setAttribute("aria-hidden", "true");
+    this.canvas.draggable = false;
+
+    const attributes: WebGLContextAttributes = {
       alpha: true,
       depth: true,
       antialias: true,
-      premultipliedAlpha: true,
+      premultipliedAlpha: false,
       preserveDrawingBuffer: false,
-    });
-    this.dpr = this.renderer.dpr;
+    };
 
-    this.camera = new Camera(gl, { fov: 45, near: 0.1, far: 100 });
-    this.camera.position.z = 4.2;
-
-    // group is the rotating carousel container
-    this.scene = new Transform();
-    this.program = new Program(gl, {
-      vertex: VERTEX_SHADER,
-      fragment: FRAGMENT_SHADER,
-      transparent: true,
-      cullFace: null, // double-sided cards
-      depthTest: true,
-    });
-
-    this.geometry = new Plane(gl, {
-      width: 1.15,
-      height: 1.6,
-      widthSegments: 2,
-      heightSegments: 2,
-    });
-
-    this.images = GALLERY.map(() => new Image());
-    // Anything below this point that throws leaves a half-built app whose
-    // pending loadImages promise would still fire buildPlanes/render, so mark
-    // the instance destroyed before letting the error propagate.
+    let gl: GL | null = null;
     try {
-      this.loadImages().then(
-        () => {
-          if (this.destroyed || !this.renderer) return;
-          this.buildPlanes();
-          this.resize();
-          this.setActiveFromCurrent();
-          this.render();
-          if (!this.paused) this.loop();
-        },
-        () => {
-          // texture load failure -> caller renders the CSS fallback
-          if (this.destroyed) return;
-          throw new Error("gallery texture load failed");
-        },
+      gl =
+        (this.canvas.getContext("webgl2", attributes) as GL | null) ??
+        (this.canvas.getContext("webgl", attributes) as GL | null);
+    } catch (error) {
+      throw new GalleryInitError("webgl-unavailable", error);
+    }
+    if (!gl) {
+      throw new GalleryInitError(
+        "webgl-unavailable",
+        new Error("WebGL context could not be created"),
       );
+    }
+    this.gl = gl;
 
-      this.attachInput();
-      this.attachLifecycle();
-    } catch (err) {
-      this.destroyed = true;
-      throw err;
+    try {
+      this.renderer = new Renderer({
+        canvas: this.canvas,
+        dpr: Math.min(
+          window.devicePixelRatio || 1,
+          MAX_DEVICE_PIXEL_RATIO,
+        ),
+        alpha: true,
+        depth: true,
+        antialias: true,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: false,
+      });
+    } catch (error) {
+      try {
+        this.gl.getExtension("WEBGL_lose_context")?.loseContext();
+      } catch {
+        // Context release is best-effort here.
+      }
+      throw new GalleryInitError("init-failed", error);
+    }
+
+    this.gl.clearColor(0, 0, 0, 0);
+
+    this.camera = new Camera(this.gl, {
+      fov: 45,
+      near: 0.1,
+      far: 100,
+    });
+    this.camera.position.z = 20;
+
+    this.planeGeometry = new Plane(this.gl, {
+      heightSegments: 50,
+      widthSegments: 100,
+    });
+    this.titleGeometry = new Plane(this.gl);
+
+    this.motionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    this.reducedMotion = this.motionQuery.matches;
+
+    this.resize();
+
+    this.host.appendChild(this.canvas);
+    this.canvas.addEventListener(
+      "webglcontextlost",
+      this.onContextLost,
+      false,
+    );
+
+    this.attachInput();
+    this.attachLifecycle();
+  }
+
+  async init(): Promise<void> {
+    try {
+      const [titleFamily, images] = await Promise.all([
+        waitForFonts(),
+        loadImages(this.items.map((item) => item.image.src)),
+      ]);
+      if (this.destroyed) return;
+
+      if (!this.resize()) {
+        this.fail(
+          "init-failed",
+          new Error("Gallery container has no measurable size"),
+        );
+        return;
+      }
+
+      this.build(images, titleFamily);
+      this.ready = true;
+      this.clock = 0;
+      this.updateMedias(0);
+      this.renderFrame();
+      this.canvas.classList.add("portal-gallery__canvas--ready");
+      this.onReady();
+      this.syncPause();
+    } catch (error) {
+      if (this.destroyed || this.failed) return;
+      this.fail(
+        error instanceof ImageLoadError
+          ? "image-load-failed"
+          : "init-failed",
+        error,
+      );
     }
   }
 
-  private loadImages(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      let loaded = 0;
-      const total = this.images.length;
-      const onLoad = () => {
-        loaded += 1;
-        if (loaded === total) resolve();
-      };
-      const onError = () => reject(new Error("image failed to load"));
-      this.images.forEach((img, i) => {
-        img.src = GALLERY[i].image.src;
-        img.alt = GALLERY[i].image.alt;
-        if (img.decode) {
-          img.decode().then(onLoad).catch(onError);
-        } else {
-          img.onload = onLoad;
-          img.addEventListener("error", onError, { once: true });
-        }
-        if (img.complete && img.width && img.height) onLoad();
+  private build(
+    images: HTMLImageElement[],
+    titleFamily: string,
+  ): void {
+    this.itemCount = this.items.length;
+    this.total = this.itemCount * COPIES;
+    const titleColor = resolveTitleColor();
+
+    for (let index = 0; index < this.total; index += 1) {
+      const item = this.items[index % this.itemCount];
+      const image = images[index % this.itemCount];
+      if (!item || !image) continue;
+      const media = new Media({
+        gl: this.gl,
+        geometry: this.planeGeometry,
+        titleGeometry: this.titleGeometry,
+        image,
+        index,
+        length: this.total,
+        scene: this.scene,
+        screen: this.screen,
+        viewport: this.viewport,
+        text: item.name,
+        titleColor,
+        titleFamily,
+      });
+      this.medias.push(media);
+    }
+
+    this.width = this.medias[0]?.width ?? 0;
+    if (this.width > 0) {
+      this.scroll.current = this.itemCount * this.width;
+      this.scroll.target = this.scroll.current;
+    }
+    this.emitActive();
+  }
+
+  private attachInput(): void {
+    this.host.addEventListener("wheel", this.handleWheel, {
+      passive: false,
+    });
+    this.host.addEventListener(
+      "pointerdown",
+      this.handlePointerDown,
+    );
+    this.host.addEventListener(
+      "pointermove",
+      this.handlePointerMove,
+    );
+    this.host.addEventListener("pointerup", this.handlePointerUp);
+    this.host.addEventListener(
+      "pointercancel",
+      this.handlePointerCancel,
+    );
+    this.host.addEventListener(
+      "lostpointercapture",
+      this.handleLostPointerCapture,
+    );
+  }
+
+  private attachLifecycle(): void {
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.destroyed || this.resizeRaf) return;
+      this.resizeRaf = window.requestAnimationFrame(() => {
+        this.resizeRaf = 0;
+        if (!this.destroyed) this.resize();
       });
     });
-  }
+    this.resizeObserver.observe(this.host);
 
-  private buildPlanes() {
-    if (this.destroyed) return;
-    const { gl } = this;
-    const angleStep = (2 * Math.PI) / TOTAL;
-    const radius = 1.62;
-
-    for (let i = 0; i < TOTAL; i++) {
-      const texture = new Texture(gl, {
-        image: this.images[i % ITEM_COUNT],
-        flipY: false,
-      });
-      this.textures.push(texture);
-
-      const mesh = new Mesh({
-        gl,
-        geometry: this.geometry,
-        program: this.program,
-        frustumCulled: true,
-      }) as Mesh & { userData?: { texture: Texture; index: number } };
-      mesh.userData = { texture, index: i };
-
-      // base position on the circle (angle i), card faces inward
-      const baseAngle = i * angleStep;
-      mesh.position.x = Math.sin(baseAngle) * radius;
-      mesh.position.z = -Math.cos(baseAngle) * radius;
-      mesh.rotation.y = -baseAngle;
-
-      mesh.onBeforeRender(() => {
-        mesh.program.uniforms.uMap = { value: mesh.userData!.texture };
-      });
-
-      this.planes.push(mesh);
-      this.scene.addChild(mesh);
-    }
-
-    (this.program.uniforms as { uMap?: { value: Texture } }).uMap = {
-      value: this.textures[0],
-    };
-  }
-
-  /* scroll model ---------------------------------------------------------- */
-
-  euclid(v: number, m: number): number {
-    return ((v % m) + m) % m;
-  }
-
-  activeIndexFromCurrent(current: number): number {
-    return this.euclid(Math.round(current), TOTAL) % ITEM_COUNT;
-  }
-
-  setActiveFromCurrent() {
-    const index = this.activeIndexFromCurrent(this.current);
-    this.onActiveChange(index);
-  }
-
-  goTo(itemIndex: number) {
-    // goTo(0) starts at the middle copy (index MIDDLE_START = 5)
-    const target = this.euclid(MIDDLE_START + itemIndex, TOTAL);
-    this.target = target;
-    this.current = target; // instant snap for programmatic navigation
-    this.setActiveFromCurrent();
-    if (!this.paused) this.render();
-  }
-
-  next() {
-    const next = this.euclid(this.target + 1, TOTAL);
-    this.target = next;
-    this.current = next;
-    this.setActiveFromCurrent();
-    if (!this.paused) this.render();
-  }
-
-  prev() {
-    const prev = this.euclid(this.target - 1, TOTAL);
-    this.target = prev;
-    this.current = prev;
-    this.setActiveFromCurrent();
-    if (!this.paused) this.render();
-  }
-
-  /* input ----------------------------------------------------------------- */
-
-  private attachInput() {
-    const canvas = this.canvas;
-    const wrapper = canvas.parentElement;
-    if (!wrapper) return; // canvas not attached yet; input skipped
-
-    const onWheel = (e: WheelEvent) => {
-      if (this.destroyed || this.paused) return;
-      const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-      if (!horizontal) return; // vertical wheel still scrolls the page
-      e.preventDefault();
-      this.wheelAccum += e.deltaX;
-      const step = 55; // px per item
-      while (this.wheelAccum > step) {
-        this.wheelAccum -= step;
-        this.next();
-      }
-      while (this.wheelAccum < -step) {
-        this.wheelAccum += step;
-        this.prev();
-      }
-    };
-
-    this.input = {
-      wheel: { target: wrapper, handler: onWheel as EventListener },
-      pointers: [
-        { target: canvas, handler: this.pointerDownHandler as EventListener },
-        { target: canvas, handler: this.pointerMoveHandler as EventListener },
-        { target: canvas, handler: this.pointerUpHandler as EventListener },
-        { target: canvas, handler: this.pointerCancelHandler as EventListener },
-      ],
-    };
-
-    wrapper.addEventListener(
-      "wheel",
-      this.input.wheel.handler,
-      { passive: false } as AddEventListenerOptions,
-    );
-    canvas.addEventListener("pointerdown", this.pointerDownHandler);
-    canvas.addEventListener("pointermove", this.pointerMoveHandler);
-    canvas.addEventListener("pointerup", this.pointerUpHandler);
-    canvas.addEventListener("pointercancel", this.pointerCancelHandler);
-  }
-
-  private attachLifecycle() {
-    const el = this.canvas.parentElement;
-    if (!el) return; // canvas not attached yet; lifecycle skipped
-    const io = new IntersectionObserver(
+    this.intersectionObserver = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          this.paused = !entry.isIntersecting;
-          if (!this.paused && !this.destroyed) this.loop();
-        });
+        this.visible = entries.some(
+          (entry) => entry.isIntersecting,
+        );
+        this.syncPause();
       },
-      { threshold: 0.05 },
+      { threshold: 0.01 },
     );
-    io.observe(el);
+    this.intersectionObserver.observe(this.host);
 
-    const onVisibility = () => {
-      this.paused = document.hidden;
-      if (!this.paused && !this.destroyed) this.loop();
-    };
-    window.addEventListener("visibilitychange", onVisibility);
+    document.addEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange,
+    );
+    this.motionQuery.addEventListener(
+      "change",
+      this.handleMotionChange,
+    );
 
-    const onResize = () => this.resize();
-    window.addEventListener("resize", onResize);
-
-    const observer = new MutationObserver(() => {
-      const bg = resolveBackground();
-      this.gl.clearColor(bg[0], bg[1], bg[2], 1);
-      this.render();
-    });
-    observer.observe(document.documentElement, {
+    this.mutationObserver = new MutationObserver(
+      this.handleThemeChange,
+    );
+    this.mutationObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["data-theme"],
     });
-
-    this.life = { io, onVisibility, onResize, observer };
   }
 
-  /* render loop ----------------------------------------------------------- */
-
-  loop() {
-    if (this.destroyed || this.paused) return;
-    this.step();
-    this.render();
-    this.raf = requestAnimationFrame(() => this.loop());
-  }
-
-  step() {
-    if (this.dragging) return;
-    // shortest-path lerp around the circle
-    const delta = this.euclid(this.target - this.current + HALF, TOTAL) - HALF;
-    this.current += delta * 0.16;
-    this.current = this.euclid(this.current, TOTAL);
-    this.target = this.euclid(this.target, TOTAL);
-  }
-
-  updatePlanes() {
-    const { current } = this;
-    const angleStep = (2 * Math.PI) / TOTAL;
-    const radius = 1.62;
-    const depth = 1.05;
-
-    for (let i = 0; i < TOTAL; i++) {
-      const mesh = this.planes[i];
-      // effective signed distance from the scroll centre (plane units)
-      const dist = this.euclid(i - current + HALF, TOTAL) - HALF;
-      const angle = dist * angleStep;
-
-      mesh.position.x = Math.sin(angle) * radius;
-      mesh.position.z = (1 - Math.cos(angle)) * depth; // centre closest
-      mesh.rotation.y = -angle;
-
-      const scale = Math.max(0.45, 1 - Math.abs(dist) * 0.15);
-      mesh.scale.set(scale, scale, 1);
+  private syncPause(): void {
+    const nextPaused = !this.visible || document.hidden || this.destroyed;
+    if (nextPaused) {
+      this.paused = true;
+      this.stopLoop();
+      return;
     }
-    this.scene.updateMatrixWorld();
+    this.paused = false;
+    if (this.ready) this.startLoop();
   }
 
-  render() {
+  private startLoop(): void {
+    if (this.destroyed || this.paused || !this.ready) return;
+    if (this.reducedMotion) {
+      this.renderFrame();
+      return;
+    }
+    if (this.raf) return;
+    this.raf = window.requestAnimationFrame(this.loop);
+  }
+
+  private stopLoop(): void {
+    if (this.raf) {
+      window.cancelAnimationFrame(this.raf);
+      this.raf = 0;
+    }
+  }
+
+  private loop = (): void => {
+    this.raf = 0;
+    if (this.destroyed || this.paused || !this.ready) return;
+    this.step();
+    this.renderFrame();
+    this.raf = window.requestAnimationFrame(this.loop);
+  };
+
+  private step(): void {
+    const previous = this.scroll.current;
+    if (!this.dragging) {
+      const difference = this.scroll.target - this.scroll.current;
+      if (Math.abs(difference) <= 0.0001) {
+        this.scroll.current = this.scroll.target;
+      } else {
+        this.scroll.current += difference * this.scroll.ease;
+      }
+    }
+    const speed = this.scroll.current - previous;
+    if (!this.reducedMotion) this.clock += 0.04;
+    this.updateMedias(speed);
+  }
+
+  private renderFrame(): void {
     if (this.destroyed) return;
-    this.updatePlanes();
     this.renderer.render({
       scene: this.scene,
       camera: this.camera,
-      clear: true,
     });
   }
 
-  resize() {
-    if (this.destroyed) return;
-    const wrapper = this.canvas.parentElement;
-    if (!wrapper) return; // canvas not yet attached to the DOM
-    const { clientWidth, clientHeight } = wrapper;
-    this.width = clientWidth;
-    this.height = clientHeight;
-    this.renderer.setSize(clientWidth, clientHeight);
-    this.camera.perspective({
-      fov: 45,
-      aspect: clientWidth / clientHeight,
-    });
-    this.canvas.style.width = `${clientWidth}px`;
-    this.canvas.style.height = `${clientHeight}px`;
-    this.render();
-  }
-
-  pause() {
-    this.paused = true;
-    cancelAnimationFrame(this.raf);
-    this.raf = 0;
-  }
-
-  resume() {
-    if (this.destroyed || this.paused === false) return;
-    this.paused = false;
-    this.loop();
-  }
-
-  destroy() {
-    this.destroyed = true;
-    this.pause();
-    const input = this.input;
-    if (input) {
-      input.wheel.target.removeEventListener(
-        "wheel",
-        input.wheel.handler,
-        { passive: false } as AddEventListenerOptions,
+  private updateMedias(speed: number): void {
+    for (const media of this.medias) {
+      media.update(
+        this.scroll.current,
+        speed,
+        this.reducedMotion,
+        this.clock,
       );
     }
-    const canvas = this.canvas;
-    canvas.removeEventListener("pointerdown", this.pointerDownHandler as EventListener);
-    canvas.removeEventListener("pointermove", this.pointerMoveHandler as EventListener);
-    canvas.removeEventListener("pointerup", this.pointerUpHandler as EventListener);
-    canvas.removeEventListener("pointercancel", this.pointerCancelHandler as EventListener);
-
-    const life = this.life;
-    if (life) {
-      life.io.disconnect();
-      window.removeEventListener("visibilitychange", life.onVisibility);
-      window.removeEventListener("resize", life.onResize);
-      life.observer.disconnect();
-    }
-
-    this.planes.forEach((m) => this.scene.removeChild(m));
-    this.textures.forEach((t) => {
-      const gl = this.gl;
-      gl.deleteTexture(t.texture as WebGLTexture);
-    });
-    this.geometry.remove();
-    this.program.remove();
-    if (this.canvas.parentNode) this.canvas.parentNode.removeChild(this.canvas);
   }
 
-  // Stable handler references so they can be removed in destroy().
-  private pointerDownHandler = (e: PointerEvent) => {
-    if (e.button !== 0) return;
-    if (this.destroyed || this.paused) return;
-    this.dragging = true;
-    this.dragStartX = e.clientX;
-    this.dragStartTarget = this.target;
-    this.canvas.setPointerCapture?.(e.pointerId);
+  private emitActive(): void {
+    if (!this.width || !this.itemCount || !this.total) return;
+    const raw = Math.round(this.scroll.target / this.width);
+    const wrapped = euclid(raw, this.total) % this.itemCount;
+    if (wrapped === this.activeIndex) return;
+    this.activeIndex = wrapped;
+    this.onActiveIndex(wrapped);
+  }
+
+  private moveBy(direction: -1 | 1): void {
+    if (!this.ready || !this.width) return;
+    const base =
+      Math.round(this.scroll.target / this.width) * this.width;
+    this.scroll.target = base + direction * this.width;
+    this.emitActive();
+    if (this.reducedMotion) {
+      this.syncToTarget();
+    } else {
+      this.startLoop();
+    }
+  }
+
+  next(): void {
+    this.moveBy(1);
+  }
+
+  prev(): void {
+    this.moveBy(-1);
+  }
+
+  private syncToTarget(): void {
+    this.scroll.current = this.scroll.target;
+    this.updateMedias(0);
+    this.renderFrame();
+  }
+
+  private snap(): void {
+    if (this.destroyed || !this.width) return;
+    this.scroll.target =
+      Math.round(this.scroll.target / this.width) * this.width;
+    this.emitActive();
+    if (this.reducedMotion) this.syncToTarget();
+    else this.startLoop();
+  }
+
+  private scheduleSnap(): void {
+    if (this.snapTimer) window.clearTimeout(this.snapTimer);
+    this.snapTimer = window.setTimeout(() => {
+      this.snapTimer = 0;
+      if (!this.destroyed) this.snap();
+    }, SNAP_DELAY);
+  }
+
+  private resize(): boolean {
+    if (this.destroyed) return false;
+    const width = this.host.clientWidth;
+    const height = this.host.clientHeight;
+    if (!width || !height) return false;
+
+    const changed =
+      this.screen.width !== width || this.screen.height !== height;
+    this.screen = { width, height };
+    this.renderer.setSize(width, height);
+    this.camera.perspective({ fov: 45, aspect: width / height });
+
+    const fov = (this.camera.fov * Math.PI) / 180;
+    const viewportHeight =
+      2 * Math.tan(fov / 2) * this.camera.position.z;
+    this.viewport = {
+      width: viewportHeight * this.camera.aspect,
+      height: viewportHeight,
+    };
+
+    const previousWidth = this.width;
+    for (const media of this.medias) {
+      media.onResize({
+        screen: this.screen,
+        viewport: this.viewport,
+      });
+    }
+    if (this.medias[0]) {
+      this.width = this.medias[0].width;
+      if (
+        previousWidth > 0 &&
+        this.width > 0 &&
+        previousWidth !== this.width
+      ) {
+        const scale = this.width / previousWidth;
+        this.scroll.current *= scale;
+        this.scroll.target *= scale;
+      }
+    }
+
+    if (this.ready && changed) {
+      this.updateMedias(0);
+      this.renderFrame();
+    }
+    return true;
+  }
+
+  private handleWheel = (event: WheelEvent): void => {
+    if (this.destroyed || this.paused || !this.ready) return;
+    const deltaMode =
+      event.deltaMode === 1
+        ? 16
+        : event.deltaMode === 2
+          ? this.host.clientWidth
+          : 1;
+    const horizontal =
+      Math.abs(event.deltaX) > Math.abs(event.deltaY)
+        ? event.deltaX
+        : event.shiftKey
+          ? event.deltaY
+          : 0;
+    if (!horizontal) return;
+
+    if (event.cancelable) event.preventDefault();
+    const amount = clamp(
+      horizontal * deltaMode * WHEEL_FACTOR,
+      -4,
+      4,
+    );
+    if (!amount) return;
+    this.scroll.target += amount;
+    this.emitActive();
+    if (this.reducedMotion) this.syncToTarget();
+    else this.startLoop();
+    this.scheduleSnap();
   };
-  private pointerMoveHandler = (e: PointerEvent) => {
-    if (!this.dragging || this.destroyed || this.paused) return;
-    const delta = e.clientX - this.dragStartX;
-    this.target = this.euclid(this.dragStartTarget + delta * 0.02, TOTAL);
-    this.current = this.target;
-    this.setActiveFromCurrent();
-    this.render();
-  };
-  private pointerUpHandler = () => {
-    if (!this.dragging) return;
+
+  private handlePointerDown = (event: PointerEvent): void => {
+    if (this.destroyed || this.paused || !this.ready) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    this.pointerDown = true;
+    this.pointerAxis = null;
     this.dragging = false;
-    this.current = this.target;
-    this.setActiveFromCurrent();
-    this.render();
+    this.pointerId = event.pointerId;
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+    this.dragStartTarget = this.scroll.target;
+    try {
+      this.host.setPointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture is an enhancement; drag still works without it.
+    }
   };
-  private pointerCancelHandler = () => {
-    this.dragging = false;
+
+  private handlePointerMove = (event: PointerEvent): void => {
+    if (!this.pointerDown || this.destroyed) return;
+    const dx = event.clientX - this.dragStartX;
+    const dy = event.clientY - this.dragStartY;
+
+    if (!this.pointerAxis) {
+      if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+      this.pointerAxis =
+        Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      if (this.pointerAxis === "x") {
+        this.dragging = true;
+        this.host.classList.add("is-dragging");
+      }
+    }
+    if (this.pointerAxis !== "x") return;
+
+    const previous = this.scroll.current;
+    const target =
+      this.dragStartTarget + (this.dragStartX - event.clientX) * DRAG_FACTOR;
+    this.scroll.target = target;
+    this.scroll.current = target;
+    this.emitActive();
+    this.updateMedias(this.scroll.current - previous);
+    this.renderFrame();
+    this.startLoop();
   };
+
+  private handlePointerUp = (): void => {
+    this.endPointer();
+  };
+
+  private handlePointerCancel = (): void => {
+    this.endPointer();
+  };
+
+  private handleLostPointerCapture = (): void => {
+    if (!this.pointerDown) return;
+    this.endPointer();
+  };
+
+  private endPointer(): void {
+    if (!this.pointerDown) return;
+    this.pointerDown = false;
+    this.pointerAxis = null;
+    this.host.classList.remove("is-dragging");
+    const pointerId = this.pointerId;
+    this.pointerId = null;
+    if (
+      pointerId !== null &&
+      this.host.hasPointerCapture(pointerId)
+    ) {
+      try {
+        this.host.releasePointerCapture(pointerId);
+      } catch {
+        // Capture may already be gone.
+      }
+    }
+    if (this.dragging) {
+      this.dragging = false;
+      this.snap();
+    }
+  }
+
+  private handleVisibilityChange = (): void => {
+    this.syncPause();
+  };
+
+  private handleMotionChange = (): void => {
+    this.reducedMotion = this.motionQuery.matches;
+    if (this.reducedMotion) {
+      this.scroll.current = this.scroll.target;
+      this.stopLoop();
+      this.updateMedias(0);
+      this.renderFrame();
+    } else {
+      this.startLoop();
+    }
+  };
+
+  private handleThemeChange = (): void => {
+    if (this.destroyed) return;
+    const color = resolveTitleColor();
+    for (const media of this.medias) media.setTitleColor(color);
+    if (this.reducedMotion) {
+      this.renderFrame();
+    } else if (!this.paused) {
+      this.startLoop();
+    }
+  };
+
+  private onContextLost = (event: Event): void => {
+    event.preventDefault();
+    this.fail("context-lost", new Error("WebGL context lost"));
+  };
+
+  private fail(reason: FallbackReason, error: unknown): void {
+    if (this.destroyed || this.failed) return;
+    this.failed = true;
+    this.onFallback(reason, error);
+    this.destroy();
+  }
+
+  destroy(): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.stopLoop();
+    if (this.resizeRaf) {
+      window.cancelAnimationFrame(this.resizeRaf);
+      this.resizeRaf = 0;
+    }
+    if (this.snapTimer) {
+      window.clearTimeout(this.snapTimer);
+      this.snapTimer = 0;
+    }
+
+    this.host.removeEventListener("wheel", this.handleWheel);
+    this.host.removeEventListener(
+      "pointerdown",
+      this.handlePointerDown,
+    );
+    this.host.removeEventListener(
+      "pointermove",
+      this.handlePointerMove,
+    );
+    this.host.removeEventListener("pointerup", this.handlePointerUp);
+    this.host.removeEventListener(
+      "pointercancel",
+      this.handlePointerCancel,
+    );
+    this.host.removeEventListener(
+      "lostpointercapture",
+      this.handleLostPointerCapture,
+    );
+    this.canvas.removeEventListener(
+      "webglcontextlost",
+      this.onContextLost,
+    );
+
+    this.resizeObserver?.disconnect();
+    this.intersectionObserver?.disconnect();
+    this.mutationObserver?.disconnect();
+    document.removeEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange,
+    );
+    this.motionQuery.removeEventListener(
+      "change",
+      this.handleMotionChange,
+    );
+
+    for (const media of this.medias) media.destroy();
+    this.medias.length = 0;
+    this.planeGeometry.remove();
+    this.titleGeometry.remove();
+
+    this.host.classList.remove("is-dragging");
+    if (this.canvas.parentNode) {
+      this.canvas.parentNode.removeChild(this.canvas);
+    }
+
+    try {
+      this.gl.getExtension("WEBGL_lose_context")?.loseContext();
+    } catch {
+      // Context release is best-effort on teardown.
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -608,79 +1307,161 @@ type SelectedWorkGalleryProps = {
   className?: string;
 };
 
-export function SelectedWorkGallery({ className = "" }: SelectedWorkGalleryProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [webglReady, setWebglReady] = useState(false);
-  const [webglFailed, setWebglFailed] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+export function SelectedWorkGallery({
+  className = "",
+}: SelectedWorkGalleryProps) {
+  const items = useMemo(() => GALLERY, []);
+  const hostRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<SelectedWorkApp | null>(null);
-  const destroyedRef = useRef(false);
+  const fallbackRef = useRef<HTMLDivElement>(null);
+  const fallbackTrackRef = useRef<HTMLDivElement>(null);
 
-  const setActive = useCallback((index: number) => {
-    setActiveIndex(index);
-  }, []);
+  const [status, setStatus] = useState<
+    "loading" | "ready" | "fallback"
+  >("loading");
+  const [fallbackReason, setFallbackReason] =
+    useState<FallbackReason | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-  const next = useCallback(() => {
-    appRef.current?.next();
-  }, []);
-
-  const prev = useCallback(() => {
-    appRef.current?.prev();
+  useEffect(() => {
+    const media = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const wrapper = wrapperRef.current;
-    if (!canvas || !wrapper) return;
+    const host = hostRef.current;
+    if (!host) return;
+    let cancelled = false;
     let app: SelectedWorkApp | null = null;
-    let initFailed = false;
+
+    const handleFallback = (
+      reason: FallbackReason,
+      error: unknown,
+    ) => {
+      if (cancelled) return;
+      reportFallback(reason, error);
+      setFallbackReason(reason);
+      setActiveIndex(0);
+      setStatus("fallback");
+      appRef.current = null;
+    };
+
     try {
-      app = new SelectedWorkApp(canvas, setActive);
+      app = new SelectedWorkApp({
+        host,
+        items,
+        onActiveIndex: (index) => {
+          if (!cancelled) setActiveIndex(index);
+        },
+        onReady: () => {
+          if (!cancelled) setStatus("ready");
+        },
+        onFallback: handleFallback,
+      });
       appRef.current = app;
-    } catch (err) {
-      console.warn("SelectedWorkGallery: WebGL unavailable, falling back", err);
-      initFailed = true;
-      canvas.style.display = "none";
+      void app.init();
+    } catch (error) {
+      const reason =
+        error instanceof GalleryInitError
+          ? error.reason
+          : "init-failed";
+      queueMicrotask(() => {
+        if (cancelled) return;
+        reportFallback(reason, error);
+        setFallbackReason(reason);
+        setActiveIndex(0);
+        setStatus("fallback");
+      });
     }
-    // Defer the state update so it is not synchronous in the effect body.
-    queueMicrotask(() => {
-      if (destroyedRef.current) return;
-      if (initFailed) setWebglFailed(true);
-      else setWebglReady(true);
-    });
 
     return () => {
-      destroyedRef.current = true;
+      cancelled = true;
       appRef.current = null;
       app?.destroy();
     };
-  }, [setActive]);
+  }, [items]);
 
-  // Arrow key navigation scoped to the gallery
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      const wrapper = wrapperRef.current;
-      if (!wrapper || !wrapper.contains(e.target as Node)) return;
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        next();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        prev();
+  const updateActiveFromFallback = useCallback(() => {
+    const scroller = fallbackRef.current;
+    const track = fallbackTrackRef.current;
+    if (!scroller || !track) return;
+    const center = scroller.scrollLeft + scroller.clientWidth / 2;
+    let best = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    Array.from(track.children).forEach((child, index) => {
+      const element = child as HTMLElement;
+      const distance = Math.abs(
+        element.offsetLeft + element.offsetWidth / 2 - center,
+      );
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = index;
       }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [next, prev]);
+    });
+    setActiveIndex(best);
+  }, []);
 
-  const item = GALLERY[activeIndex];
+  const move = useCallback(
+    (direction: -1 | 1) => {
+      const app = appRef.current;
+      if (app) {
+        if (direction > 0) app.next();
+        else app.prev();
+        return;
+      }
+      const scroller = fallbackRef.current;
+      const track = fallbackTrackRef.current;
+      if (!scroller || !track) return;
+      const cards = Array.from(track.children) as HTMLElement[];
+      if (!cards.length) return;
+      const targetIndex = clamp(
+        activeIndex + direction,
+        0,
+        cards.length - 1,
+      );
+      const card = cards[targetIndex];
+      if (!card) return;
+      scroller.scrollTo({
+        left:
+          card.offsetLeft -
+          (scroller.clientWidth - card.offsetWidth) / 2,
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+      setActiveIndex(targetIndex);
+    },
+    [activeIndex, reducedMotion],
+  );
+
+  const next = useCallback(() => move(1), [move]);
+  const prev = useCallback(() => move(-1), [move]);
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+        return;
+      }
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      event.preventDefault();
+      move(event.key === "ArrowRight" ? 1 : -1);
+    },
+    [move],
+  );
+
+  const item = items[activeIndex] ?? items[0];
 
   return (
     <section
       id="work"
       className={`portal-gallery-section ${className}`}
       aria-label="Selected work"
+      aria-busy={status === "loading"}
+      onKeyDown={handleKeyDown}
     >
       <div className="portal-gallery__head">
         <p className="portal-label">Selected work</p>
@@ -690,71 +1471,123 @@ export function SelectedWorkGallery({ className = "" }: SelectedWorkGalleryProps
         </QuietLink>
       </div>
 
-      <div className="portal-gallery__wrap" ref={wrapperRef}>
-        <canvas
-          ref={canvasRef}
-          className={`portal-gallery__canvas ${webglReady ? "" : "portal-gallery__canvas--hidden"}`}
+      <div
+        className="portal-gallery__wrap"
+        tabIndex={0}
+        role="region"
+        aria-label="Project gallery. Use the left and right arrow keys to browse."
+      >
+        <div
+          ref={hostRef}
+          className="portal-gallery__host"
           aria-hidden="true"
         />
 
-        {/* CSS scroll-snap fallback (shown when WebGL is unavailable / failed) */}
-        <div
-          className={`portal-gallery__fallback ${webglFailed || !webglReady ? "" : "portal-gallery__fallback--hidden"}`}
-        >
-          <div className="portal-gallery__track">
-            {GALLERY.map((it) => (
-              <div
-                key={it.name}
-                className={`portal-gallery__card ${activeIndex === GALLERY.indexOf(it) ? "portal-gallery__card--active" : ""}`}
-              >
-                <img
-                  src={it.image.src}
-                  alt={it.image.alt}
-                  width={it.image.width}
-                  height={it.image.height}
-                  className="portal-gallery__card__image"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="portal-gallery__card__body">
-                  <div className="portal-gallery__card__status">
-                    <span aria-hidden="true" className="portal-gallery__card__dot" />
-                    {it.status}
+        {status === "fallback" && (
+          <div
+            ref={fallbackRef}
+            className="portal-gallery__fallback"
+            data-fallback-reason={fallbackReason ?? undefined}
+            onScroll={updateActiveFromFallback}
+          >
+            <div
+              ref={fallbackTrackRef}
+              className="portal-gallery__track"
+            >
+              {items.map((entry, index) => (
+                <div
+                  key={entry.name}
+                  className={`portal-gallery__card ${
+                    activeIndex === index
+                      ? "portal-gallery__card--active"
+                      : ""
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- fallback uses the same local captures at their real dimensions */}
+                  <img
+                    src={entry.image.src}
+                    alt={entry.image.alt}
+                    width={entry.image.width}
+                    height={entry.image.height}
+                    className="portal-gallery__card__image"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(event) => {
+                      event.currentTarget.classList.add(
+                        "portal-gallery__card__image--missing",
+                      );
+                    }}
+                  />
+                  <div className="portal-gallery__card__body">
+                    <div className="portal-gallery__card__status">
+                      <span
+                        aria-hidden="true"
+                        className="portal-gallery__card__dot"
+                      />
+                      {entry.status}
+                    </div>
+                    <h3 className="portal-gallery__card__name">
+                      {entry.name}
+                    </h3>
+                    <p className="portal-gallery__card__summary">
+                      {entry.summary}
+                    </p>
+                    <p className="portal-gallery__card__evidence">
+                      {entry.evidence}
+                    </p>
+                    <a
+                      href={entry.linkHref}
+                      target={entry.external ? "_blank" : undefined}
+                      rel={
+                        entry.external
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="portal-gallery__card__link"
+                    >
+                      {entry.linkLabel}
+                      {entry.external && (
+                        <span className="sr-only">
+                          {" "}
+                          (opens in a new tab)
+                        </span>
+                      )}
+                    </a>
                   </div>
-                  <h3 className="portal-gallery__card__name">{it.name}</h3>
-                  <p className="portal-gallery__card__summary">{it.summary}</p>
-                  <p className="portal-gallery__card__evidence">{it.evidence}</p>
-                  <a
-                    href={it.linkHref}
-                    target={it.external ? "_blank" : undefined}
-                    rel={it.external ? "noopener noreferrer" : undefined}
-                    className="portal-gallery__card__link"
-                  >
-                    {it.linkLabel}
-                    {it.external && (
-                      <span className="sr-only"> (opens in a new tab)</span>
-                    )}
-                  </a>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-          <p className="portal-gallery__fallback__note">
-            Item {activeIndex + 1} of {ITEM_COUNT}
-          </p>
-        </div>
+        )}
       </div>
 
       {/* Active-item caption, synced to the gallery, aria-live="polite" */}
-      <div className="portal-gallery__caption" aria-live="polite">
+      <div
+        className="portal-gallery__caption"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         <div className="portal-gallery__caption__inner">
           <div className="portal-gallery__caption__status">
-            <span aria-hidden="true" className="portal-gallery__caption__dot" />
+            <span
+              aria-hidden="true"
+              className="portal-gallery__caption__dot"
+            />
             {item.status}
+            <span className="portal-gallery__caption__count">
+              {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {String(items.length).padStart(2, "0")}
+            </span>
           </div>
-          <h3 className="portal-gallery__caption__name">{item.name}</h3>
-          <p className="portal-gallery__caption__summary">{item.summary}</p>
-          <p className="portal-gallery__caption__evidence">{item.evidence}</p>
+          <h3 className="portal-gallery__caption__name">
+            {item.name}
+          </h3>
+          <p className="portal-gallery__caption__summary">
+            {item.summary}
+          </p>
+          <p className="portal-gallery__caption__evidence">
+            {item.evidence}
+          </p>
           <a
             href={item.linkHref}
             target={item.external ? "_blank" : undefined}

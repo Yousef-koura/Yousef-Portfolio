@@ -413,9 +413,23 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   height:clamp(400px,60svh,700px);
   overflow:hidden;
   background:var(--tk-background);
+  touch-action:pan-y;
+  cursor:grab;
+  user-select:none;
+  -webkit-user-select:none;
 }
+.portal-gallery__wrap:focus-visible{
+  outline:2px solid var(--tk-champagne);
+  outline-offset:2px;
+}
+.portal-gallery__wrap.is-dragging{cursor:grabbing;}
 @media (min-width:761px){
   .portal-gallery__wrap{height:clamp(500px,70svh,900px);}
+}
+.portal-gallery__host{
+  position:absolute;
+  inset:0;
+  touch-action:pan-y;
 }
 .portal-gallery__canvas{
   position:absolute;
@@ -423,8 +437,18 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   width:100%;
   height:100%;
   display:block;
+  opacity:0;
+  transition:opacity .4s ease;
+  touch-action:pan-y;
+  cursor:grab;
+  user-select:none;
+  -webkit-user-select:none;
 }
-.portal-gallery__canvas--hidden{display:none;}
+.portal-gallery__canvas--ready{opacity:1;}
+.portal-gallery__wrap.is-dragging .portal-gallery__canvas{cursor:grabbing;}
+@media (prefers-reduced-motion:reduce){
+  .portal-gallery__canvas{transition:none;}
+}
 .portal-gallery__fallback{
   position:absolute;
   inset:0;
@@ -457,10 +481,13 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 }
 .portal-gallery__card__image{
   width:100%;
-  height:clamp(140px,22vh,200px);
+  height:clamp(110px,18vh,200px);
   object-fit:cover;
   display:block;
   background:var(--tk-background);
+}
+.portal-gallery__card__image--missing{
+  visibility:hidden;
 }
 .portal-gallery__card__body{
   padding:clamp(12px,3vw,16px);
@@ -495,6 +522,10 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   line-height:1.55;
   color:var(--tk-muted-strong);
   margin:0;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:4;
+  overflow:hidden;
 }
 .portal-gallery__card__evidence{
   font-family:var(--font-mono);
@@ -502,6 +533,10 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   letter-spacing:.12em;
   color:var(--tk-muted-strong);
   margin:4px 0 0;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
 }
 .portal-gallery__card__link{
   color:var(--tk-champagne);
@@ -536,7 +571,7 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   max-width:46ch;
 }
 .portal-gallery__caption__status{
-  display:inline-flex;
+  display:flex;
   align-items:center;
   gap:8px;
   font-family:var(--font-mono);
@@ -547,6 +582,10 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 }
 .portal-gallery__caption__dot{
   width:8px;height:8px;border-radius:50%;background:var(--tk-champagne);
+}
+.portal-gallery__caption__count{
+  margin-left:auto;
+  color:var(--tk-champagne-strong);
 }
 .portal-gallery__caption__name{
   font-family:var(--font-display);

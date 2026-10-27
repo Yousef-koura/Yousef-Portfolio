@@ -102,14 +102,16 @@ declare module "ogl" {
   }
 
   export class Mesh extends Transform {
-    constructor(params?: {
-      gl?: any;
-      geometry?: any;
-      program?: any;
-      mode?: number;
-      frustumCulled?: boolean;
-      renderOrder?: number;
-    });
+    constructor(
+      gl: any,
+      params?: {
+        geometry?: any;
+        program?: any;
+        mode?: number;
+        frustumCulled?: boolean;
+        renderOrder?: number;
+      },
+    );
     gl: any;
     geometry: any;
     program: any;
