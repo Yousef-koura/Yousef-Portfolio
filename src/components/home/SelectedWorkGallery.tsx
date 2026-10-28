@@ -34,6 +34,11 @@ type GalleryItem = {
   linkHref: string;
   external: boolean;
   image: { src: string; alt: string; width: number; height: number };
+  /** Optional Home-only gallery cover. Only SelectedWorkGallery reads it;
+      falls back to `image` when not set. The shared `image` field is never
+      changed or repointed, so /work, /work/movenue, and every other consumer
+      keep the real Movenue screenshot. */
+  galleryImage?: { src: string; alt: string; width: number; height: number };
 };
 
 const cops = getProjectDetail("flyrank-content-opportunity-scoring");
@@ -49,6 +54,12 @@ const GALLERY: GalleryItem[] = [
     linkHref: "/work/movenue",
     external: false,
     image: featuredProject.image,
+    galleryImage: {
+      src: "/projects/movenue-cover-1400x1800.png",
+      alt: "Movenue brand cover",
+      width: 1400,
+      height: 1800,
+    },
   },
   {
     name: secondaryProjects[1].name, // Personal RAG Chatbot
@@ -790,7 +801,11 @@ class SelectedWorkApp {
     try {
       const [titleFamily, images] = await Promise.all([
         waitForFonts(),
-        loadImages(this.items.map((item) => item.image.src)),
+        loadImages(
+          this.items.map(
+            (item) => item.galleryImage?.src ?? item.image.src,
+          ),
+        ),
       ]);
       if (this.destroyed) return;
 
@@ -1499,24 +1514,28 @@ export function SelectedWorkGallery({
               ref={fallbackTrackRef}
               className="portal-gallery__track"
             >
-              {items.map((entry, index) => (
-                <div
-                  key={entry.name}
-                  className={`portal-gallery__card ${
-                    activeIndex === index
-                      ? "portal-gallery__card--active"
-                      : ""
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element -- fallback uses the same local captures at their real dimensions */}
-                  <img
-                    src={entry.image.src}
-                    alt={entry.image.alt}
-                    width={entry.image.width}
-                    height={entry.image.height}
-                    className="portal-gallery__card__image"
-                    loading="lazy"
-                    decoding="async"
+              {items.map((entry, index) => {
+                const cover = entry.galleryImage;
+                return (
+                  <div
+                    key={entry.name}
+                    className={`portal-gallery__card ${
+                      activeIndex === index
+                        ? "portal-gallery__card--active"
+                        : ""
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- fallback uses the same local captures at their real dimensions */}
+                    <img
+                      src={cover?.src ?? entry.image.src}
+                      alt={cover?.alt ?? entry.image.alt}
+                      width={cover?.width ?? entry.image.width}
+                      height={cover?.height ?? entry.image.height}
+                      className={`portal-gallery__card__image${
+                        cover ? " portal-gallery__card__image--cover" : ""
+                      }`}
+                      loading="lazy"
+                      decoding="async"
                     onError={(event) => {
                       event.currentTarget.classList.add(
                         "portal-gallery__card__image--missing",
@@ -1560,7 +1579,8 @@ export function SelectedWorkGallery({
                     </a>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
