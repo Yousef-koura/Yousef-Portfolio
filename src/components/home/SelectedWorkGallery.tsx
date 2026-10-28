@@ -26,6 +26,7 @@ import {
 
 type GalleryItem = {
   name: string;
+  slug: string;
   status: "Live" | "Completed";
   summary: string;
   evidence: string;
@@ -40,52 +41,57 @@ const cops = getProjectDetail("flyrank-content-opportunity-scoring");
 const GALLERY: GalleryItem[] = [
   {
     name: featuredProject.name,
+    slug: "movenue",
     status: featuredProject.status,
     summary: featuredProject.summary,
     evidence: featuredProject.evidence,
-    linkLabel: featuredProject.links[0].label,
-    linkHref: featuredProject.links[0].href,
-    external: Boolean(featuredProject.links[0].external),
+    linkLabel: "View project",
+    linkHref: "/work/movenue",
+    external: false,
     image: featuredProject.image,
   },
   {
     name: secondaryProjects[1].name, // Personal RAG Chatbot
+    slug: "personal-rag-chatbot",
     status: secondaryProjects[1].status,
     summary: secondaryProjects[1].summary,
     evidence: secondaryProjects[1].evidence,
-    linkLabel: secondaryProjects[1].links[0].label,
-    linkHref: secondaryProjects[1].links[0].href,
-    external: Boolean(secondaryProjects[1].links[0].external),
+    linkLabel: "View project",
+    linkHref: "/work/personal-rag-chatbot",
+    external: false,
     image: secondaryProjects[1].image,
   },
   {
     name: secondaryProjects[0].name, // Agri-Bot
+    slug: "agri-bot",
     status: secondaryProjects[0].status,
     summary: secondaryProjects[0].summary,
     evidence: secondaryProjects[0].evidence,
-    linkLabel: secondaryProjects[0].links[0].label,
-    linkHref: secondaryProjects[0].links[0].href,
-    external: Boolean(secondaryProjects[0].links[0].external),
+    linkLabel: "View project",
+    linkHref: "/work/agri-bot",
+    external: false,
     image: secondaryProjects[0].image,
   },
   {
     name: secondaryProjects[2].name, // FMCG Data Engineering Pipeline
+    slug: "fmcg-pipeline",
     status: secondaryProjects[2].status,
     summary: secondaryProjects[2].summary,
     evidence: secondaryProjects[2].evidence,
-    linkLabel: secondaryProjects[2].links[0].label,
-    linkHref: secondaryProjects[2].links[0].href,
-    external: Boolean(secondaryProjects[2].links[0].external),
+    linkLabel: "View project",
+    linkHref: "/work/fmcg-pipeline",
+    external: false,
     image: secondaryProjects[2].image,
   },
   {
     name: cops?.name ?? "Content Opportunity Scoring",
+    slug: "flyrank-content-opportunity-scoring",
     status: (cops?.status ?? "Completed") as "Live" | "Completed",
     summary: cops?.summary ?? "",
     evidence: cops?.stack.map((t) => t.label).join(" · ") ?? "",
-    linkLabel: cops?.links[0]?.label ?? "View repository",
-    linkHref: cops?.links[0]?.href ?? "",
-    external: Boolean(cops?.links[0]?.external),
+    linkLabel: "View project",
+    linkHref: "/work/flyrank-content-opportunity-scoring",
+    external: false,
     image: cops?.image ?? {
       src: "/projects/flyrank-capstone-cover.jpg",
       alt: "Content Opportunity Scoring — decision-support ranking for content-refresh review",
@@ -1464,7 +1470,6 @@ export function SelectedWorkGallery({
       onKeyDown={handleKeyDown}
     >
       <div className="portal-gallery__head">
-        <p className="portal-label">Selected work</p>
         <h2 className="portal-gallery__title">Selected work</h2>
         <QuietLink href="/work" className="portal-ql">
           All work
@@ -1561,7 +1566,10 @@ export function SelectedWorkGallery({
         )}
       </div>
 
-      {/* Active-item caption, synced to the gallery, aria-live="polite" */}
+      {/* Active-item caption, synced to the gallery, aria-live="polite".
+          Minimal and centered: status dot + project name, 01 / 05 counter,
+          one-line summary, one evidence/tech line, single "View project"
+          link to the /work/[slug] detail page. */}
       <div
         className="portal-gallery__caption"
         aria-live="polite"
@@ -1588,16 +1596,8 @@ export function SelectedWorkGallery({
           <p className="portal-gallery__caption__evidence">
             {item.evidence}
           </p>
-          <a
-            href={item.linkHref}
-            target={item.external ? "_blank" : undefined}
-            rel={item.external ? "noopener noreferrer" : undefined}
-            className="portal-gallery__caption__link"
-          >
+          <a href={item.linkHref} className="portal-gallery__caption__link">
             {item.linkLabel}
-            {item.external && (
-              <span className="sr-only"> (opens in a new tab)</span>
-            )}
           </a>
         </div>
       </div>
