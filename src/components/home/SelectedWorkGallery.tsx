@@ -71,6 +71,12 @@ const GALLERY: GalleryItem[] = [
     linkHref: "/work/personal-rag-chatbot",
     external: false,
     image: secondaryProjects[1].image,
+    galleryImage: {
+      src: "/projects/rag-chatbot-cover-1400x1800.png",
+      alt: "Personal RAG Chatbot project cover",
+      width: 1400,
+      height: 1800,
+    },
   },
   {
     name: secondaryProjects[0].name, // Agri-Bot
@@ -82,6 +88,12 @@ const GALLERY: GalleryItem[] = [
     linkHref: "/work/agri-bot",
     external: false,
     image: secondaryProjects[0].image,
+    galleryImage: {
+      src: "/projects/agribot-cover-1400x1800.png",
+      alt: "Agri-Bot project cover",
+      width: 1400,
+      height: 1800,
+    },
   },
   {
     name: secondaryProjects[2].name, // FMCG Data Engineering Pipeline
@@ -93,6 +105,12 @@ const GALLERY: GalleryItem[] = [
     linkHref: "/work/fmcg-pipeline",
     external: false,
     image: secondaryProjects[2].image,
+    galleryImage: {
+      src: "/projects/fmcg-pipeline-cover-1400x1800.png",
+      alt: "FMCG Data Engineering Pipeline project cover",
+      width: 1400,
+      height: 1800,
+    },
   },
   {
     name: cops?.name ?? "Content Opportunity Scoring",
@@ -108,6 +126,12 @@ const GALLERY: GalleryItem[] = [
       alt: "Content Opportunity Scoring — decision-support ranking for content-refresh review",
       width: 1897,
       height: 842,
+    },
+    galleryImage: {
+      src: "/projects/content-opportunity-scoring-cover-1400x1800.png",
+      alt: "Content Opportunity Scoring project cover",
+      width: 1400,
+      height: 1800,
     },
   },
 ];

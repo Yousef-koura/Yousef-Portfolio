@@ -521,10 +521,10 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 .portal-gallery__card__image--missing{
   visibility:hidden;
 }
-/* Home-only Movenue gallery cover (7:9 portrait). The fallback card box
-   becomes 7:9 so the full cover — wordmark + Arabic headline — shows with
-   no crop, stretch, or letterbox. Scoped to Movenue only; the other four
-   fallback cards keep the base clamped height / object-fit: cover. */
+/* Home-only gallery covers (7:9 portrait). The fallback card box becomes
+   7:9 so each full cover — wordmark + focal visual — shows with no crop,
+   stretch, or letterbox. Applied to every card that sets galleryImage;
+   cards without a cover keep the base clamped height / object-fit: cover. */
 .portal-gallery__card__image--cover{
   flex-shrink:0;
   height:auto;
