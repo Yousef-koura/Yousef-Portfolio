@@ -132,13 +132,15 @@ export function PortalArchive() {
         </div>
       </section>
 
-      {/* STATEMENT — title block. The positioning statement is the anchor
-          (largest); the role line + descriptor are a compact supporting line.
-          Centered, consistent with the sections below. Copy unchanged. */}
+      {/* STATEMENT — title block. Role first (prominent), descriptor second
+          (quiet support), positioning statement third (reading size), all
+          centered as one block. Copy unchanged. */}
       <section className="portal-statement" data-reveal>
-        <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
-        <p className="portal-statement__role">AI Engineer</p>
-        <p className="portal-statement__descriptor">Applied AI · LLMs/RAG · Computer vision · Machine learning · Data</p>
+        <div className="portal-statement__body">
+          <p className="portal-statement__role">AI Engineer</p>
+          <p className="portal-statement__descriptor">Applied AI · LLMs/RAG · Computer vision · Machine learning · Data</p>
+          <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
+        </div>
       </section>
 
       {/* ABOUT — two-sentence confirmed-facts block + "More about me". */}
@@ -210,7 +212,7 @@ export function PortalArchive() {
               </RevealImage>
             </figure>
           </Reveal>
-          <div>
+          <div className="portal-publication__text">
             <h3 className="portal-publication__title">{publication.title}</h3>
             <p className="portal-publication__venue">{publication.venue}</p>
             <p className="portal-publication__date">{publication.date}</p>

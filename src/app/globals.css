@@ -277,11 +277,10 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 /* Journey — four confirmed roles as calm steps (no per-role summary line in
    Version A); "Digital HUB (D-HUB)" wraps at word boundaries. */
 .portal-journey{position:relative;padding:clamp(10px,6vw,8vw) clamp(16px,4vw,13vw)}
-.portal-journey__head{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:clamp(10px,4vw,16px);text-align:center}
-.portal-journey__title{font-family:var(--font-display);font-size:clamp(1.75rem,4vw,2.5rem);letter-spacing:-.06em;line-height:1.1;margin:0 0 4px;color:var(--tk-ink)}
-.portal-journey__track{position:relative}
-.portal-journey__step{display:grid;grid-template-columns:clamp(150px,22vw,190px) 1fr;gap:clamp(12px,3vw,18px);padding:clamp(12px,3vw,18px) 0;border-bottom:1px solid color-mix(in srgb, var(--tk-line) 35%, transparent);align-items:start}
-.portal-journey__step:last-child{border-bottom:none}
+.portal-journey__head{display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vw,12px);margin-bottom:clamp(20px,3vw,28px);text-align:center}
+.portal-journey__title{font-family:var(--font-display);font-size:clamp(1.75rem,4vw,2.5rem);letter-spacing:-.06em;line-height:1.1;margin:0;color:var(--tk-ink)}
+.portal-journey__track{position:relative;width:100%;max-width:60rem;margin:0 auto;padding:0;list-style:none;border-top:1px solid var(--tk-line)}
+.portal-journey__step{display:grid;grid-template-columns:clamp(150px,22vw,190px) 1fr;gap:clamp(12px,3vw,18px);padding:clamp(12px,3vw,18px) 0;border-bottom:1px solid var(--tk-line);align-items:start}
 .portal-journey__time{font-family:var(--font-mono);font-size:clamp(12px,1.5vw,13px);letter-spacing:.12em;text-transform:uppercase;color:var(--tk-muted-strong)}
 .portal-journey__time--current{color:var(--tk-champagne-strong)}
 .portal-journey__org{font-family:var(--font-display);font-size:clamp(1.1rem,2.2vw,1.3rem);letter-spacing:-.03em;line-height:1.2;margin:0 0 2px;color:var(--tk-ink);overflow-wrap:break-word;min-width:0}
@@ -289,18 +288,18 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 .portal-journey__role--current{color:var(--tk-champagne-strong)}
 .portal-current{font-family:var(--font-mono);font-size:clamp(11px,1.4vw,12px);letter-spacing:.14em;text-transform:uppercase;color:var(--tk-champagne-strong)}
 
-/* Publication — slim evidence row (large certificate block removed). */
-.portal-publication__row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(12px,3vw,20px);text-align:center}
+/* Publication — certificate, title, venue, date, and link in one centered column. */
+.portal-publication__row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,2.4vw,18px);text-align:center}
 .portal-publication__thumb{width:clamp(140px,22vw,300px);height:auto;display:block;border:1px solid var(--p-line)}
-.portal-publication__title{font-family:var(--font-display);font-size:clamp(1.15rem,2.4vw,1.4rem);letter-spacing:-.04em;line-height:1.25;margin:0 0 2px;color:var(--tk-ink)}
+.portal-publication__text{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;max-width:60ch;margin:0 auto}
+.portal-publication__title{font-family:var(--font-display);font-size:clamp(1.15rem,2.4vw,1.4rem);letter-spacing:-.04em;line-height:1.25;margin:0;color:var(--tk-ink);text-wrap:balance}
 .portal-publication__venue{font-family:var(--font-mono);font-size:clamp(12px,1.5vw,13px);letter-spacing:.12em;color:var(--tk-muted-strong);margin:0}
-.portal-publication__date{font-family:var(--font-mono);font-size:clamp(12px,1.5vw,13px);letter-spacing:.12em;color:var(--tk-champagne-strong);margin:4px 0 0}
-.portal-publication__link{color:var(--tk-champagne);font-family:var(--font-mono);font-size:clamp(12px,1.5vw,13px);letter-spacing:.14em;text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin:clamp(8px,2vw,14px) auto 0}
+.portal-publication__date{font-family:var(--font-mono);font-size:clamp(12px,1.5vw,13px);letter-spacing:.12em;color:var(--tk-champagne-strong);margin:0}
+.portal-publication__link{color:var(--tk-champagne);font-family:var(--font-mono);font-size:clamp(12px,1.5vw,13px);letter-spacing:.14em;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;margin:clamp(4px,1.2vw,8px) auto 0}
+.portal-publication__link:focus-visible{outline:2px solid var(--tk-champagne);outline-offset:2px}
 
 @media (max-width:760px){
   .portal-journey__step{grid-template-columns:1fr}
-  .portal-publication__row{flex-direction:column;align-items:center}
-  .portal-publication__link{margin:clamp(8px,2vw,14px) auto 0}
 }
 
 
@@ -326,47 +325,65 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
    on cream it softens to a bronze-tinted whisper. */
 [data-theme="light"] .portal-action:hover{box-shadow:0 12px 28px rgba(140,106,46,.14)}
 
-/* ─── Statement — single column, left aligned (Version A) ─── */
+/* ─── Statement — centered title block: role, descriptor, statement ─── */
 .portal-statement{
   display:flex;
   flex-direction:column;
-  gap:clamp(10px,3vw,16px);
+  align-items:center;
+  gap:0;
   padding:clamp(24px,6vw,48px) clamp(16px,4vw,20px);
   border-top:1px solid var(--tk-line);
   overflow:clip;
+  text-align:center;
+}
+.portal-statement__body{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(10px,1.6vw,14px);
+  width:100%;
+  max-width:64ch;
+  margin:0 auto;
 }
 .portal-statement__role{
   color:var(--tk-champagne-strong);
   font-family:var(--font-display);
-  font-size:clamp(1.5rem,5vw,2.75rem);
+  font-size:clamp(2.25rem,5vw,3.25rem);
   font-weight:600;
-  letter-spacing:-.02em;
-  line-height:1.05;
+  letter-spacing:-.025em;
+  line-height:.98;
   margin:0;
+  text-wrap:balance;
 }
 .portal-statement__descriptor{
   color:var(--tk-muted-strong);
   font-family:var(--font-mono);
-  font-size:clamp(12px,1.6vw,14px);
-  letter-spacing:.16em;
+  font-size:clamp(12px,1.4vw,14px);
+  letter-spacing:.14em;
+  line-height:1.65;
   text-transform:uppercase;
   margin:0;
+  max-width:62ch;
+  text-wrap:balance;
 }
 .portal-statement__copy{
   font-family:var(--font-display);
-  font-size:clamp(1.25rem,2.6vw,2rem);
-  letter-spacing:-.04em;
-  line-height:1.1;
-  margin:0;
-  max-width:34ch;
+  font-size:clamp(1.15rem,2vw,1.5rem);
+  letter-spacing:-.025em;
+  line-height:1.4;
+  margin:clamp(6px,1.2vw,10px) auto 0;
+  max-width:46ch;
+  color:var(--tk-ink);
+  text-wrap:balance;
 }
 .portal-statement em{color:var(--tk-champagne);font-style:normal}
 
-/* ─── About — stacked below the statement (Version A) ─── */
+/* ─── About — centered heading, copy block and link ─── */
 .portal-about{
   display:flex;
   flex-direction:column;
-  gap:clamp(12px,3vw,18px);
+  align-items:center;
+  gap:clamp(16px,2.4vw,24px);
   padding:clamp(24px,6vw,48px) clamp(16px,4vw,20px);
   border-top:1px solid var(--tk-line);
   overflow:clip;
@@ -378,17 +395,23 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   line-height:1.1;
   margin:0;
   color:var(--tk-ink);
+  text-align:center;
 }
 .portal-about__copy{
   color:var(--tk-muted-strong);
-  font-size:clamp(13px,1.7vw,15px);
-  line-height:1.6;
-  margin:0;
-  max-width:46ch;
+  font-size:clamp(14px,1.7vw,16px);
+  line-height:1.65;
+  width:100%;
+  max-width:60ch;
+  margin:0 auto;
+  text-align:center;
+  text-wrap:pretty;
 }
 .portal-about__link{
   display:flex;
-  justify-content:flex-start;
+  width:100%;
+  justify-content:center;
+  align-self:stretch;
 }
 
 /* ─── Selected Work — OGL WebGL curved carousel (Version A) ─── */
@@ -405,9 +428,8 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   flex-direction:column;
   align-items:center;
   gap:clamp(8px,2vw,12px);
-  flex-wrap:wrap;
   text-align:center;
-  margin-bottom:clamp(24px,6vw,40px);
+  margin:0;
 }
 .portal-gallery__title{
   font-family:var(--font-display);
@@ -572,7 +594,7 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 
 /* Caption — synced to the active item, aria-live="polite" */
 .portal-gallery__caption{
-  margin-top:clamp(20px,5vw,32px);
+  margin-top:0;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -580,7 +602,12 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   text-align:center;
 }
 .portal-gallery__caption__inner{
-  max-width:52ch;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(6px,1.2vw,10px);
+  width:100%;
+  max-width:60ch;
   margin:0 auto;
   text-align:center;
 }
@@ -597,9 +624,6 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 }
 .portal-gallery__caption__dot{
   width:8px;height:8px;border-radius:50%;background:var(--tk-champagne);
-}
-.portal-gallery__caption__count{
-  color:var(--tk-champagne-strong);
 }
 .portal-gallery__caption__name{
   font-family:var(--font-display);
@@ -620,7 +644,7 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   font-size:clamp(12px,1.5vw,13px);
   letter-spacing:.12em;
   color:var(--tk-muted-strong);
-  margin:4px 0 0;
+  margin:0;
 }
 .portal-gallery__caption__link{
   color:var(--tk-champagne);
@@ -639,35 +663,53 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
   outline-offset:2px;
 }
 
-/* Prev / Next navigation */
+/* Prev / Next navigation — capsule controls with the counter between them */
 .portal-gallery__nav{
   display:flex;
-  gap:clamp(12px,3vw,16px);
-  margin-top:clamp(24px,6vw,40px);
+  align-items:center;
   justify-content:center;
+  gap:clamp(12px,2.4vw,16px);
+  margin-top:0;
 }
 .portal-gallery__nav__button{
   display:inline-flex;
   align-items:center;
+  justify-content:center;
   gap:8px;
   min-height:44px;
-  padding:12px 20px;
+  padding:0 clamp(16px,2vw,20px);
   background:transparent;
   border:1px solid var(--tk-line);
+  border-radius:9999px;
   color:var(--tk-ink);
   font-family:var(--font-mono);
   font-size:clamp(12px,1.5vw,13px);
   letter-spacing:.14em;
   text-transform:uppercase;
   cursor:pointer;
+  transition:border-color .2s ease,color .2s ease,background-color .2s ease;
 }
-.portal-gallery__nav__button:hover{
+.portal-gallery__nav__button:hover,
+.portal-gallery__nav__button:active{
   border-color:var(--tk-champagne);
   color:var(--tk-champagne);
+  background:color-mix(in srgb,var(--tk-champagne) 8%,transparent);
 }
 .portal-gallery__nav__button:focus-visible{
   outline:2px solid var(--tk-champagne);
   outline-offset:2px;
+}
+.portal-gallery__nav__count{
+  min-width:5.5ch;
+  text-align:center;
+  color:var(--tk-champagne-strong);
+  font-family:var(--font-mono);
+  font-size:clamp(11px,1.4vw,12px);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.14em;
+}
+@media (prefers-reduced-motion:reduce){
+  .portal-gallery__nav__button{transition:none;}
 }
 
 /* ─── Consistent section rhythm — every below-hero section shares the same

@@ -1567,9 +1567,9 @@ export function SelectedWorkGallery({
       </div>
 
       {/* Active-item caption, synced to the gallery, aria-live="polite".
-          Minimal and centered: status dot + project name, 01 / 05 counter,
-          one-line summary, one evidence/tech line, single "View project"
-          link to the /work/[slug] detail page. */}
+          Minimal centered description: status dot + status, project name,
+          summary, evidence/tech line, single "View project" link to the
+          /work/[slug] detail page. */}
       <div
         className="portal-gallery__caption"
         aria-live="polite"
@@ -1582,10 +1582,6 @@ export function SelectedWorkGallery({
               className="portal-gallery__caption__dot"
             />
             {item.status}
-            <span className="portal-gallery__caption__count">
-              {String(activeIndex + 1).padStart(2, "0")} /{" "}
-              {String(items.length).padStart(2, "0")}
-            </span>
           </div>
           <h3 className="portal-gallery__caption__name">
             {item.name}
@@ -1602,6 +1598,9 @@ export function SelectedWorkGallery({
         </div>
       </div>
 
+      {/* Controls sit directly beneath the caption. The 01 / 05 counter is
+          placed between the two buttons so it cannot collide with the
+          status label above. Wrap-around at both edges is intentional. */}
       <div className="portal-gallery__nav">
         <button
           type="button"
@@ -1609,9 +1608,13 @@ export function SelectedWorkGallery({
           className="portal-gallery__nav__button"
           aria-label="Previous project"
         >
-          <ArrowLeft size={17} aria-hidden="true" />
+          <ArrowLeft size={16} aria-hidden="true" />
           <span className="portal-gallery__nav__label">Prev</span>
         </button>
+        <span className="portal-gallery__nav__count">
+          {String(activeIndex + 1).padStart(2, "0")} /{" "}
+          {String(items.length).padStart(2, "0")}
+        </span>
         <button
           type="button"
           onClick={next}
@@ -1619,7 +1622,7 @@ export function SelectedWorkGallery({
           aria-label="Next project"
         >
           <span className="portal-gallery__nav__label">Next</span>
-          <ArrowRight size={17} aria-hidden="true" />
+          <ArrowRight size={16} aria-hidden="true" />
         </button>
       </div>
     </section>
