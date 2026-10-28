@@ -132,14 +132,18 @@ export function PortalArchive() {
         </div>
       </section>
 
-      {/* STATEMENT — single column, left aligned (Version A) */}
+      {/* STATEMENT — title block. Role first (prominent), descriptor second
+          (quiet support), positioning statement third (reading size), all
+          centered as one block. Copy unchanged. */}
       <section className="portal-statement" data-reveal>
-        <p className="portal-statement__role">AI Engineer</p>
-        <p className="portal-statement__descriptor">Applied AI · LLMs/RAG · Computer vision · Machine learning · Data</p>
-        <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
+        <div className="portal-statement__body">
+          <p className="portal-statement__role">AI Engineer</p>
+          <p className="portal-statement__descriptor">Applied AI · LLMs/RAG · Computer vision · Machine learning · Data</p>
+          <p className="portal-statement__copy">I build the systems beneath a useful interface: <em>models, data, and decisions</em> brought into the same room.</p>
+        </div>
       </section>
 
-      {/* ABOUT — stacked below the statement (Version A) */}
+      {/* ABOUT — two-sentence confirmed-facts block + "More about me". */}
       <section id="about" className="portal-about" data-reveal>
         <h2 className="portal-about__head">About me</h2>
         <p className="portal-about__copy">
@@ -158,10 +162,9 @@ export function PortalArchive() {
       <SelectedWorkGallery />
 
       {/* JOURNEY — compact rows, timeframe / org / role + Current chip.
-          No per-role summary line; "Digital HUB (D-HUB)" wraps at word boundaries. */}
+          One title only ("Journey"); "Full experience" links to /experience. */}
       <section id="experience" className="portal-journey" data-reveal>
         <div className="portal-journey__head">
-          <p className="portal-label">Journey</p>
           <h2 className="portal-journey__title">Journey</h2>
           <QuietLink href="/experience" className="portal-ql">Full experience</QuietLink>
         </div>
@@ -209,7 +212,7 @@ export function PortalArchive() {
               </RevealImage>
             </figure>
           </Reveal>
-          <div>
+          <div className="portal-publication__text">
             <h3 className="portal-publication__title">{publication.title}</h3>
             <p className="portal-publication__venue">{publication.venue}</p>
             <p className="portal-publication__date">{publication.date}</p>
