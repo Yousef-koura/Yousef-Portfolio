@@ -521,6 +521,16 @@ a.portal-ql{min-height:44px;display:inline-flex;align-items:center;padding:10px 
 .portal-gallery__card__image--missing{
   visibility:hidden;
 }
+/* Home-only gallery covers (7:9 portrait). The fallback card box becomes
+   7:9 so each full cover — wordmark + focal visual — shows with no crop,
+   stretch, or letterbox. Applied to every card that sets galleryImage;
+   cards without a cover keep the base clamped height / object-fit: cover. */
+.portal-gallery__card__image--cover{
+  flex-shrink:0;
+  height:auto;
+  aspect-ratio:7/9;
+  object-fit:cover;
+}
 .portal-gallery__card__body{
   padding:clamp(12px,3vw,16px);
   display:flex;
