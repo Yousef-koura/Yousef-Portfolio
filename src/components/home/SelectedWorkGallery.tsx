@@ -55,7 +55,7 @@ const GALLERY: GalleryItem[] = [
     external: false,
     image: featuredProject.image,
     galleryImage: {
-      src: "/projects/movenue-cover-1400x1800.png",
+      src: "/projects/covers/movenue-cover-1400x1800.png",
       alt: "Movenue brand cover",
       width: 1400,
       height: 1800,
@@ -72,7 +72,7 @@ const GALLERY: GalleryItem[] = [
     external: false,
     image: secondaryProjects[1].image,
     galleryImage: {
-      src: "/projects/rag-chatbot-cover-1400x1800.png",
+      src: "/projects/covers/rag-chatbot-cover-1400x1800.png",
       alt: "Personal RAG Chatbot project cover",
       width: 1400,
       height: 1800,
@@ -89,7 +89,7 @@ const GALLERY: GalleryItem[] = [
     external: false,
     image: secondaryProjects[0].image,
     galleryImage: {
-      src: "/projects/agribot-cover-1400x1800.png",
+      src: "/projects/covers/agribot-cover-1400x1800.png",
       alt: "Agri-Bot project cover",
       width: 1400,
       height: 1800,
@@ -106,7 +106,7 @@ const GALLERY: GalleryItem[] = [
     external: false,
     image: secondaryProjects[2].image,
     galleryImage: {
-      src: "/projects/fmcg-pipeline-cover-1400x1800.png",
+      src: "/projects/covers/fmcg-pipeline-cover-1400x1800.png",
       alt: "FMCG Data Engineering Pipeline project cover",
       width: 1400,
       height: 1800,
@@ -128,7 +128,7 @@ const GALLERY: GalleryItem[] = [
       height: 842,
     },
     galleryImage: {
-      src: "/projects/content-opportunity-scoring-cover-1400x1800.png",
+      src: "/projects/covers/content-opportunity-scoring-cover-1400x1800.png",
       alt: "Content Opportunity Scoring project cover",
       width: 1400,
       height: 1800,
